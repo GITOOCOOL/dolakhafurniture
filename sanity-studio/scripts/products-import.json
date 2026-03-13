@@ -1,0 +1,470 @@
+[
+  {
+    "title": "Classic 6 Pot Gamala Stand",
+    "slug": "classic-6-pot-gamala-stand",
+    "price": 2850,
+    "category": "plant-stands",
+    "description": "Handcrafted wooden stand for six clay pots. Perfect for balconies and windowsills.",
+    "stock": 12,
+    "isFeatured": true
+  },
+  {
+    "title": "Rustic 4 Pot Holder",
+    "slug": "rustic-4-pot-holder",
+    "price": 1950,
+    "category": "plant-stands",
+    "description": "Sturdy four-pot stand with a weathered finish.",
+    "stock": 8,
+    "isFeatured": false
+  },
+  {
+    "title": "Tiered Bamboo Plant Stand",
+    "slug": "tiered-bamboo-plant-stand",
+    "price": 3200,
+    "category": "plant-stands",
+    "description": "Three-tier bamboo stand for small pots and succulents.",
+    "stock": 6,
+    "isFeatured": true
+  },
+  {
+    "title": "Wall-Mounted 3 Pot Rack",
+    "slug": "wall-mounted-3-pot-rack",
+    "price": 1650,
+    "category": "plant-stands",
+    "description": "Space-saving wall mount for three small pots.",
+    "stock": 15,
+    "isFeatured": false
+  },
+  {
+    "title": "Round Wicker Plant Table",
+    "slug": "round-wicker-plant-table",
+    "price": 4100,
+    "category": "plant-stands",
+    "description": "Round wicker table with space for multiple plants.",
+    "stock": 4,
+    "isFeatured": false
+  },
+  {
+    "title": "Metal Tripod Stand",
+    "slug": "metal-tripod-stand",
+    "price": 2200,
+    "category": "plant-stands",
+    "description": "Industrial-style metal tripod for one large pot.",
+    "stock": 10,
+    "isFeatured": false
+  },
+  {
+    "title": "Wooden Ladder Shelf",
+    "slug": "wooden-ladder-shelf",
+    "price": 3800,
+    "category": "plant-stands",
+    "description": "Leaning ladder shelf with four tiers for pots.",
+    "stock": 5,
+    "isFeatured": true
+  },
+  {
+    "title": "Mini 2 Pot Stand",
+    "slug": "mini-2-pot-stand",
+    "price": 950,
+    "category": "plant-stands",
+    "description": "Compact stand for two small pots. Ideal for desks.",
+    "stock": 20,
+    "isFeatured": false
+  },
+  {
+    "title": "Hexagon Pot Stand",
+    "slug": "hexagon-pot-stand",
+    "price": 2600,
+    "category": "plant-stands",
+    "description": "Geometric hexagon design holding six small pots.",
+    "stock": 7,
+    "isFeatured": false
+  },
+  {
+    "title": "Tall Pedestal Stand",
+    "slug": "tall-pedestal-stand",
+    "price": 1950,
+    "category": "plant-stands",
+    "description": "Elegant tall pedestal for a single statement pot.",
+    "stock": 9,
+    "isFeatured": false
+  },
+  {
+    "title": "Terracotta Medium Pot",
+    "slug": "terracotta-medium-pot",
+    "price": 650,
+    "category": "clay-pots",
+    "description": "Classic terracotta pot, ideal for herbs and small plants.",
+    "stock": 30,
+    "isFeatured": true
+  },
+  {
+    "title": "Small Clay Bulb Pot",
+    "slug": "small-clay-bulb-pot",
+    "price": 350,
+    "category": "clay-pots",
+    "description": "Tiny clay pot for succulents or single bulbs.",
+    "stock": 45,
+    "isFeatured": false
+  },
+  {
+    "title": "Large Garden Clay Pot",
+    "slug": "large-garden-clay-pot",
+    "price": 1200,
+    "category": "clay-pots",
+    "description": "Large unglazed clay pot for outdoor planting.",
+    "stock": 18,
+    "isFeatured": false
+  },
+  {
+    "title": "Clay Hanging Pot",
+    "slug": "clay-hanging-pot",
+    "price": 480,
+    "category": "clay-pots",
+    "description": "Lightweight clay pot with drainage, for hanging.",
+    "stock": 25,
+    "isFeatured": false
+  },
+  {
+    "title": "Set of 3 Clay Pots",
+    "slug": "set-of-3-clay-pots",
+    "price": 890,
+    "category": "clay-pots",
+    "description": "Three assorted sizes in natural clay finish.",
+    "stock": 22,
+    "isFeatured": true
+  },
+  {
+    "title": "Oval Clay Planter",
+    "slug": "oval-clay-planter",
+    "price": 720,
+    "category": "clay-pots",
+    "description": "Oval-shaped clay planter for windowsills.",
+    "stock": 14,
+    "isFeatured": false
+  },
+  {
+    "title": "Clay Pot with Tray",
+    "slug": "clay-pot-with-tray",
+    "price": 580,
+    "category": "clay-pots",
+    "description": "Medium pot with matching saucer.",
+    "stock": 28,
+    "isFeatured": false
+  },
+  {
+    "title": "Mini Clay Cactus Pot",
+    "slug": "mini-clay-cactus-pot",
+    "price": 280,
+    "category": "clay-pots",
+    "description": "Small clay pot perfect for cacti.",
+    "stock": 40,
+    "isFeatured": false
+  },
+  {
+    "title": "Wide Clay Bowl Planter",
+    "slug": "wide-clay-bowl-planter",
+    "price": 950,
+    "category": "clay-pots",
+    "description": "Shallow wide bowl for succulents or bonsai.",
+    "stock": 12,
+    "isFeatured": false
+  },
+  {
+    "title": "Traditional Gamala Pot",
+    "slug": "traditional-gamala-pot",
+    "price": 550,
+    "category": "clay-pots",
+    "description": "Classic Nepali gamala-style clay pot.",
+    "stock": 35,
+    "isFeatured": true
+  },
+  {
+    "title": "Painted Lotus Pot",
+    "slug": "painted-lotus-pot",
+    "price": 1100,
+    "category": "hand-painted",
+    "description": "Hand-painted lotus motif on terracotta.",
+    "stock": 8,
+    "isFeatured": true
+  },
+  {
+    "title": "Mandala Design Pot",
+    "slug": "mandala-design-pot",
+    "price": 1350,
+    "category": "hand-painted",
+    "description": "Intricate mandala pattern, hand-painted.",
+    "stock": 6,
+    "isFeatured": true
+  },
+  {
+    "title": "Floral Clay Pot",
+    "slug": "floral-clay-pot",
+    "price": 980,
+    "category": "hand-painted",
+    "description": "Delicate floral design on medium pot.",
+    "stock": 11,
+    "isFeatured": false
+  },
+  {
+    "title": "Peacock Painted Pot",
+    "slug": "peacock-painted-pot",
+    "price": 1500,
+    "category": "hand-painted",
+    "description": "Peacock feather design in blue and green.",
+    "stock": 5,
+    "isFeatured": false
+  },
+  {
+    "title": "Geometric Pattern Pot",
+    "slug": "geometric-pattern-pot",
+    "price": 820,
+    "category": "hand-painted",
+    "description": "Modern geometric patterns on clay.",
+    "stock": 14,
+    "isFeatured": false
+  },
+  {
+    "title": "Om Symbol Pot",
+    "slug": "om-symbol-pot",
+    "price": 760,
+    "category": "hand-painted",
+    "description": "Sacred Om symbol hand-painted on pot.",
+    "stock": 16,
+    "isFeatured": false
+  },
+  {
+    "title": "Sunset Gradient Pot",
+    "slug": "sunset-gradient-pot",
+    "price": 920,
+    "category": "hand-painted",
+    "description": "Warm sunset gradient, hand-painted.",
+    "stock": 9,
+    "isFeatured": false
+  },
+  {
+    "title": "Leaf Print Pot",
+    "slug": "leaf-print-pot",
+    "price": 680,
+    "category": "hand-painted",
+    "description": "Natural leaf print design.",
+    "stock": 20,
+    "isFeatured": false
+  },
+  {
+    "title": "Dot Art Pot",
+    "slug": "dot-art-pot",
+    "price": 890,
+    "category": "hand-painted",
+    "description": "Decorative dot art in earth tones.",
+    "stock": 10,
+    "isFeatured": false
+  },
+  {
+    "title": "Elephant Motif Pot",
+    "slug": "elephant-motif-pot",
+    "price": 1250,
+    "category": "hand-painted",
+    "description": "Lucky elephant design, hand-painted.",
+    "stock": 7,
+    "isFeatured": true
+  },
+  {
+    "title": "Mountain Scene Pot",
+    "slug": "mountain-scene-pot",
+    "price": 1400,
+    "category": "hand-painted",
+    "description": "Himalayan mountain scene on clay.",
+    "stock": 4,
+    "isFeatured": true
+  },
+  {
+    "title": "Tribal Pattern Pot",
+    "slug": "tribal-pattern-pot",
+    "price": 790,
+    "category": "hand-painted",
+    "description": "Traditional tribal pattern.",
+    "stock": 13,
+    "isFeatured": false
+  },
+  {
+    "title": "Butterfly Painted Pot",
+    "slug": "butterfly-painted-pot",
+    "price": 610,
+    "category": "hand-painted",
+    "description": "Colorful butterfly design.",
+    "stock": 18,
+    "isFeatured": false
+  },
+  {
+    "title": "River Stone Pot",
+    "slug": "river-stone-pot",
+    "price": 870,
+    "category": "hand-painted",
+    "description": "River stone texture and colors.",
+    "stock": 11,
+    "isFeatured": false
+  },
+  {
+    "title": "Buddha Face Pot",
+    "slug": "buddha-face-pot",
+    "price": 1650,
+    "category": "hand-painted",
+    "description": "Serene Buddha face on planter.",
+    "stock": 3,
+    "isFeatured": true
+  },
+  {
+    "title": "Indigo Dip-Dye Pot",
+    "slug": "indigo-dip-dye-pot",
+    "price": 720,
+    "category": "hand-painted",
+    "description": "Natural indigo dip-dye finish.",
+    "stock": 15,
+    "isFeatured": false
+  },
+  {
+    "title": "Brass Bell Wall Hanging",
+    "slug": "brass-bell-wall-hanging",
+    "price": 1850,
+    "category": "artsy-decor",
+    "description": "Handcrafted brass bell for entrance or altar.",
+    "stock": 6,
+    "isFeatured": true
+  },
+  {
+    "title": "Wooden Mask",
+    "slug": "wooden-mask",
+    "price": 2200,
+    "category": "artsy-decor",
+    "description": "Carved wooden decorative mask.",
+    "stock": 4,
+    "isFeatured": false
+  },
+  {
+    "title": "Macramé Plant Hanger",
+    "slug": "macrame-plant-hanger",
+    "price": 950,
+    "category": "artsy-decor",
+    "description": "Hand-knotted macramé for hanging pots.",
+    "stock": 12,
+    "isFeatured": false
+  },
+  {
+    "title": "Ceramic Vase",
+    "slug": "ceramic-vase",
+    "price": 1450,
+    "category": "artsy-decor",
+    "description": "Minimal ceramic vase for dried flowers.",
+    "stock": 8,
+    "isFeatured": false
+  },
+  {
+    "title": "Bamboo Wind Chime",
+    "slug": "bamboo-wind-chime",
+    "price": 680,
+    "category": "artsy-decor",
+    "description": "Gentle bamboo wind chime.",
+    "stock": 20,
+    "isFeatured": false
+  },
+  {
+    "title": "Copper Incense Holder",
+    "slug": "copper-incense-holder",
+    "price": 520,
+    "category": "artsy-decor",
+    "description": "Small copper incense stick holder.",
+    "stock": 25,
+    "isFeatured": false
+  },
+  {
+    "title": "Woven Basket Set",
+    "slug": "woven-basket-set",
+    "price": 1100,
+    "category": "artsy-decor",
+    "description": "Set of three woven storage baskets.",
+    "stock": 10,
+    "isFeatured": false
+  },
+  {
+    "title": "Stone Buddha Statue",
+    "slug": "stone-buddha-statue",
+    "price": 2800,
+    "category": "artsy-decor",
+    "description": "Small stone Buddha for garden or shelf.",
+    "stock": 5,
+    "isFeatured": true
+  },
+  {
+    "title": "Jute Rug Round",
+    "slug": "jute-rug-round",
+    "price": 1650,
+    "category": "artsy-decor",
+    "description": "Round natural jute rug.",
+    "stock": 7,
+    "isFeatured": false
+  },
+  {
+    "title": "Clay Diya Set",
+    "slug": "clay-diya-set",
+    "price": 450,
+    "category": "artsy-decor",
+    "description": "Set of five clay diyas for festivals.",
+    "stock": 30,
+    "isFeatured": false
+  },
+  {
+    "title": "Wooden Candle Holder",
+    "slug": "wooden-candle-holder",
+    "price": 780,
+    "category": "artsy-decor",
+    "description": "Carved wooden tealight holder.",
+    "stock": 14,
+    "isFeatured": false
+  },
+  {
+    "title": "Brass Trinket Box",
+    "slug": "brass-trinket-box",
+    "price": 890,
+    "category": "artsy-decor",
+    "description": "Ornate brass small storage box.",
+    "stock": 9,
+    "isFeatured": false
+  },
+  {
+    "title": "Rattan Mirror Frame",
+    "slug": "rattan-mirror-frame",
+    "price": 3200,
+    "category": "artsy-decor",
+    "description": "Round mirror with rattan frame.",
+    "stock": 3,
+    "isFeatured": true
+  },
+  {
+    "title": "Terracotta Bird Feeder",
+    "slug": "terracotta-bird-feeder",
+    "price": 620,
+    "category": "artsy-decor",
+    "description": "Decorative bird feeder for garden.",
+    "stock": 11,
+    "isFeatured": false
+  },
+  {
+    "title": "Handmade Paper Lantern",
+    "slug": "handmade-paper-lantern",
+    "price": 380,
+    "category": "artsy-decor",
+    "description": "Lokta paper lantern.",
+    "stock": 22,
+    "isFeatured": false
+  },
+  {
+    "title": "Bamboo Tray",
+    "slug": "bamboo-tray",
+    "price": 750,
+    "category": "artsy-decor",
+    "description": "Rectangular bamboo serving tray.",
+    "stock": 16,
+    "isFeatured": false
+  }
+]
