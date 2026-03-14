@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
               </div>
               <span className="hidden md:block text-xl font-black tracking-tighter uppercase italic leading-none text-stone-900">
-                Dolakha<span className="text-orange-600 group-hover:animate-pulse">.</span>Furniture
+                Dolaha<span className="text-orange-600 group-hover:animate-pulse">.</span>Furniture
               </span>
             </Link>
 
