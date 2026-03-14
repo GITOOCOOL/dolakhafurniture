@@ -35,7 +35,7 @@ export default async function Home() {
     <main className="min-h-screen bg-white text-stone-900 pb-20 overflow-x-hidden">
       
       {/* --- HERO SECTION WITH DYNAMIC IMAGES --- */}
-      <Hero dynamicImages={heroImagePool} />
+      <Hero />
 
       {/* --- PRODUCT ROWS --- */}
       <div className="w-full">
