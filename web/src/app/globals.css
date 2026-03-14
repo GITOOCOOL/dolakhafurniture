@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 1. Change the base "Paper" feel */
+  --background: #fdfaf5; /* Warm Bone/Cream */
+  --foreground: #3d2b1f; /* Deep Espresso (not harsh black) */
+  
+  /* 2. Map Boho colors to existing Tailwind class names */
+  --color-blue-50: #fff4f1;    /* Hardcoded bg-blue-50 -> Soft Blush */
+  --color-blue-600: #a3573a;   /* Hardcoded bg-blue-600 -> Terracotta */
+  --color-green-100: #e2e8da;  /* Hardcoded bg-green-100 -> Muted Sage */
+  --color-yellow-500: #df9152; /* Hardcoded bg-yellow-500 -> Ochre */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  /* 3. Force organic shapes globally */
+  --radius-md: 1rem;    /* Makes rounded-md softer */
+  --radius-lg: 1.5rem;  /* Makes rounded-lg much more organic */
+  
+  /* 4. Swap to a "Boho-friendly" font if you have one */
+  --font-sans: "Charter", "Georgia", serif; 
 }
 
+/* 5. Dark mode for Boho (Deep Forest/Clay instead of pure black) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1a1c13; /* Deep Olive Green */
+    --foreground: #e2e8da; /* Soft Sage text */
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Use a Serif font for that 'editorial-meets-boho' vibe */
+  font-family: var(--font-sans); 
+  -webkit-font-smoothing: antialiased;
 }

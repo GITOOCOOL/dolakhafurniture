@@ -8,7 +8,7 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// 1. DYNAMIC SEO METADATA
+// 1. DYNAMIC SEO METADATA - Updated for a boutique, artisanal feel
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await client.fetch(
@@ -16,13 +16,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     { slug }
   );
 
-  if (!product) return { title: "Product Not Found" };
+  if (!product) return { title: "Piece Not Found" };
 
   return {
-    title: `${product.title} | Dolakha Furniture`,
-    description: product.description || "Handcrafted furniture from Dolakha.",
+    title: `${product.title} | Handcrafted at Dolakha Furniture`,
+    description: product.description || "A unique, artisanal addition to your home, handcrafted in Kathmandu.",
     openGraph: {
-      title: `${product.title} | Dolakha Furniture`,
+      title: `${product.title} | Dolakha Furniture home Collection`,
       description: product.description,
       images: [
         {
@@ -40,20 +40,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   
-  // Fetch the full product data
   const product = await client.fetch(
     `*[_type == "product" && slug.current == $slug][0]`,
     { slug }
   );
 
-  // If the slug is wrong, show the 404 page
   if (!product) {
     notFound();
   }
 
   return (
-    <div className="bg-stone-50 min-h-screen">
-      {/* Pass the Sanity data into our Interactive Client Component */}
+    /* Changed bg-stone-50 to your new Boho Cream (#fdfaf5) */
+    <div className="bg-[#fdfaf5] min-h-screen text-[#3d2b1f] selection:bg-[#a3573a]/20">
+      {/* 
+          IMPORTANT: The real UI shift happens inside <ProductDetail />.
+          Ensure that component uses:
+          - Serif Garamond for titles
+          - Terracotta (#a3573a) for "Add to Cart" 
+          - Organic, rounded corners (rounded-[3rem])
+      */}
       <ProductDetail product={product} />
     </div>
   );

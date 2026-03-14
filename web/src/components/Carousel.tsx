@@ -33,34 +33,38 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex-1 relative group w-full px-0 overflow-visible">
+      {/* Updated Animations: Slower 'Drift' for a calmer vibe */}
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        @keyframes bounce-x-left { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-5px); } }
-        @keyframes bounce-x-right { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
-        .animate-bounce-left { animation: bounce-x-left 1.5s infinite; }
-        .animate-bounce-right { animation: bounce-x-right 1.5s infinite; }
+        @keyframes drift-x-left { 0%, 100% { transform: translateX(0); opacity: 0.4; } 50% { transform: translateX(-6px); opacity: 0.8; } }
+        @keyframes drift-x-right { 0%, 100% { transform: translateX(0); opacity: 0.4; } 50% { transform: translateX(6px); opacity: 0.8; } }
+        .animate-drift-left { animation: drift-x-left 2.5s ease-in-out infinite; }
+        .animate-drift-right { animation: drift-x-right 2.5s ease-in-out infinite; }
       `}</style>
       
-      {/* LEFT ARROW - Added z-40 and translateZ to force visibility on iOS */}
+      {/* LEFT ARROW - Changed from Stone/Orange to Cream/Terracotta */}
       <button 
         onClick={() => scroll('left')}
         className={`absolute -left-2 md:left-0 top-0 bottom-8 flex items-center justify-start
                    z-40 pointer-events-auto transform-gpu
-                   bg-gradient-to-r from-stone-50/90 via-transparent to-transparent 
-                   transition-all duration-300
+                   bg-gradient-to-r from-[#fdfaf5]/95 via-transparent to-transparent 
+                   transition-all duration-500
                    ${showLeftArrow ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         style={{ transform: 'translateZ(0)', width: '48px' }}
       >
-        <span className="text-4xl md:text-7xl font-light text-orange-600 drop-shadow-sm animate-bounce-left">
-          «
+        <span className="text-7xl md:text-7xl font-serif italic text-[#a3573a] drop-shadow-sm animate-drift-left">
+          ‹
+        </span>
+        <span className="text-7xl md:text-7xl font-serif italic text-[#a3573a] drop-shadow-sm animate-drift-left">
+          ‹
         </span>
       </button>
 
-      {/* THE CONTAINER - Maintained 2-item mobile math */}
+      {/* THE CONTAINER - Layout kept identical, fixed vertical scroll with touch-pan-y */}
       <div 
         ref={scrollRef}
         onScroll={checkScroll}
-        className="flex gap-3 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-8 no-scrollbar scroll-smooth w-full touch-pan-y"
+        className="flex gap-3 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-8 no-scrollbar scroll-smooth w-full touch-pan-x touch-pan-y"
       >
         {React.Children.map(children, (child) => (
           <div className="
@@ -74,18 +78,21 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
         ))}
       </div>
 
-      {/* RIGHT ARROW - Added z-40 and translateZ to force visibility on iOS */}
+      {/* RIGHT ARROW - Changed from Stone/Orange to Cream/Terracotta */}
       <button 
         onClick={() => scroll('right')}
         className={`absolute -right-2 md:right-0 top-0 bottom-8 flex items-center justify-end
                    z-40 pointer-events-auto transform-gpu
-                   bg-gradient-to-l from-stone-50/90 via-transparent to-transparent 
-                   transition-all duration-300
+                   bg-gradient-to-l from-[#fdfaf5]/95 via-transparent to-transparent 
+                   transition-all duration-500
                    ${showRightArrow ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         style={{ transform: 'translateZ(0)', width: '48px' }}
       >
-        <span className="text-4xl md:text-7xl font-light text-orange-600 drop-shadow-sm animate-bounce-right">
-          »
+        <span className="text-7xl md:text-7xl font-serif italic text-[#a3573a] drop-shadow-sm animate-drift-right">
+          ›
+        </span>
+        <span className="text-7xl md:text-7xl font-serif italic text-[#a3573a] drop-shadow-sm animate-drift-right">
+          ›
         </span>
       </button>
     </div>

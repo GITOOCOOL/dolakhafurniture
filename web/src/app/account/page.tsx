@@ -4,11 +4,10 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import AccountClient from "../../components/AccountClient";
 
-
-// 1. SEO METADATA
+// 1. SEO METADATA - Updated with "home" and "Artisanal" terminology
 export const metadata: Metadata = {
-  title: "Your Account | Dolakha Furniture",
-  description: "Manage your artisanal furniture orders and profile.",
+  title: "My home Account | Dolakha Furniture",
+  description: "Manage your artisanal furniture orders and curated profile.",
 };
 
 // Force fresh data on every visit
@@ -36,9 +35,16 @@ export default async function AccountPage({
   );
 
   return (
-    <div className="bg-stone-50 min-h-screen pt-32 pb-20">
+    /* Changed bg-stone-50 to your new Boho Cream (#fdfaf5) */
+    <div className="bg-[#fdfaf5] min-h-screen pt-32 pb-20 font-sans text-[#3d2b1f]">
       <div className="container mx-auto px-6">
-        {/* Pass data to the Client Component for interactivity */}
+        {/* 
+            Note: You will likely need to update the AccountClient component next 
+            to ensure its internal buttons, cards, and text use the:
+            - Espresso (#3d2b1f) 
+            - Terracotta (#a3573a)
+            - Serif Fonts (Cormorant Garamond)
+        */}
         <AccountClient 
           user={user} 
           orders={orders} 
