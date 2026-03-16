@@ -6,7 +6,7 @@ const ProductCard = ({ product }: { product: any }) => {
     <div className="group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-[#e5dfd3] bg-white w-full h-full shadow-sm hover:shadow-[0_20px_50px_rgba(163,87,58,0.1)] transition-shadow duration-700">
       <Link 
         href={`/product/${product.slug}`} 
-        className="flex flex-col h-full active:scale-[0.98] transition-transform duration-200 ease-out touch-manipulation"
+        className="flex flex-col h-full transition-transform duration-200 ease-out touch-manipulation"
       >
         <div className="aspect-[4/5] bg-[#fdfaf5] overflow-hidden">
            <img 

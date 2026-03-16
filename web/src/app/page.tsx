@@ -33,12 +33,15 @@ export default async function Home() {
 
       {/* --- PRODUCT ROWS --- */}
       <div id="products-section" className="w-full">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-serif italic tracking-tight text-[#3d2b1f] my-16 py-16 underline underline-offset-4 decoration-[#a3573a] decoration-2 transition-all duration-500 hover:decoration-[#a3573a]/50"> Browse Our Collections </h2>
+        </div>
         {categoriesInOrder.map((cat, index) => {
           const isStriped = index % 2 !== 0;
           return (
             <section
               key={cat.slug}
-              className={`mt-8 py-16 md:py-16 pt-0 w-full border-t border-stone-200 scroll-mt-20 transition-all duration-500 ${isStriped
+              className={`mt-00 py-0 md:py-16 pt-0 w-full border-t border-stone-200 scroll-mt-20 transition-all duration-500 ${isStriped
                 ? 'bg-stone-100 shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]'
                 : 'bg-white'
                 }`}

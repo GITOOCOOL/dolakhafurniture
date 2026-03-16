@@ -19,7 +19,7 @@ export default function BulletinTicker({ bulletins = [] }: { bulletins: Bulletin
 
     const timer = setInterval(() => {
       setBulletinIndex((prev) => (prev + 1) % (bulletins?.length || 1));
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, [bulletins?.length]);
@@ -27,7 +27,7 @@ export default function BulletinTicker({ bulletins = [] }: { bulletins: Bulletin
   if (!bulletins || bulletins.length === 0) return null;
 
   return (
-    <div className="w-full h-16 relative overflow-hidden bg-[#fdfaf5] border-b border-[#e5dfd3] border-dotted z-40 [transform-style:preserve-3d] [transform:translateZ(10px)]">
+    <div className="w-full h-28 relative overflow-hidden bg-[#fdfaf5] border-b border-[#e5dfd3] border-dotted z-40 rounded-none">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={bulletinIndex}
@@ -36,7 +36,7 @@ export default function BulletinTicker({ bulletins = [] }: { bulletins: Bulletin
           animate="center"
           exit="exit"
           transition={{ type: "tween", ease: "linear", duration: 2.5 }}
-          className="absolute inset-0 flex items-center justify-center p-2"
+          className="relative w-full h-full flex items-center justify-center p-2 rounded-full"
         >
           {bulletins[bulletinIndex] && (
             <Bulletin

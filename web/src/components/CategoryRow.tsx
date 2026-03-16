@@ -17,7 +17,7 @@ const CategoryRow = ({ title, slug, products }: CategoryRowProps) => {
       <div className="flex-shrink-0 w-full lg:w-auto px-1 md:px-0">
         <CategoryRibbon title={title} slug={slug} />
       </div>
-      
+
       {/* Carousel Wrapper: min-w-0 is vital for flexbox carousels */}
       <div className="w-full min-w-0">
         <Carousel>

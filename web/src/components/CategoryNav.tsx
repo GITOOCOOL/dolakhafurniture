@@ -11,10 +11,10 @@ type Category = {
   slug: string;
 };
 
-export default function CategoryNav({ 
+export default function CategoryNav({
   isMobile = false,
   onItemClick,
-}: { 
+}: {
   isMobile?: boolean;
   onItemClick?: () => void;
 }) {
@@ -35,7 +35,7 @@ export default function CategoryNav({
         setLoading(false);
       }
     }
-    
+
     fetchCategories();
   }, []);
 
@@ -56,33 +56,33 @@ export default function CategoryNav({
   const allLinks = [...baseLinks, ...categoryLinks, ...endLinks];
 
   if (!mounted || loading) {
-     return isMobile ? (
-       <nav className="flex flex-col items-start justify-center flex-grow gap-8 w-full opacity-50">
-          {[1,2,3,4].map(i => (
-             <div key={i} className="h-10 w-48 bg-[#e5dfd3] animate-pulse rounded"></div>
-          ))}
-       </nav>
-     ) : (
-       <div className="flex gap-6 lg:gap-10 opacity-50">
-          {[1,2,3,4,5].map(i => (
-             <div key={i} className="h-4 w-16 bg-[#e5dfd3] animate-pulse rounded"></div>
-          ))}
-       </div>
-     );
+    return isMobile ? (
+      <nav className="flex flex-col items-start justify-start flex-grow gap-8 w-full opacity-50 pt-2 h-full overflow-hidden pb-20">
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} className="h-12 md:h-14 w-64 bg-[#e5dfd3] animate-pulse rounded-2xl"></div>
+        ))}
+      </nav>
+    ) : (
+      <div className="flex gap-6 lg:gap-10 opacity-50">
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} className="h-4 w-16 bg-[#e5dfd3] animate-pulse rounded"></div>
+        ))}
+      </div>
+    );
   }
 
   if (isMobile) {
     return (
-      <nav className="flex flex-col items-start justify-start flex-grow gap-8 overflow-y-auto no-scrollbar pb-10 w-full h-full">
+      <nav className="flex flex-col items-start justify-start flex-grow gap-8 overflow-y-auto no-scrollbar pb-20 w-full h-full pt-2">
         {allLinks.map((link) => (
-            <Link 
-              key={link.name}
-              href={link.href}
-              onClick={onItemClick}
-              className="text-5xl font-serif italic text-[#3d2b1f] hover:text-[#a3573a] transition-all flex-shrink-0"
-            >
-              {link.name}
-            </Link>
+          <Link
+            key={link.name}
+            href={link.href}
+            onClick={onItemClick}
+            className="text-5xl font-serif italic text-[#3d2b1f] hover:text-[#a3573a] flex-shrink-0"
+          >
+            {link.name}
+          </Link>
         ))}
       </nav>
     );
@@ -91,9 +91,9 @@ export default function CategoryNav({
   return (
     <nav className="flex items-center justify-center gap-6 lg:gap-10 text-[13px] font-medium font-serif italic tracking-wide w-full overflow-x-auto no-scrollbar py-1">
       {allLinks.map((link) => (
-        <Link 
-          key={link.name} 
-          href={link.href} 
+        <Link
+          key={link.name}
+          href={link.href}
           className="text-[#3d2b1f] whitespace-nowrap hover:text-[#a3573a] transition-colors relative group py-1"
         >
           {link.name}

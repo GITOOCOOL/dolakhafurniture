@@ -52,24 +52,29 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
   }, [heroImages.length, page]);
 
   return (
-    <section className="relative w-full lg:min-h-[90vh] flex flex-col justify-center bg-[#fdfaf5] overflow-hidden border-b border-[#e5dfd3] border-dotted">
+    <section className="relative w-full lg:min-h-[80vh] flex flex-col justify-center bg-[#fdfaf5] overflow-hidden">
 
-      {/* 0. FULL-WIDTH BULLETIN TICKER */}
-      <BulletinTicker bulletins={bulletins} />
-
-      {/* 1. BOHO SIDEBAR (SUBTLE SERIF) */}
-      <div className="hidden xl:flex fixed left-0 top-0 bottom-0 w-20 border-r border-[#e5dfd3] border-dotted flex-col items-center justify-center gap-10 z-50 bg-white/30 backdrop-blur-sm px-4">
-        <p className="rotate-180 [writing-mode:vertical-lr] text-[10px] font-serif italic tracking-[0.4em] text-[#a89f91]">
-          Dolakha home Archive / 2024
-        </p>
+      {/* 0. FULL-WIDTH BULLETIN TICKER WITH SPACING GAP */}
+      <div className="mt-4 md:mt-6">
+        <BulletinTicker bulletins={bulletins} />
       </div>
 
-      <div className="container mx-auto px-6 xl:pl-40 pt-10 pb-20 lg:py-24 relative z-10">
+
+
+      <div className="container mx-auto px-6 xl:pl-40 pt-10 pb-0 lg:py-24 relative z-10">
 
         {/* 2. MAIN BRANDING */}
         <div className="max-w-6xl">
           {/* --- HERO IMAGE CAROUSEL --- */}
-          <div className="relative h-[40vh] lg:h-[60vh] w-full mt-8 mb-12 overflow-hidden rounded-[3rem] border border-[#e5dfd3] shadow-2xl group bg-stone-100">
+          <div
+            className="relative w-full mt-0 mb-12 overflow-hidden rounded-[3rem] border border-[#e5dfd3] shadow-2xl group bg-stone-100 isolate"
+            style={{
+              height: '31vh', // Reduced by another 10% (from 35vh)
+              maxHeight: '380px', // Reduced from 420px
+              minHeight: '250px', // Reduced from 280px
+              WebkitMaskImage: '-webkit-radial-gradient(white, black)'
+            }}
+          >
             {heroImages.length > 0 ? (
               <>
                 <AnimatePresence initial={false} custom={direction}>
@@ -84,15 +89,15 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
                       x: { type: "tween", ease: "linear", duration: 0.8 },
                       opacity: { duration: 0.2 }
                     }}
-                    className="absolute inset-0 flex items-center justify-center z-10"
+                    className="absolute inset-0 flex items-center justify-center z-10 w-full h-full overflow-hidden"
                   >
                     {/* Background Blur Layer */}
-                    <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute inset-0 w-full h-full overflow-hidden">
                       <Image
                         src={urlFor(heroImages[safeIndex].mainImage).width(800).blur(50).url()}
                         alt=""
                         fill
-                        className="object-cover opacity-40 scale-110"
+                        className="object-cover opacity-40 scale-[1.01]"
                         priority
                       />
                     </div>
@@ -111,8 +116,7 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
                 </AnimatePresence>
 
                 {/* BROWSE BUTTON OVERLAY (Outside AnimatePresence - Strictly Static) */}
-                {/* We use translateZ and preserve-3d to force Safari to keep this overlay on top of the GPU-accelerated motion layers */}
-                <div className="absolute inset-0 flex items-end justify-center pb-12 z-30 pointer-events-none [transform-style:preserve-3d] [transform:translateZ(5px)]">
+                <div className="absolute inset-0 flex items-end justify-center pb-12 z-30 pointer-events-none">
                   <button
                     onClick={handleScroll}
                     className="pointer-events-auto bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-full font-bold uppercase text-[12px] tracking-[0.3em] hover:bg-white hover:text-[#3d2b1f] shadow-2xl flex items-center gap-4 group"
@@ -147,7 +151,7 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
             <span className="text-[#a3573a] decoration-[#e5dfd3] underline-offset-[1.5rem] underline decoration-dotted">Furniture.</span>
           </h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Mission Statement */}
             <div className="space-y-12">
               <div className="space-y-6 border-l-2 border-[#a3573a] pl-8">
@@ -159,83 +163,65 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-5">
-                <Link href="/shop" className="w-full bg-[#3d2b1f] text-[#fdfaf5] px-6 py-6 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-[#a3573a] transition-all shadow-xl flex items-center gap-3 active:scale-95">
-                  Shop Now <ArrowRight size={16} />
-                </Link>
-              </div>
-              <div className="flex gap-5">
-                <a
-                  href="tel:+9779808005210" /* Replace with your actual business number */
-                  className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] px-6 py-6 rounded-full font-sans font-bold uppercase text-[10px] tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-[#fdfaf5] transition-all active:scale-95 shadow-sm"
-                >
-                  <Phone size={16} className="text-[#a3573a]" />
-                  Call Us Anytime
-                </a>
-                <a href="https://wa.me" target="_blank" className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] px-6 py-6 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] flex items-center gap-3 hover:bg-[#fdfaf5] transition-all active:scale-95 shadow-sm">
-                  <MessageCircle size={16} className="text-[#25D366]" /> WhatsApp
-                </a>
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-wrap gap-5">
+                  <Link href="/shop" className="w-full bg-[#3d2b1f] text-[#fdfaf5] px-6 py-6 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-[#a3573a] transition-all shadow-xl flex items-center gap-3">
+                    Shop Now <ArrowRight size={16} />
+                  </Link>
+                </div>
+                <div className="flex gap-5">
+                  <a
+                    href="tel:+9779808005210"
+                    className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] px-6 py-4 rounded-full font-sans font-bold uppercase text-[10px] tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-[#fdfaf5] transition-all shadow-sm"
+                  >
+                    <Phone size={16} className="text-[#a3573a]" />
+                    Call Us Anytime
+                  </a>
+                  <a href="https://wa.me" target="_blank" className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] px-4 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] flex items-center gap-3 hover:bg-[#fdfaf5] transition-all shadow-sm">
+                    <MessageCircle size={16} className="text-[#25D366]" /> WhatsApp
+                  </a>
+                </div>
               </div>
             </div>
 
-            {/* 3. THE SOCIAL GRID (CLEAN & SPACED) */}
-            {/* 3. THE SOCIAL GRID (CLEAN & SPACED) */}
-            <div className="bg-white/40 p-8 md:p-16 rounded-[4rem] md:rounded-[5rem] border border-[#e5dfd3] backdrop-blur-md relative">
-              <Leaf className="absolute -top-4 -right-4 md:-top-6 md:-right-6 text-[#a3573a] rotate-12 opacity-30" size={32} />
+            {/* 3. THE SOCIAL ROW (COMPACT) */}
+            <div className="bg-white/40 p-6 md:p-8 rounded-[2.5rem] border border-[#e5dfd3] backdrop-blur-md relative">
+              <Leaf className="absolute -top-3 -right-3 text-[#a3573a] rotate-12 opacity-30" size={24} />
 
-              <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.4em] text-[#a89f91] mb-10 md:mb-16 text-center lg:text-left">
+              <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#a89f91] mb-6 text-center">
                 Connect to our Socials
               </p>
 
-              {/* MOBILE: Row of 4 icons | DESKTOP: Vertical list with large gaps */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:gap-y-16">
-
+              <div className="flex flex-row gap-6 md:gap-10 justify-center items-center">
                 {/* Facebook */}
-                <a href="https://facebook.com/dolakhafurniture" target="_blank" className="flex items-center gap-6 group justify-center sm:justify-start">
-                  <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-[#3b5998] group-hover:text-white transition-all duration-700">
-                    <Facebook strokeWidth={1.2} className="w-[18px] h-[18px] md:w-[20px] md:h-[20px]" />
-                  </div>
-                  <div className="hidden sm:flex flex-col">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f]">Facebook</span>
-                    <span className="text-[9px] italic font-serif text-[#a89f91]">@dolakhafurniture</span>
+                <a href="https://facebook.com/dolakhafurniture" target="_blank" className="group">
+                  <div className="h-12 w-12 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-[#3b5998] group-hover:text-white transition-all duration-700">
+                    <Facebook strokeWidth={1.2} size={20} />
                   </div>
                 </a>
 
                 {/* Instagram */}
-                <a href="https://instagram.com/dolakhafurnituredesign" target="_blank" className="flex items-center gap-6 group justify-center sm:justify-start">
-                  <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-gradient-to-tr group-hover:from-yellow-400 group-hover:to-purple-600 group-hover:text-white transition-all duration-700">
-                    <Instagram strokeWidth={1.2} className="w-[18px] h-[18px] md:w-[20px] md:h-[20px]" />
-                  </div>
-                  <div className="hidden sm:flex flex-col">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f]">Instagram</span>
-                    <span className="text-[9px] italic font-serif text-[#a89f91]">@dolakhafurnituredesign</span>
+                <a href="https://instagram.com/dolakhafurnituredesign" target="_blank" className="group">
+                  <div className="h-12 w-12 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-gradient-to-tr group-hover:from-yellow-400 group-hover:to-purple-600 group-hover:text-white transition-all duration-700">
+                    <Instagram strokeWidth={1.2} size={20} />
                   </div>
                 </a>
 
                 {/* TikTok */}
-                <a href="https://tiktok.com/@dolakhafurniture" target="_blank" className="flex items-center gap-6 group justify-center sm:justify-start">
-                  <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-[#1a1c13] group-hover:text-white transition-all duration-700">
-                    <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] md:w-[20px] md:h-[20px] fill-current" xmlns="http://www.w3.org">
+                <a href="https://tiktok.com/@dolakhafurniture" target="_blank" className="group">
+                  <div className="h-12 w-12 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-[#1a1c13] group-hover:text-white transition-all duration-700">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
                     </svg>
-                  </div>
-                  <div className="hidden sm:flex flex-col">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f]">TikTok</span>
-                    <span className="text-[9px] italic font-serif text-[#a89f91]">@dolakhafurniture</span>
                   </div>
                 </a>
 
                 {/* Email */}
-                <a href="mailto:dolakhafurniture@gmail.com" className="flex items-center gap-6 group justify-center sm:justify-start">
-                  <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-[#a3573a] group-hover:text-white transition-all duration-700">
-                    <Mail strokeWidth={1.2} className="w-[18px] h-[18px] md:w-[20px] md:h-[20px]" />
-                  </div>
-                  <div className="hidden sm:flex flex-col">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f]">Email</span>
-                    <span className="text-[9px] italic font-serif text-[#a89f91]">Message us</span>
+                <a href="mailto:dolakhafurniture@gmail.com" className="group">
+                  <div className="h-12 w-12 rounded-full bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center shadow-sm group-hover:bg-[#a3573a] group-hover:text-white transition-all duration-700">
+                    <Mail strokeWidth={1.2} size={20} />
                   </div>
                 </a>
-
               </div>
             </div>
 
@@ -244,7 +230,7 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
         </div>
 
         {/* 4. TRUST SIGNALS (NATURAL TONES) */}
-        <div className="mt-24 flex flex-wrap gap-12 lg:gap-24 border-t border-[#e5dfd3] border-dotted pt-16">
+        {/* <div className="mt-24 flex flex-wrap gap-12 lg:gap-24 border-t border-[#e5dfd3] border-dotted pt-16">
           <div className="flex flex-col gap-2">
             <span className="text-4xl font-serif italic text-[#3d2b1f]">Free</span>
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#a89f91]">Delivery in Ktm</span>
@@ -257,7 +243,7 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
             <span className="text-4xl font-serif italic text-[#3d2b1f]">Pure</span>
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#a89f91]">Iron-Wood Fusion</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

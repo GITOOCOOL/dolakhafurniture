@@ -152,7 +152,7 @@ export default function CheckoutPage() {
                   className={`w-full py-6 rounded-3xl font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-500 flex items-center justify-center gap-3 shadow-lg
                     ${isProcessing 
                       ? 'bg-[#e5dfd3] text-[#a89f91] cursor-not-allowed' 
-                      : 'bg-[#3d2b1f] text-[#fdfaf5] hover:bg-[#a3573a] hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)] active:scale-[0.98]'
+                      : 'bg-[#3d2b1f] text-[#fdfaf5] hover:bg-[#a3573a] hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]'
                     }`}
                 >
                   {isProcessing ? "Authorizing..." : user ? (

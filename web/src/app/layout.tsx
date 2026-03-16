@@ -9,6 +9,7 @@ import CategoryNav from "@/components/CategoryNav";
 import { Menu, X, Leaf, Search, Facebook, Instagram } from "lucide-react"; // Added Leaf for a boho touch
 import { motion, AnimatePresence } from "framer-motion";
 import { Image } from "lucide-react";
+
 // Boho Typography: Elegant Serif for Headlines, Soft Sans for Body
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
@@ -25,23 +26,23 @@ const sans = Montserrat({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
-    if (isMenuOpen) {
+    if (isMenuOpen || isSearchOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
     }
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isSearchOpen]);
 
   // Expanded nav links for Etsy-like category bar
   // Categories are now dynamically fetched in the CategoryNav component
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning={true}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-        <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
         {/* Updated Neon Pulse to a "Boho Glow" (Terracotta/Ochre) */}
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -57,63 +58,63 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* --- ETSY-STYLE HEADER --- */}
         <header className="sticky top-0 z-50 w-full bg-[#fdfaf5] border-b border-[#e5dfd3] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          {/* Top Row: Logo, Search, Actions */}
-          <div className="container mx-auto px-4 md:px-6 w-full flex items-center justify-between py-3 md:py-4 gap-4 md:gap-8">
+          {/* Top Row: Hamburger, Logo/Search, Actions */}
+          <div className="container mx-auto px-4 md:px-6 w-full flex items-center py-3 md:py-4">
 
-            {/* Logo Section */}
-            <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-              <div className="relative flex-shrink-0 flex items-center justify-center">
-                <img
-                  src="/logo.png"
-                  alt="logo"
-                  className="w-10 h-10 md:w-12 md:h-12 aspect-square object-contain transition-transform duration-700 group-hover:rotate-6"
-                />
-              </div>
-              <span className="hidden lg:block text-2xl font-serif italic tracking-tight text-[#3d2b1f]">
-                Dolakha<span className="text-[#a3573a]">.</span>Furniture
-              </span>
-            </Link>
-
-            {/* Search Bar (Center, expanding) */}
-            <div className="flex-1 max-w-2xl hidden md:flex items-center group relative">
-              <input
-                type="text"
-                placeholder="Search for furniture, decor, and more..."
-                className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] placeholder:text-[#a89f91] text-sm md:text-base rounded-full py-2.5 pl-5 pr-12 focus:outline-none focus:ring-2 focus:ring-[#a3573a]/30 focus:border-[#a3573a] transition-all shadow-sm group-hover:shadow-md"
-                suppressHydrationWarning
-              />
-              <button className="absolute right-1.5 p-2 bg-[#a3573a] text-white rounded-full hover:bg-[black] transition-colors shadow-sm">
-                <Search size={16} strokeWidth={2.5} />
-              </button>
-            </div>
-
-            {/* Actions Section */}
-            <div className="flex-shrink-0 flex items-center gap-2 md:gap-4">
-              <NavbarActions />
+            {/* 1. LEFT ZONE: Hamburger + Shop All */}
+            <div className="flex-1 flex items-center justify-start gap-2">
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="md:hidden p-2 text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors ml-1"
+                className="p-2.5 text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors -ml-2"
                 aria-label="Menu"
               >
-                <Menu size={24} strokeWidth={1.5} />
+                <Menu size={28} strokeWidth={1.5} />
               </button>
+
+              <Link
+                href="/shop"
+                className="h-[48px] flex items-center px-4 md:px-6 text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors whitespace-nowrap"
+              >
+                Shop All
+              </Link>
+            </div>
+
+            {/* 2. CENTER ZONE: Logo */}
+            <div className="flex-1 flex items-center justify-center relative z-10 min-w-0">
+              <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
+                <div className="relative flex-shrink-0 flex items-center justify-center">
+                  {/* House Graphic Frame */}
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-14 h-14 md:w-20 md:h-20 text-[#a3573a] opacity-20 absolute transition-transform duration-700 group-hover:scale-110"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  </svg>
+
+                  <img
+                    src="/logo.png"
+                    alt="Home"
+                    className="w-8 h-8 md:w-11 md:h-11 aspect-square object-contain transition-transform duration-700 group-hover:rotate-6 relative z-10 mt-1.5"
+                  />
+                </div>
+                <span className="hidden lg:block text-2xl xl:text-3xl font-serif italic tracking-tight text-[#3d2b1f]">
+                  Dolakha<span className="text-[#a3573a]">.</span>Furniture
+                </span>
+              </Link>
+            </div>
+
+            {/* 3. RIGHT ZONE: Actions */}
+            <div className="flex-1 flex items-center justify-end">
+              <NavbarActions onSearchClick={() => setIsSearchOpen(true)} />
             </div>
           </div>
 
-          {/* Mobile Search Bar (Only visible on small screens below md) */}
-          <div className="md:hidden px-4 pb-3 w-full">
-            <div className="relative flex items-center w-full">
-              <input
-                type="text"
-                placeholder="Search furniture & decor..."
-                className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] placeholder:text-[#a89f91] text-sm rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-[#a3573a]/30 focus:border-[#a3573a] shadow-sm"
-                suppressHydrationWarning
-              />
-              <button className="absolute right-2 text-[#a3573a] p-1.5 hover:bg-[#fdfaf5] rounded-full transition-colors">
-                <Search size={16} strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
+
 
           {/* Bottom Row: Category Navigation Desktop */}
           <div className="hidden md:flex container mx-auto px-6 pb-3 justify-center">
@@ -121,17 +122,71 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
 
+        {/* --- FULL SCREEN SEARCH MODAL --- */}
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-[#fdfaf5] z-[200] flex flex-col items-center pt-20 px-6"
+            >
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen(false)}
+                className="absolute top-8 right-8 p-3 text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors cursor-pointer touch-manipulation"
+              >
+                <X size={32} strokeWidth={1.2} />
+              </button>
+
+              <div className="w-full max-w-4xl space-y-12">
+                <div className="text-center space-y-4">
+                  <Leaf className="mx-auto text-[#a3573a] opacity-40" size={32} />
+                  <h2 className="text-4xl md:text-6xl font-serif italic text-[#3d2b1f]">What can we craft for you?</h2>
+                </div>
+
+                <div className="relative group">
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="Search by collection, material, or style..."
+                    className="w-full bg-transparent border-b-2 border-[#e5dfd3] text-[#3d2b1f] placeholder:text-[#a89f91] text-2xl md:text-4xl py-6 focus:outline-none focus:border-[#a3573a] transition-all font-light"
+                    suppressHydrationWarning
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <Search size={40} strokeWidth={1} className="text-[#a3573a] opacity-30 group-focus-within:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-4 pt-8">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91] w-full text-center mb-2">Popular Searches</span>
+                  {['Sofa Sets', 'Dining Tables', 'Wardrobes', 'Beds', 'Office Chairs'].map((term) => (
+                    <button
+                      key={term}
+                      type="button"
+                      className="px-6 py-2 rounded-full border border-[#e5dfd3] text-[#3d2b1f] hover:border-[#a3573a] hover:text-[#a3573a] transition-all text-[11px] font-medium uppercase tracking-wider cursor-pointer touch-manipulation"
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* --- FULL SCREEN MOBILE MENU (Warm Tones) --- */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, x: "100%" }}
+              initial={{ opacity: 0, x: "-100%" }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: "100%" }}
+              exit={{ opacity: 0, x: "-100%" }}
               transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
-              className="fixed inset-0 bg-[#fdfaf5] z-[100] flex flex-col p-8 overflow-hidden"
+              className="fixed inset-0 bg-[#fdfaf5] z-[100] flex flex-col p-8 overflow-hidden justify-start items-start"
             >
-              <div className="flex justify-between items-center h-20 mb-12">
+              {/* Header: Fixed and strictly at the top */}
+              <div className="flex-shrink-0 flex justify-between items-center w-full h-16 mb-8">
                 <div className="flex items-center gap-2">
                   <Leaf className="text-[#a3573a]" size={18} />
                   <p className="text-xs font-serif italic tracking-widest text-[#3d2b1f]">Menu</p>
@@ -139,15 +194,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                 <button
                   onClick={() => setIsMenuOpen(false)}
-                  className="p-4 bg-[#3d2b1f] text-[#fdfaf5] rounded-full shadow-lg active:scale-90 transition-all"
+                  className="p-4 bg-[#3d2b1f] text-[#fdfaf5] rounded-full shadow-lg transition-all"
                 >
                   <X size={20} strokeWidth={2} />
                 </button>
               </div>
 
-              <CategoryNav isMobile={true} onItemClick={() => setIsMenuOpen(false)} />
+              {/* Menu Content: Scrollable flex-1 area */}
+              <div className="flex-1 w-full overflow-hidden">
+                <CategoryNav isMobile={true} onItemClick={() => setIsMenuOpen(false)} />
+              </div>
 
-              <div className="mt-auto border-t border-[#e5dfd3] pt-10 pb-6">
+              {/* Footer: Stays at the bottom */}
+              <div className="flex-shrink-0 w-full border-t border-[#e5dfd3] pt-10 pb-6">
                 <div className="flex gap-8 mb-4 font-serif italic text-[#3d2b1f]">
                   <a href="https://facebook.com/dolakhafurniture" className="hover:text-[#a3573a]"><Facebook size={20} /></a>
                   <a href="https://instagram.com/dolakhafurnituredesign" className="hover:text-[#a3573a]"><Instagram size={20} /></a>

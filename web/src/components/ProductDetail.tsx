@@ -88,7 +88,7 @@ export default function ProductDetail({ product }: { product: any }) {
             {/* BUTTON: Changed to font-sans font-bold for a clear, modern action */}
             <button
               onClick={handleAddToCart}
-              className={`w-full py-6 rounded-full font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-700 active:scale-95 shadow-xl
+              className={`w-full py-6 rounded-full font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-700 shadow-xl
                 ${isSuccess 
                   ? 'bg-[#a3573a] text-white shadow-[0_20px_40px_rgba(163,87,58,0.3)]' 
                   : 'bg-[#3d2b1f] text-[#fdfaf5] hover:bg-[#a3573a] hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]'}`}
