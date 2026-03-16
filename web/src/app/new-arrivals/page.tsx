@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "The latest handcrafted additions to our  collection.",
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewArrivalsPage() {
   const products = await client.fetch(
     `*[_type == "product"] | order(_createdAt desc) [0...4] {
@@ -15,7 +17,7 @@ export default async function NewArrivalsPage() {
       title,
       price,
       mainImage,
-      category,
+      "category": category->title,
       description,
       "slug": slug.current
     }`

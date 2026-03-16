@@ -3,10 +3,12 @@ import CategoryRow from "@/components/CategoryRow";
 import { Product } from '@/types/product';
 import Hero from "@/components/Hero";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // Fetch products with their images
   const products = await client.fetch<Product[]>(`*[_type == "product"]{
-    _id, title, price, mainImage, category, "slug": slug.current, description
+    _id, title, price, mainImage, "category": category->slug.current, "slug": slug.current, description
   }`);
 
   // DYNAMIC IMAGE LOGIC: 

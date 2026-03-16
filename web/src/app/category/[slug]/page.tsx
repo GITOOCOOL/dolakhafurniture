@@ -21,7 +21,7 @@ export default async function CategoryPage({ params }: Props) {
   const data = await client.fetch(
     `{
       "category": *[_type == "category" && slug.current == $slug][0],
-      "products": *[_type == "product" && category == $slug] | order(_createdAt desc)
+      "products": *[_type == "product" && category->slug.current == $slug] | order(_createdAt desc)
     }`,
     { slug }
   );

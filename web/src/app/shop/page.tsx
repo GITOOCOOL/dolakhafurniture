@@ -7,14 +7,16 @@ export const metadata: Metadata = {
   description: "Browse our complete archive of handcrafted furniture and decor.",
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function ShopPage() {
   const products = await client.fetch(
-    `*[_type == "product"] | order(category asc, title asc) {
+    `*[_type == "product"] | order(category->title asc, title asc) {
       _id,
       title,
       price,
       mainImage,
-      category,
+      "category": category->title,
       description,
       "slug": slug.current
     }`

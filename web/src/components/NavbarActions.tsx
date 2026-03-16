@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Leaf } from "lucide-react";
+import { ShoppingBag, Leaf, User } from "lucide-react";
 
 export default function NavbarActions() {
   const supabase = createClient();
@@ -59,34 +59,45 @@ export default function NavbarActions() {
     <div className="flex items-center gap-6">
       {/* --- ACCOUNT / AUTH SECTION --- */}
       {user ? (
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-end">
-            <span suppressHydrationWarning className="text-[10px] font-serif italic font-bold text-[#a3573a]">
-              Hi, {user.user_metadata.full_name?.split(" ")[0]}
-            </span>
-            <div className="flex gap-3">
-              <Link href="/account" className="text-[9px] font-bold uppercase tracking-widest text-[#a89f91] hover:text-[#a3573a] transition-colors">
-                Profile
-              </Link>
-              <button onClick={handleLogout} className="text-[9px] font-bold uppercase tracking-widest text-[#a89f91] hover:text-[#3d2b1f] transition-colors">
-                Exit
-              </button>
+        <div className="flex items-center gap-4 group/account relative cursor-pointer">
+          <Link href="/account">
+            {user.user_metadata.avatar_url ? (
+              <img 
+                src={user.user_metadata.avatar_url} 
+                className="w-10 h-10 rounded-full border border-[#e5dfd3] shadow-sm hover:border-[#a3573a] transition-all cursor-pointer" 
+                alt="profile" 
+              />
+            ) : (
+              <div className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#e5dfd3]/50 text-[#3d2b1f] transition-all cursor-pointer">
+                <User size={20} strokeWidth={2} />
+              </div>
+            )}
+          </Link>
+
+          {/* Account Dropdown */}
+          <div className="absolute top-full right-0 pt-2 w-48 opacity-0 pointer-events-none group-hover/account:opacity-100 group-hover/account:pointer-events-auto transition-all z-50">
+            <div className="bg-white border border-[#e5dfd3] rounded-2xl shadow-lg p-4">
+              <span suppressHydrationWarning className="block text-xs font-serif italic font-bold text-[#a3573a] w-full border-b border-[#e5dfd3] pb-2 mb-2">
+                Hi, {user.user_metadata.full_name?.split(" ")[0]}
+              </span>
+              <div className="flex flex-col gap-2">
+                <Link href="/account" className="text-xs font-medium text-[#3d2b1f] hover:text-[#a3573a] transition-colors">
+                  Profile
+                </Link>
+                <button onClick={handleLogout} className="text-xs font-medium text-left text-[#3d2b1f] hover:text-[#a3573a] transition-colors">
+                  Sign Out
+                </button>
+              </div>
             </div>
           </div>
-          {user.user_metadata.avatar_url && (
-            <img 
-              src={user.user_metadata.avatar_url} 
-              className="w-8 h-8 rounded-full border border-[#e5dfd3] shadow-sm" 
-              alt="profile" 
-            />
-          )}
         </div>
       ) : (
         <button 
           onClick={handleLogin} 
-          className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f] hover:text-[#a3573a] transition-colors"
+          className="flex flex-col items-center gap-1 text-[#3d2b1f] hover:text-[#a3573a] transition-colors"
         >
-          Login
+          <User size={20} strokeWidth={1.5} />
+          <span className="text-[10px] font-medium hidden md:block">Sign in</span>
         </button>
       )}
 
@@ -100,12 +111,15 @@ export default function NavbarActions() {
               scale: totalQuantity > 0 ? [1, 1.15, 1] : 1, 
             }}
             transition={{ duration: 0.4 }}
-            className={`relative flex items-center justify-center w-11 h-11 rounded-full shadow-md active:scale-95 transition-all
+            className={`relative flex items-center justify-center p-2 rounded-full hover:bg-[#e5dfd3]/50 transition-all
               ${totalQuantity > 0 
-                ? 'bg-[#a3573a] text-white shadow-[0_10px_20px_rgba(163,87,58,0.3)]' 
-                : 'bg-[#3d2b1f] text-[#fdfaf5] hover:bg-[#a3573a]'}`}
+                ? 'text-[#a3573a]' 
+                : 'text-[#3d2b1f]'}`}
           >
-            <ShoppingBag size={18} strokeWidth={2} />
+            <div className="flex flex-col items-center gap-1">
+              <ShoppingBag size={20} strokeWidth={1.5} />
+              <span className="text-[10px] font-medium hidden md:block">Cart</span>
+            </div>
             
             {totalQuantity > 0 && (
               <motion.span 

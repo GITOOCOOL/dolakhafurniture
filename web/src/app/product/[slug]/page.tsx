@@ -18,20 +18,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!product) return { title: "Piece Not Found" };
 
+  const defaultDescription = "A unique, artisanal addition to your home, handcrafted in Kathmandu.";
+  const imageUrl = product.mainImage 
+    ? urlFor(product.mainImage).width(1200).height(630).url() 
+    : '/logo.png'; // Fallback image
+
   return {
     title: `${product.title} | Handcrafted at Dolakha Furniture`,
-    description: product.description || "A unique, artisanal addition to your home, handcrafted in Kathmandu.",
+    description: product.description || defaultDescription,
     openGraph: {
-      title: `${product.title} | Dolakha Furniture home Collection`,
-      description: product.description,
+      title: `${product.title} | Dolakha Furniture Home Collection`,
+      description: product.description || defaultDescription,
       images: [
         {
-          url: urlFor(product.mainImage).width(1200).height(630).url(),
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: product.title,
         },
       ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.title} | Handcrafted at Dolakha Furniture`,
+      description: product.description || defaultDescription,
+      images: [imageUrl],
     },
   };
 }

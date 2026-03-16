@@ -18,7 +18,7 @@ const ProductCard = ({ product }: { product: any }) => {
 
         <div className="p-5 md:p-7 flex-1 flex flex-col gap-2">
           <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#a3573a] opacity-80">
-            {product.category || "Handcrafted Piece"}
+            {typeof product.category === 'string' ? product.category : product.category?.title || "Handcrafted Piece"}
           </span>
 
           {/* Title: Stays Serif Italic for the "Boho" look */}

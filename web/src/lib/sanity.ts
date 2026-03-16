@@ -7,6 +7,9 @@ export const client = createClient({
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: '2026-03-11',
     useCdn: false,
+    fetch: {
+        cache: 'no-store', // This forces Next.js to fetch fresh data on every request
+    }
 });
 
 const builder = createImageUrlBuilder(client);
