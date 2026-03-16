@@ -1,6 +1,7 @@
 import { client, urlFor } from "@/lib/sanity";
 import Link from "next/link";
 import { Metadata } from "next";
+import { allProductsQuery } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Shop All Collections | Dolakha Furniture",
@@ -10,22 +11,14 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function ShopPage() {
-  const products = await client.fetch(
-    `*[_type == "product"] | order(category->title asc, title asc) {
-      _id,
-      title,
-      price,
-      mainImage,
-      "category": category->{title, "slug": slug.current},
-      description,
-      "slug": slug.current
-    }`
-  );
+  const products = await client.fetch(allProductsQuery);
 
   return (
-    <div className="bg-[#fdfaf5] min-h-screen pt-32 pb-20 font-sans text-[#3d2b1f]">
-      <div className="container mx-auto px-6">
-        
+    <div className="bg-[#fdfaf5] min-h-screen font-sans text-[#3d2b1f]">
+      {/* BULLETIN TICKER AT TOP */}
+
+      <div className="container mx-auto px-6 py-20">
+
         {/* SHOP HEADER */}
         <header className="mb-20 max-w-6xl text-center md:text-left">
           <p className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a3573a] mb-4">
@@ -42,8 +35,8 @@ export default async function ShopPage() {
         {/* PRODUCT GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-[#e5dfd3] border-dotted pt-16">
           {products.map((product: any, index: number) => (
-            <Link 
-              href={`/product/${product.slug}`} 
+            <Link
+              href={`/product/${product.slug}`}
               key={product._id}
               className="group flex flex-col space-y-6"
             >
@@ -54,7 +47,7 @@ export default async function ShopPage() {
                   alt={product.title}
                   className="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105"
                 />
-                
+
                 <div className="absolute top-6 left-6">
                   <span className="bg-[#fdfaf5]/90 backdrop-blur-md text-[#3d2b1f] px-4 py-2 rounded-full text-[9px] font-sans font-bold uppercase tracking-widest border border-[#e5dfd3]">
                     {product.category?.title}
@@ -74,18 +67,16 @@ export default async function ShopPage() {
                   <h2 className="text-3xl font-serif italic font-medium text-[#3d2b1f] group-hover:text-[#a3573a] transition-colors leading-tight">
                     {product.title}
                   </h2>
-                  {/* FONT CORRECTION: Price set to font-sans */}
                   <span className="text-lg font-sans font-bold text-[#a3573a] whitespace-nowrap">
                     Rs. {product.price}
                   </span>
                 </div>
-                
+
                 <p className="text-[#a89f91] text-sm font-light italic leading-relaxed line-clamp-2">
                   {product.description || "Handcrafted with precision in Dolakha, bringing artisanal elegance to your ."}
                 </p>
-                
+
                 <div className="pt-4">
-                  {/* FONT CORRECTION: Sourced Item Number set to font-sans */}
                   <span className="inline-block border-b border-[#e5dfd3] pb-1 text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#e5dfd3] group-hover:text-[#a3573a] group-hover:border-[#a3573a] transition-all duration-300">
                     Sourced Item <span className="font-sans">{String(index + 1).padStart(3, '0')}</span>
                   </span>
@@ -97,19 +88,18 @@ export default async function ShopPage() {
 
         {/* FOOTER NAV */}
         <div className="mt-48 pt-16 border-t border-[#e5dfd3] border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
-                Dolakha Furniture / Shop All
-            </div>
-            <Link 
-              href="/" 
-              className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#3d2b1f] hover:text-[#a3573a] transition-colors border-b border-[#3d2b1f] hover:border-[#a3573a] pb-1"
-            >
-              Back to Home ↑
-            </Link>
-            {/* FONT CORRECTION: Year set to font-sans */}
-            <div className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
-                EST. 2024
-            </div>
+          <div className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+            Dolakha Furniture / Shop All
+          </div>
+          <Link
+            href="/"
+            className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#3d2b1f] hover:text-[#a3573a] transition-colors border-b border-[#3d2b1f] hover:border-[#a3573a] pb-1"
+          >
+            Back to Home ↑
+          </Link>
+          <div className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+            EST. 2024
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
-import { ArrowRight, MessageCircle, Instagram, Facebook, Mail, Leaf, Phone } from 'lucide-react';
 import Link from 'next/link';
-import Bulletin from '@/components/Bulletin';
+import { ArrowBigDownDash, ArrowRight, Phone, MessageCircle, Leaf, Facebook, Instagram, Mail, ArrowDown } from 'lucide-react';
+import BulletinTicker from '@/components/BulletinTicker';
 import { Bulletin as BulletinType } from '@/types/bulletin';
 import { HeroImage as HeroImageType } from '@/types/heroImage';
 import Image from 'next/image';
@@ -9,23 +9,56 @@ import { urlFor } from '@/lib/sanity';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? '100%' : '-100%',
+  }),
+};
+
 const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages: HeroImageType[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [[page, direction], setPage] = useState([0, 0]);
+
+  const activeIndex = page % heroImages.length;
+  // Handle wrapping for negative indices
+  const safeIndex = activeIndex < 0 ? activeIndex + heroImages.length : activeIndex;
+
+  const paginate = (newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
+  };
+
+  const handleScroll = () => {
+    const section = document.getElementById('products-section');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     if (heroImages.length <= 1) return;
 
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
+      paginate(1);
+    }, 4000);
 
     return () => clearInterval(timer);
-  }, [heroImages.length]);
+  }, [heroImages.length, page]);
+
   return (
     <section className="relative w-full lg:min-h-[90vh] flex flex-col justify-center bg-[#fdfaf5] overflow-hidden border-b border-[#e5dfd3] border-dotted">
 
+      {/* 0. FULL-WIDTH BULLETIN TICKER */}
+      <BulletinTicker bulletins={bulletins} />
+
       {/* 1. BOHO SIDEBAR (SUBTLE SERIF) */}
-      <div className="hidden xl:flex fixed left-0 top-0 bottom-0 w-20 border-r border-[#e5dfd3] border-dotted flex-col items-center justify-center gap-10 z-50 bg-white/30 backdrop-blur-sm">
+      <div className="hidden xl:flex fixed left-0 top-0 bottom-0 w-20 border-r border-[#e5dfd3] border-dotted flex-col items-center justify-center gap-10 z-50 bg-white/30 backdrop-blur-sm px-4">
         <p className="rotate-180 [writing-mode:vertical-lr] text-[10px] font-serif italic tracking-[0.4em] text-[#a89f91]">
           Dolakha home Archive / 2024
         </p>
@@ -35,29 +68,28 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
 
         {/* 2. MAIN BRANDING */}
         <div className="max-w-6xl">
-          {/* I will later add a dynamic news ticker here that fetches updates from the backend, but for now these are hardcoded bulletins to add some life and movement to the hero section. The colors can be customized via props, and the component is designed to be reusable across the site for any important announcements or promotions. */}
-          {/* <Bulletin news="Now Delivering Across Kathmandu, Bhaktapur, Lalitpur and Surrounds" color="#0d00ff"/>
-          <Bulletin news="New Year Sale - Up to 30% Off - Starting Soon" color="#d95518"/> */}
-          {bulletins.map((bulletin, index) => (
-            <Bulletin key={index} news={bulletin.content} color={bulletin.bulletinType === 'news' ? '#0d00ff' : '#d95518ff'} />
-          ))}
           {/* --- HERO IMAGE CAROUSEL --- */}
-          <div className="relative h-[40vh] lg:h-[60vh] w-full mt-8 mb-12 overflow-hidden rounded-[3rem] border border-[#e5dfd3] shadow-2xl group">
+          <div className="relative h-[40vh] lg:h-[60vh] w-full mt-8 mb-12 overflow-hidden rounded-[3rem] border border-[#e5dfd3] shadow-2xl group bg-stone-100">
             {heroImages.length > 0 ? (
               <>
-                <AnimatePresence mode="wait">
+                <AnimatePresence initial={false} custom={direction}>
                   <motion.div
-                    key={currentIndex}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
-                    className="absolute inset-0 flex items-center justify-center bg-stone-100"
+                    key={page}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                      x: { type: "tween", ease: "linear", duration: 0.8 },
+                      opacity: { duration: 0.2 }
+                    }}
+                    className="absolute inset-0 flex items-center justify-center z-10"
                   >
                     {/* Background Blur Layer */}
                     <div className="absolute inset-0 overflow-hidden">
                       <Image
-                        src={urlFor(heroImages[currentIndex].mainImage).width(800).blur(50).url()}
+                        src={urlFor(heroImages[safeIndex].mainImage).width(800).blur(50).url()}
                         alt=""
                         fill
                         className="object-cover opacity-40 scale-110"
@@ -68,8 +100,8 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
                     {/* Main Image Layer (Full Visibility) */}
                     <div className="relative w-full h-full p-4 md:p-8 flex items-center justify-center z-10">
                       <Image
-                        src={urlFor(heroImages[currentIndex].mainImage).width(1200).url()}
-                        alt={heroImages[currentIndex].title || "Hero Image"}
+                        src={urlFor(heroImages[safeIndex].mainImage).width(1200).url()}
+                        alt={heroImages[safeIndex].title || "Hero Image"}
                         fill
                         className="object-contain drop-shadow-2xl"
                         priority
@@ -78,13 +110,25 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
                   </motion.div>
                 </AnimatePresence>
 
+                {/* BROWSE BUTTON OVERLAY (Outside AnimatePresence - Strictly Static) */}
+                {/* We use translateZ and preserve-3d to force Safari to keep this overlay on top of the GPU-accelerated motion layers */}
+                <div className="absolute inset-0 flex items-end justify-center pb-12 z-30 pointer-events-none [transform-style:preserve-3d] [transform:translateZ(5px)]">
+                  <button
+                    onClick={handleScroll}
+                    className="pointer-events-auto bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-full font-bold uppercase text-[12px] tracking-[0.3em] hover:bg-white hover:text-[#3d2b1f] shadow-2xl flex items-center gap-4 group"
+                  >
+                    Browse all
+                    <ArrowDown size={18} />
+                  </button>
+                </div>
+
                 {/* SLIDE INDICATORS (DOTS) */}
                 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
                   {heroImages.map((_, i) => (
                     <button
                       key={i}
-                      onClick={() => setCurrentIndex(i)}
-                      className={`h-1 transition-all duration-500 rounded-full ${i === currentIndex ? 'w-10 bg-[#a3573a]' : 'w-4 bg-white/40 hover:bg-white/60'
+                      onClick={() => setPage([i, i > safeIndex ? 1 : -1])}
+                      className={`h-1 transition-all duration-500 rounded-full ${i === safeIndex ? 'w-10 bg-[#a3573a]' : 'w-4 bg-white/40 hover:bg-white/60'
                         }`}
                       aria-label={`Go to slide ${i + 1}`}
                     />
@@ -92,7 +136,7 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
                 </div>
               </>
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-stone-100 text-stone-400 font-serif italic">
+              <div className="absolute inset-0 flex items-center justify-center text-stone-400 font-serif italic">
                 Curation in progress...
               </div>
             )}

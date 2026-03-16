@@ -41,6 +41,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="scroll-smooth">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
+        {/* Updated Neon Pulse to a "Boho Glow" (Terracotta/Ochre) */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          @keyframes boho-glow {
+            0%, 100% { filter: drop-shadow(0 0 2px rgba(163, 87, 58, 0.4)); }
+            50% { filter: drop-shadow(0 0 8px rgba(223, 145, 82, 0.6)); }
+          }
+          .neon-hover:hover { animation: boho-glow 2s infinite; }
+        `}} />
       </head>
       {/* Changed bg-stone-50 to a custom soft cream and updated fonts */}
       <body className={`${serif.variable} ${sans.variable} antialiased bg-[#fdfaf5] text-[#3d2b1f] font-sans overflow-x-hidden w-full max-w-full`}>
@@ -70,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 type="text"
                 placeholder="Search for furniture, decor, and more..."
                 className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] placeholder:text-[#a89f91] text-sm md:text-base rounded-full py-2.5 pl-5 pr-12 focus:outline-none focus:ring-2 focus:ring-[#a3573a]/30 focus:border-[#a3573a] transition-all shadow-sm group-hover:shadow-md"
+                suppressHydrationWarning
               />
               <button className="absolute right-1.5 p-2 bg-[#a3573a] text-white rounded-full hover:bg-[black] transition-colors shadow-sm">
                 <Search size={16} strokeWidth={2.5} />
@@ -96,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 type="text"
                 placeholder="Search furniture & decor..."
                 className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] placeholder:text-[#a89f91] text-sm rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-[#a3573a]/30 focus:border-[#a3573a] shadow-sm"
+                suppressHydrationWarning
               />
               <button className="absolute right-2 text-[#a3573a] p-1.5 hover:bg-[#fdfaf5] rounded-full transition-colors">
                 <Search size={16} strokeWidth={2.5} />
@@ -179,6 +191,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     type="text"
                     placeholder="EMAIL ADDRESS"
                     className="bg-transparent text-xs w-full outline-none placeholder:text-[#a89f91] placeholder:text-[10px] tracking-widest"
+                    suppressHydrationWarning
                   />
                   <button className="text-[#df9152] font-serif italic">→</button>
                 </div>
@@ -186,16 +199,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
         </footer>
-
-        {/* Updated Neon Pulse to a "Boho Glow" (Terracotta/Ochre) */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          @keyframes boho-glow {
-            0%, 100% { filter: drop-shadow(0 0 2px rgba(163, 87, 58, 0.4)); }
-            50% { filter: drop-shadow(0 0 8px rgba(223, 145, 82, 0.6)); }
-          }
-          .neon-hover:hover { animation: boho-glow 2s infinite; }
-        `}} />
       </body>
     </html>
   );
