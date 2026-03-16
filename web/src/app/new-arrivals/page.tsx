@@ -17,7 +17,7 @@ export default async function NewArrivalsPage() {
       title,
       price,
       mainImage,
-      "category": category->title,
+      "category": category->{title, "slug": slug.current},
       description,
       "slug": slug.current
     }`
@@ -75,7 +75,7 @@ export default async function NewArrivalsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#a3573a] mb-2">
-                      {product.category}
+                      {product.category?.title}
                     </p>
                     <h2 className="text-4xl md:text-5xl font-serif italic font-medium text-[#3d2b1f] leading-none group-hover:text-[#a3573a] transition-colors">
                       {product.title}

@@ -62,6 +62,8 @@ Refer to these files for a full architectural map:
 - **Sanity Connection:** Verified local Studio (localhost:3333) pushes data to Sanity Cloud for the Frontend to fetch.
 - **Auth Foundation:** Supabase client/server split configured with Google OAuth redirects in Google Console and Supabase Dashboard.
 - **State Management:** Zustand implemented for the shopping cart logic (`src/store/useCart.ts`).
+- **Hero Carousel:** Implemented an auto-sliding hero carousel in `Hero.tsx` using `framer-motion` for transitions. Features `object-contain` for full image visibility and a blurred background layer for a premium feel.
+- **Type Safety Resolution:** Fixed TypeScript import errors for `Bulletin` and `HeroImage` types in the frontend.
 
 ### 🛠 Current Focus (Immediate Next Steps)
 1. **Sanity Routing Fix:** Deploy `vercel.json` to `/sanity-studio` to handle Single Page App (SPA) rewrites and prevent 404s on refresh.

@@ -13,3 +13,9 @@ export const productBySlugQuery = `*[_type == "product" && slug.current == $slug
 export const categoriesQuery = `*[_type == "category"]{
     _id, title, "slug": slug.current
 }`
+export const bulletinQuery = `*[_type == "bulletin"]{
+    _id, title, content, bulletinType, "slug": slug.current, mainImage, createdAt
+}`
+export const heroImageQuery = `*[_type == "heroImage"]{
+    _id, title, "slug": slug.current, mainImage, createdAt
+}`

@@ -2,22 +2,26 @@ import { client } from "@/lib/sanity";
 import CategoryRow from "@/components/CategoryRow";
 import { Product } from '@/types/product';
 import Hero from "@/components/Hero";
+import { Bulletin } from '@/types/bulletin';
+import { bulletinQuery, heroImageQuery } from "@/lib/queries";
+import { HeroImage } from '@/types/heroImage';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   // Fetch products with their images
   const products = await client.fetch<Product[]>(`*[_type == "product"]{
-    _id, title, price, mainImage, "category": category->slug.current, "slug": slug.current, description
+    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description
   }`);
-
+  const bulletins = await client.fetch<Bulletin[]>(bulletinQuery);
+  const heroImages = await client.fetch<HeroImage[]>(heroImageQuery);
   // DYNAMIC IMAGE LOGIC: 
-  // Get all unique product images and shuffle them to pick 4
-  const heroImagePool = products
-    .filter(p => p.mainImage)
-    .map(p => p.mainImage)
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 4);
+  // // Get all unique product images and shuffle them to pick 4
+  // const heroImagePool = heroImages
+  //   .filter(p => p.mainImage)
+  //   .map(p => p.mainImage)
+  //   .sort(() => 0.5 - Math.random())
+  //   .slice(0, 4);
 
   const categoriesInOrder = [
     { title: 'Clay Pots', value: 'clay-pots' },
@@ -27,7 +31,7 @@ export default async function Home() {
   ];
 
   const productsByCategory = products.reduce((acc, product) => {
-    const key = product.category || 'other';
+    const key = product.category?.slug || 'other';
     if (!acc[key]) acc[key] = [];
     acc[key].push(product);
     return acc;
@@ -35,25 +39,24 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-white text-stone-900 pb-20 overflow-x-hidden">
-      
+
       {/* --- HERO SECTION WITH DYNAMIC IMAGES --- */}
-      <Hero />
+      <Hero bulletins={bulletins} heroImages={heroImages} />
 
       {/* --- PRODUCT ROWS --- */}
       <div className="w-full">
         {categoriesInOrder.map((cat, index) => {
           const isStriped = index % 2 !== 0;
           return (
-            <section 
-              key={cat.value} 
-              className={`py-16 md:py-16 pt-0 w-full border-t border-stone-200 scroll-mt-20 transition-all duration-500 ${
-                isStriped 
-                  ? 'bg-stone-100 shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]' 
-                  : 'bg-white'
-              }`}
+            <section
+              key={cat.value}
+              className={`py-16 md:py-16 pt-0 w-full border-t border-stone-200 scroll-mt-20 transition-all duration-500 ${isStriped
+                ? 'bg-stone-100 shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]'
+                : 'bg-white'
+                }`}
             >
               <div className="container mx-auto px-6">
-                <CategoryRow 
+                <CategoryRow
                   title={cat.title}
                   slug={cat.value}
                   products={productsByCategory[cat.value] ?? []}

@@ -6,7 +6,10 @@ export type Product = {
     slug: string;
     price: number;
     mainImage: SanityImageSource;
-    category?: string;
+    category?: {
+        title: string;
+        slug: string;
+    };
     description?: string;
     stock: number;
     isFeatured?: boolean;

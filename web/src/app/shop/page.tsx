@@ -16,7 +16,7 @@ export default async function ShopPage() {
       title,
       price,
       mainImage,
-      "category": category->title,
+      "category": category->{title, "slug": slug.current},
       description,
       "slug": slug.current
     }`
@@ -57,7 +57,7 @@ export default async function ShopPage() {
                 
                 <div className="absolute top-6 left-6">
                   <span className="bg-[#fdfaf5]/90 backdrop-blur-md text-[#3d2b1f] px-4 py-2 rounded-full text-[9px] font-sans font-bold uppercase tracking-widest border border-[#e5dfd3]">
-                    {product.category}
+                    {product.category?.title}
                   </span>
                 </div>
 
