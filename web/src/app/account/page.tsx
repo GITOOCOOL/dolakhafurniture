@@ -28,9 +28,10 @@ export default async function AccountPage({
   }
 
   // 3. FETCH ORDERS FROM SANITY
+  // We fetch orders linked to the user ID OR guest orders that match the user's email
   const orders = await sanityClient.fetch(
-    `*[_type == "order" && supabaseUserId == $userId] | order(_createdAt desc)`,
-    { userId: user.id },
+    `*[_type == "order" && (supabaseUserId == $userId || (supabaseUserId == "guest" && customerEmail == $email))] | order(_createdAt desc)`,
+    { userId: user.id, email: user.email },
     { useCdn: false } // Always get fresh orders
   );
 

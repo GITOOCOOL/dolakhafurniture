@@ -29,6 +29,7 @@ Refer to `tree.txt` for the full map. Key paths:
 2. **Path Doubling Prevention:** When using Vercel CLI, always navigate INTO the subfolder (`web` or `sanity-studio`) before running `npx vercel`.
 3. **Sanity Schema Updates:** When modifying schemas, ensure the `sanity.config.ts` hardcoded `projectId` (`b6iov2to`) remains intact.
 4. **Auth Flow:** Always use the `auth/callback/route.ts` pattern for Supabase + Google Login redirects.
+5. **Guest Checkout:** Support a frictionless guest checkout flow. Do not force login to complete an order.
 
 ## ⌨️ Common Commands
 ### Web Frontend
@@ -64,13 +65,26 @@ Refer to these files for a full architectural map:
 - **State Management:** Zustand implemented for the shopping cart logic (`src/store/useCart.ts`).
 - **Hero Carousel:** Implemented an auto-sliding hero carousel in `Hero.tsx` using `framer-motion` for transitions. Features `object-contain` for full image visibility and a blurred background layer for a premium feel.
 - **Type Safety Resolution:** Fixed TypeScript import errors for `Bulletin` and `HeroImage` types in the frontend.
+- **Unified Authentication UI:** Implemented a reusable `AuthForm` component with Google, Facebook, and Email/Password support. Unified the UI across the `/auth` page and the Account Drawer with a premium Boho aesthetic.
+- **Checkout Overhaul:** Implemented a high-performance, 2-column "AIM'N" style checkout flow with Guest checkout support, dynamic QR payments, and post-checkout inquiry modals.
 
 ### 🛠 Current Focus (Immediate Next Steps)
 1. **Sanity Routing Fix:** Deploy `vercel.json` to `/sanity-studio` to handle Single Page App (SPA) rewrites and prevent 404s on refresh.
 2. **CORS Finalization:** Ensure all Vercel Preview URLs are whitelisted in the Sanity Management Dashboard (API > CORS Origins).
 3. **SEO & Metadata:** Review `app/product/[slug]/page.tsx` to ensure Sanity data is being injected into Next.js Metadata for better Google ranking.
 4. **Mobile Strategy:** Start structuring Sanity schemas to be platform-agnostic for the upcoming **React Native** app.
+5. **Checkout Overhaul:** Implement a premium, AIM'N style checkout flow featuring guest support, a 2-column layout, and detailed order summaries.
 
 ### 🚀 Future Marketing Goals
 - **Funnel Integration:** Implement tracking for user journeys from landing pages to checkout.
 - **Brand Consistency:** Ensure Tailwind theme matches the "Dolakha Furniture" brand guidelines across web and (eventually) mobile.
+
+## 🚀 Deployment Readiness Checklist
+Before running `npx vercel --prod`, always verify these critical items:
+1. **Vercel Env Vars:** Ensure `NEXT_PUBLIC_FACEBOOK_APP_ID` and `FACEBOOK_APP_SECRET` (if used server-side) are added to Vercel Project Settings.
+2. **Meta Privacy Policy:** Facebook Login requires a valid Privacy Policy URL in the App Dashboard to remain active in Live mode.
+3. **Supabase Redirects:** 
+   - Ensure the "Site URL" is set to the production domain.
+   - White-list only production domains (`dolakhafurniture.vercel.app`) and `localhost`. 
+   - **Crucial:** Remove any temporary local IP addresses (e.g., `172.x.x.x`) used for mobile testing before going live.
+4. **Auth Callback Resilience:** Verify that `auth/callback/route.ts` correctly handles the `next` parameter for post-login redirection.

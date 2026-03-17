@@ -4,8 +4,14 @@ import { NextResponse } from 'next/server'
 
 // NO "default export" here! Only named "GET"
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
+  const requestUrl = new URL(request.url)
+  const code = requestUrl.searchParams.get('code')
+  const next = requestUrl.searchParams.get('next') ?? '/'
+  
+  // Reconstruct origin based on headers to support local network IPs (like 172.x.x.x)
+  const host = request.headers.get('host')
+  const protocol = request.headers.get('x-forwarded-proto') || (host?.includes('localhost') || host?.includes('127.0.0.1') || host?.startsWith('172.') ? 'http' : 'https')
+  const origin = `${protocol}://${host}`
 
   if (code) {
     const cookieStore = await cookies() // Await this for Next.js 15
@@ -29,11 +35,10 @@ export async function GET(request: Request) {
     
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      // Redirect to homepage on success
-      return NextResponse.redirect(`${origin}/`)
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
-  // Return to homepage even on error (or create an /auth-error page)
+  // Return to homepage even on error
   return NextResponse.redirect(`${origin}/`)
 }

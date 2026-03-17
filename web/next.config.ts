@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.fbcdn.net',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.facebook.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   // This is the clean way to hide the "N" in Next.js 15

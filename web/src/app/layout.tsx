@@ -59,13 +59,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* --- ETSY-STYLE HEADER --- */}
         <header className="sticky top-0 z-50 w-full bg-[#fdfaf5] border-b border-[#e5dfd3] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           {/* Top Row: Hamburger, Logo/Search, Actions */}
-          <div className="container mx-auto px-4 md:px-6 w-full flex items-center py-3 md:py-4">
+          <div className="container mx-auto px-2 md:px-6 w-full flex items-center justify-between py-3 md:py-4 gap-2">
 
             {/* 1. LEFT ZONE: Hamburger + Shop All */}
-            <div className="flex-1 flex items-center justify-start gap-2">
+            <div className="flex-none flex items-center gap-1 md:gap-2">
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="p-2.5 text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors -ml-2"
+                className="p-2.5 text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors -ml-2 flex-shrink-0"
                 aria-label="Menu"
               >
                 <Menu size={28} strokeWidth={1.5} />
@@ -73,14 +73,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
               <Link
                 href="/shop"
-                className="h-[48px] flex items-center px-4 md:px-6 text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors whitespace-nowrap"
+                className="h-[48px] flex items-center px-4 md:px-6 text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors whitespace-nowrap flex-shrink-0"
               >
                 Shop All
               </Link>
             </div>
 
-            {/* 2. CENTER ZONE: Logo */}
-            <div className="flex-1 flex items-center justify-center relative z-10 min-w-0">
+            {/* 2. CENTER ZONE: Logo - Using absolute centering on mobile for better space management */}
+            <div className="flex-1 flex items-center justify-center min-w-0 md:static">
               <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
                 <div className="relative flex-shrink-0 flex items-center justify-center">
                   {/* House Graphic Frame */}
@@ -109,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             {/* 3. RIGHT ZONE: Actions */}
-            <div className="flex-1 flex items-center justify-end">
+            <div className="flex-none flex items-center justify-end">
               <NavbarActions onSearchClick={() => setIsSearchOpen(true)} />
             </div>
           </div>

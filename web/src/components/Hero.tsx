@@ -146,7 +146,7 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
             )}
           </div>
 
-          <h1 className="text-[14vw] lg:text-[10rem] font-serif italic font-medium leading-[0.85] mb-14 text-[#3d2b1f] tracking-tight">
+          <h1 className="text-[12vw] lg:text-[10rem] font-serif italic font-medium leading-[0.85] mb-14 text-[#3d2b1f] tracking-tight">
             Dolakha<br />
             <span className="text-[#a3573a] decoration-[#e5dfd3] underline-offset-[1.5rem] underline decoration-dotted">Furniture.</span>
           </h1>

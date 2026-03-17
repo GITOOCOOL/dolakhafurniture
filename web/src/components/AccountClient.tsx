@@ -14,6 +14,13 @@ export default function AccountClient({ user, orders, showSuccess }: any) {
     }
   }, [showSuccess]);
 
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    const parts = name.split(" ");
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return parts[0][0].toUpperCase();
+  };
+
   return (
     <div className="max-w-6xl mx-auto text-[#3d2b1f]">
       {/* SUCCESS BANNER - Swapped to Terracotta and Boho Radius */}
@@ -40,13 +47,19 @@ export default function AccountClient({ user, orders, showSuccess }: any) {
         {/* LEFT: USER INFO - Softer cards */}
         <div className="lg:col-span-4">
           <div className="bg-white/60 backdrop-blur-md p-10 rounded-[4rem] border border-[#e5dfd3] shadow-sm sticky top-32">
-            <div className="relative w-24 h-24 mb-8 rounded-full overflow-hidden border-4 border-[#fdfaf5] shadow-sm">
-              <Image 
-                src={user.user_metadata.avatar_url} 
-                alt="profile" 
-                fill 
-                className="object-cover" 
-              />
+            <div className="relative w-24 h-24 mb-8 rounded-full overflow-hidden border border-[#e5dfd3] shadow-inner bg-[#fdfaf5] flex items-center justify-center">
+              {user.user_metadata.avatar_url ? (
+                <Image 
+                  src={user.user_metadata.avatar_url} 
+                  alt="profile" 
+                  fill 
+                  className="object-cover" 
+                />
+              ) : (
+                <span className="text-3xl font-bold text-[#3d2b1f] tracking-tighter">
+                  {getInitials(user.user_metadata.full_name)}
+                </span>
+              )}
             </div>
             {/* NAME: Using Serif for prestige */}
             <h2 className="text-3xl font-serif italic font-medium text-[#3d2b1f] leading-none">

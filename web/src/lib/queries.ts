@@ -32,3 +32,7 @@ export const allProductsQuery = `*[_type == "product"] | order(category->title a
     description,
     "slug": slug.current
 }`
+
+export const paymentAccountsQuery = `*[_type == "paymentAccount" && isActive == true]{
+    _id, accountName, accountNumber, bankNameOrWalletName, accountType, qrCodeImage, isActive
+}`
