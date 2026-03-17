@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import { createClient } from "sanity";
 
-const projectId = "b6iov2to";
-const dataset = "production";
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
+const dataset = process.env.SANITY_STUDIO_DATASET;
 const apiVersion = "2024-03-11";
 
 const token = process.env.SANITY_IMPORT_TOKEN;
@@ -10,7 +10,7 @@ const token = process.env.SANITY_IMPORT_TOKEN;
 if (!token) {
   console.error(
     "Missing SANITY_IMPORT_TOKEN. Create a token with write access in Sanity manage and set it before running:\n" +
-      "  SANITY_IMPORT_TOKEN=xxx node scripts/import-products.mjs"
+    "  SANITY_IMPORT_TOKEN=xxx node scripts/import-products.mjs"
   );
   process.exit(1);
 }

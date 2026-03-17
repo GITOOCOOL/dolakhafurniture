@@ -57,16 +57,16 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   if (loading) return <div className="w-20 h-8 bg-[#fdfaf5] animate-pulse rounded-full border border-[#e5dfd3]" />;
 
   return (
-    <div className="flex items-center gap-1 md:gap-4 relative z-50 flex-shrink-0">
+    <div className="flex items-center gap-6 md:gap-4 relative z-50 flex-shrink-0">
       {/* Search Toggle Button - Grouped with Actions */}
       <button
         type="button"
         onPointerDown={() => onSearchClick()}
         onClick={() => onSearchClick()}
-        className="p-2.5 text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors cursor-pointer flex-shrink-0"
+        className="w-[38px] h-[38px] flex items-center justify-center text-[#3d2b1f] bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] rounded-full transition-all cursor-pointer flex-shrink-0"
         aria-label="Search"
       >
-        <Search size={28} strokeWidth={1.5} />
+        <Search size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
       </button>
 
       {/* --- ANIMATED CART SECTION --- */}
@@ -80,13 +80,13 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
               scale: totalQuantity > 0 ? [1, 1.15, 1] : 1,
             }}
             transition={{ duration: 0.4 }}
-            className={`relative flex items-center justify-center p-2.5 rounded-none hover:bg-[#e5dfd3]/50 transition-all cursor-pointer touch-manipulation flex-shrink-0
+            className={`relative flex items-center justify-center w-[38px] h-[38px] bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
               ${totalQuantity > 0
                 ? 'text-[#a3573a]'
                 : 'text-[#3d2b1f]'}`}
           >
             <div className="flex items-center gap-1">
-              <ShoppingBag size={28} strokeWidth={1.5} />
+              <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
               {/* <span className="text-[10px] font-medium hidden md:block">Cart</span> */}
             </div>
 
@@ -132,23 +132,23 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
         <button
           type="button"
           onClick={() => setIsAccountModalOpen(true)}
-          className="flex items-center justify-center p-2 rounded-full hover:bg-[#e5dfd3]/50 transition-all text-[#3d2b1f] cursor-pointer touch-manipulation group flex-shrink-0"
+          className="w-[38px] h-[38px] flex items-center justify-center bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] rounded-full transition-all text-[#3d2b1f] cursor-pointer touch-manipulation group flex-shrink-0"
         >
           {user ? (
-             user.user_metadata.avatar_url ? (
-               <img
-                 src={user.user_metadata.avatar_url}
-                 className="w-8 h-8 rounded-full border border-[#e5dfd3] shadow-sm group-hover:border-[#a3573a] transition-all object-cover flex-shrink-0"
-                 alt="profile"
-               />
-             ) : (
-               <div className="w-8 h-8 rounded-full bg-[#3d2b1f] text-[#fdfaf5] flex items-center justify-center text-[10px] font-bold tracking-tighter border border-[#e5dfd3] shadow-sm group-hover:bg-[#a3573a] transition-all flex-shrink-0">
-                 {getInitials(user.user_metadata.full_name)}
-               </div>
-             )
+            user.user_metadata.avatar_url ? (
+              <img
+                src={user.user_metadata.avatar_url}
+                className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-[#e5dfd3] shadow-sm group-hover:border-[#a3573a] transition-all object-cover flex-shrink-0"
+                alt="profile"
+              />
+            ) : (
+              <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full bg-[#3d2b1f] text-[#fdfaf5] flex items-center justify-center text-[9px] md:text-[10px] font-bold tracking-tighter border border-[#e5dfd3] shadow-sm group-hover:bg-[#a3573a] transition-all flex-shrink-0">
+                {getInitials(user.user_metadata.full_name)}
+              </div>
+            )
           ) : (
             <div className="flex items-center gap-1 flex-shrink-0">
-              <User size={28} strokeWidth={1.5} className="flex-shrink-0" />
+              <User size={22} className="md:w-7 md:h-7 flex-shrink-0" strokeWidth={1.2} />
             </div>
           )}
         </button>
@@ -248,9 +248,9 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
                       <div className="mx-auto w-12 h-12 rounded-none bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center text-[#a3573a] shadow-sm">
                         <Leaf size={20} strokeWidth={1.5} />
                       </div>
-                      
-                      <AuthForm 
-                        onSuccess={() => setIsAccountModalOpen(false)} 
+
+                      <AuthForm
+                        onSuccess={() => setIsAccountModalOpen(false)}
                         showRewardBanner={true}
                       />
                     </div>

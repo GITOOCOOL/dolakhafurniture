@@ -2,6 +2,7 @@ import { client, urlFor } from "@/lib/sanity";
 import Link from "next/link";
 import { Metadata } from "next";
 import { allProductsQuery } from "@/lib/queries";
+import { Product } from "@/types";
 
 export const metadata: Metadata = {
   title: "Shop All Collections | Dolakha Furniture",
@@ -34,7 +35,7 @@ export default async function ShopPage() {
 
         {/* PRODUCT GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-[#e5dfd3] border-dotted pt-16">
-          {products.map((product: any, index: number) => (
+          {products.map((product: Product, index: number) => (
             <Link
               href={`/product/${product.slug}`}
               key={product._id}

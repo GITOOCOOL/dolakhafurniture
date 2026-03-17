@@ -8,7 +8,7 @@ import NavbarActions from "@/components/NavbarActions";
 import CategoryNav from "@/components/CategoryNav";
 import { Menu, X, Leaf, Search, Facebook, Instagram } from "lucide-react"; // Added Leaf for a boho touch
 import { motion, AnimatePresence } from "framer-motion";
-import { Image } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 // Boho Typography: Elegant Serif for Headlines, Soft Sans for Body
 const serif = Cormorant_Garamond({
@@ -58,31 +58,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* --- ETSY-STYLE HEADER --- */}
         <header className="sticky top-0 z-50 w-full bg-[#fdfaf5] border-b border-[#e5dfd3] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          {/* Top Row: Hamburger, Logo/Search, Actions */}
+          {/* Top Row: Hamburger, Logo/Search, Actions - Restored Stable Layout */}
           <div className="container mx-auto px-2 md:px-6 w-full flex items-center justify-between py-3 md:py-4 gap-2">
 
             {/* 1. LEFT ZONE: Hamburger + Shop All */}
-            <div className="flex-none flex items-center gap-1 md:gap-2">
+            <div className="flex-none flex items-center gap-2 md:gap-4">
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="p-2.5 text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors -ml-2 flex-shrink-0"
+                className="w-[38px] h-[38px] flex items-center justify-center text-[#3d2b1f] hover:text-[#a3573a] transition-all -ml-1 md:-ml-2 flex-shrink-0"
                 aria-label="Menu"
               >
-                <Menu size={28} strokeWidth={1.5} />
+                <Menu size={26} className="md:w-7 md:h-7" strokeWidth={1.5} />
               </button>
 
-              <Link
-                href="/shop"
-                className="h-[48px] flex items-center px-4 md:px-6 text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-[#3d2b1f] hover:bg-[#e5dfd3]/30 rounded-full transition-colors whitespace-nowrap flex-shrink-0"
-              >
-                Shop All
-              </Link>
+              <div className="bg-[#eee9df] rounded-full shadow-sm">
+                <Link
+                  href="/shop"
+                  className="h-8 md:h-[48px] flex items-center px-4 md:px-6 text-[10px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-[#a3573a] bg-[#eee9df] shadow-sm hover:bg-[#d9d1c1] rounded-full transition-all whitespace-nowrap flex-shrink-0 underline underline-offset-4 decoration-1"
+                >
+                  Shop
+                </Link>
+              </div>
             </div>
 
-            {/* 2. CENTER ZONE: Logo - Using absolute centering on mobile for better space management */}
-            <div className="flex-1 flex items-center justify-center min-w-0 md:static">
+            {/* 2. CENTER ZONE: Logo - Perfectly centered in the flex slot */}
+            <div className="flex-1 flex items-center justify-center min-w-0">
               <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-                <div className="relative flex-shrink-0 flex items-center justify-center">
+                <div className="relative flex-shrink-0 w-14 h-14 md:w-20 md:h-20 flex items-center justify-center">
                   {/* House Graphic Frame */}
                   <svg
                     viewBox="0 0 24 24"
@@ -91,7 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     strokeWidth="1.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-14 h-14 md:w-20 md:h-20 text-[#a3573a] opacity-20 absolute transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full text-[#a3573a] opacity-20 absolute transition-transform duration-700 group-hover:scale-110"
                   >
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                   </svg>
@@ -99,7 +101,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <img
                     src="/logo.png"
                     alt="Home"
-                    className="w-8 h-8 md:w-11 md:h-11 aspect-square object-contain transition-transform duration-700 group-hover:rotate-6 relative z-10 mt-1.5"
+                    style={{ width: '22px', height: '22px' }}
+                    className="md:w-11 md:h-11 aspect-square object-contain transition-transform duration-700 group-hover:rotate-6 relative z-10 mt-1"
                   />
                 </div>
                 <span className="hidden lg:block text-2xl xl:text-3xl font-serif italic tracking-tight text-[#3d2b1f]">

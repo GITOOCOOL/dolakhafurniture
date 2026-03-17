@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Leaf } from "lucide-react";
+import { Product } from "@/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -21,7 +22,9 @@ export default async function CategoryPage({ params }: Props) {
   const data = await client.fetch(
     `{
       "category": *[_type == "category" && slug.current == $slug][0],
-      "products": *[_type == "product" && category->slug.current == $slug] | order(_createdAt desc)
+      "products": *[_type == "product" && category->slug.current == $slug] | order(_createdAt desc) {
+        _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
+      }
     }`,
     { slug }
   );
@@ -57,9 +60,9 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-[#e5dfd3] border-dotted pt-16">
-            {data.products.map((product: any, index: number) => (
+            {data.products.map((product: Product, index: number) => (
               <Link 
-                href={`/product/${product.slug.current}`} 
+                href={`/product/${product.slug}`} 
                 key={product._id}
                 className="group flex flex-col space-y-6"
               >

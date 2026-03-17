@@ -3,6 +3,8 @@ import { urlFor } from "@/lib/sanity";
 import ProductDetail from "@/components/ProductDetail";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { productBySlugQuery } from "@/lib/queries";
+import { Product } from "@/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -11,8 +13,8 @@ interface Props {
 // 1. DYNAMIC SEO METADATA - Updated for a boutique, artisanal feel
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await client.fetch(
-    `*[_type == "product" && slug.current == $slug][0]`, 
+  const product = await client.fetch<Product | null>(
+    productBySlugQuery, 
     { slug }
   );
 
@@ -51,8 +53,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   
-  const product = await client.fetch(
-    `*[_type == "product" && slug.current == $slug][0]`,
+  const product = await client.fetch<Product | null>(
+    productBySlugQuery,
     { slug }
   );
 

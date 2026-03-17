@@ -5,8 +5,10 @@ import Image from "next/image";
 import { urlFor } from "@/lib/sanity";
 import { useCart } from "@/store/useCart";
 import { Leaf, Minus, Plus, ShieldCheck } from "lucide-react";
+import Button from "./ui/Button";
+import { Product } from "@/types";
 
-export default function ProductDetail({ product }: { product: any }) {
+export default function ProductDetail({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const addItem = useCart((state) => state.addItem);
@@ -63,44 +65,40 @@ export default function ProductDetail({ product }: { product: any }) {
           <div className="space-y-8 pt-8 border-t border-[#e5dfd3] border-dotted">
             <div className="flex items-center gap-8">
               <span className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91]">Quantity</span>
-              <div className="flex items-center border border-[#e5dfd3] rounded-full px-5 py-3 gap-8 bg-white shadow-sm">
-                <button 
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))} 
-                  className="text-[#a89f91] hover:text-[#a3573a] transition-colors"
-                >
-                  <Minus size={16} />
-                </button>
+              <div className="flex items-center border border-[#e5dfd3] rounded-full px-2 py-2 gap-4 bg-white shadow-sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="p-2 min-h-0 text-[#a89f91]"
+                  leftIcon={<Minus size={16} />}
+                />
                 
-                {/* QUANTITY NUMBER: Changed to font-sans */}
                 <span className="font-sans font-bold text-lg w-6 text-center">
                   {quantity}
                 </span>
 
-                <button 
-                  onClick={() => setQuantity(quantity + 1)} 
-                  className="text-[#a89f91] hover:text-[#a3573a] transition-colors"
-                >
-                  <Plus size={16} />
-                </button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="p-2 min-h-0 text-[#a89f91]"
+                  leftIcon={<Plus size={16} />}
+                />
               </div>
             </div>
 
             {/* BUTTON: Changed to font-sans font-bold for a clear, modern action */}
-            <button
+            <Button
               onClick={handleAddToCart}
-              className={`w-full py-6 rounded-full font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-700 shadow-xl
-                ${isSuccess 
-                  ? 'bg-[#a3573a] text-white shadow-[0_20px_40px_rgba(163,87,58,0.3)]' 
-                  : 'bg-[#3d2b1f] text-[#fdfaf5] hover:bg-[#a3573a] hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]'}`}
+              fullWidth
+              size="xl"
+              variant={isSuccess ? "accent" : "primary"}
+              className={isSuccess ? "shadow-[0_20px_40px_rgba(163,87,58,0.3)]" : "hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]"}
+              leftIcon={isSuccess ? <ShieldCheck size={18} /> : undefined}
             >
-              <span className="flex items-center justify-center gap-3">
-                {isSuccess ? (
-                  <><ShieldCheck size={18} /> Added to home</>
-                ) : (
-                  'Add to Cart'
-                )}
-              </span>
-            </button>
+              {isSuccess ? "Added to home" : "Add to Cart"}
+            </Button>
             
             <p className="text-center text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-[#a89f91] opacity-60">
               * Locally Sourced • Hand-Finished • Delivered in Kathmandu

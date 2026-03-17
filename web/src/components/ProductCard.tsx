@@ -1,7 +1,8 @@
 import { urlFor } from "../lib/sanity";
 import Link from "next/link";
+import { Product } from "@/types";
 
-const ProductCard = ({ product }: { product: any }) => {
+const ProductCard = ({ product }: { product: Product }) => {
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-[#e5dfd3] bg-white w-full h-full shadow-sm hover:shadow-[0_20px_50px_rgba(163,87,58,0.1)] transition-shadow duration-700">
       <Link 

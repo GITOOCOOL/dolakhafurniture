@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { ArrowBigDownDash, ArrowRight, Phone, MessageCircle, Leaf, Facebook, Instagram, Mail, ArrowDown } from 'lucide-react';
 import BulletinTicker from '@/components/BulletinTicker';
+import Button from './ui/Button';
 import { Bulletin as BulletinType } from '@/types/bulletin';
 import { HeroImage as HeroImageType } from '@/types/heroImage';
 import Image from 'next/image';
@@ -117,13 +118,14 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
 
                 {/* BROWSE BUTTON OVERLAY (Outside AnimatePresence - Strictly Static) */}
                 <div className="absolute inset-0 flex items-end justify-center pb-12 z-30 pointer-events-none">
-                  <button
+                  <Button
                     onClick={handleScroll}
-                    className="pointer-events-auto bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 rounded-full font-bold uppercase text-[12px] tracking-[0.3em] hover:bg-white hover:text-[#3d2b1f] shadow-2xl flex items-center gap-4 group"
+                    variant="ghost"
+                    className="pointer-events-auto bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-5 hover:bg-white hover:text-[#3d2b1f] shadow-2xl group uppercase tracking-[0.3em] font-bold text-[12px]"
+                    rightIcon={<ArrowDown size={18} />}
                   >
                     Browse all
-                    <ArrowDown size={18} />
-                  </button>
+                  </Button>
                 </div>
 
                 {/* SLIDE INDICATORS (DOTS) */}
@@ -165,20 +167,34 @@ const Hero = ({ bulletins, heroImages }: { bulletins: BulletinType[], heroImages
 
               <div className="flex flex-col gap-5">
                 <div className="flex flex-wrap gap-5">
-                  <Link href="/shop" className="w-full bg-[#3d2b1f] text-[#fdfaf5] px-6 py-6 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-[#a3573a] transition-all shadow-xl flex items-center gap-3">
-                    Shop Now <ArrowRight size={16} />
+                  <Link href="/shop" className="w-full">
+                    <Button
+                      fullWidth
+                      size="xl"
+                      rightIcon={<ArrowRight size={16} />}
+                    >
+                      Shop Now
+                    </Button>
                   </Link>
                 </div>
                 <div className="flex gap-5">
-                  <a
-                    href="tel:+9779808005210"
-                    className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] px-6 py-4 rounded-full font-sans font-bold uppercase text-[10px] tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-[#fdfaf5] transition-all shadow-sm"
-                  >
-                    <Phone size={16} className="text-[#a3573a]" />
-                    Call Us Anytime
+                  <a href="tel:+9779808005210" className="w-full">
+                    <Button
+                      variant="outline"
+                      fullWidth
+                      leftIcon={<Phone size={16} className="text-[#a3573a]" />}
+                    >
+                      Call Us
+                    </Button>
                   </a>
-                  <a href="https://wa.me" target="_blank" className="w-full bg-white border border-[#e5dfd3] text-[#3d2b1f] px-4 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] flex items-center gap-3 hover:bg-[#fdfaf5] transition-all shadow-sm">
-                    <MessageCircle size={16} className="text-[#25D366]" /> WhatsApp
+                  <a href="https://wa.me" target="_blank" className="w-full">
+                    <Button
+                      variant="outline"
+                      fullWidth
+                      leftIcon={<MessageCircle size={16} className="text-[#25D366]" />}
+                    >
+                      WhatsApp
+                    </Button>
                   </a>
                 </div>
               </div>

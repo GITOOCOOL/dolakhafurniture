@@ -11,6 +11,7 @@ export type Product = {
         slug: string;
     };
     description?: string;
-    stock: number;
+    stock?: number;
     isFeatured?: boolean;
+    _createdAt?: string;
 }

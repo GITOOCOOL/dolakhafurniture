@@ -2,6 +2,7 @@
 
 import { createClient as createSupabase } from "@/utils/supabase/server"
 import { createClient as createSanity } from "@sanity/client"
+import { CartItem, CustomerData } from "@/types"
 
 // 1. Initialize the Sanity Admin Client with Write Permissions
 const sanityAdmin = createSanity({
@@ -12,7 +13,7 @@ const sanityAdmin = createSanity({
   apiVersion: "2024-03-12"
 })
 
-export async function processOrder(cartItems: any[], total: number, customerData: any) {
+export async function processOrder(cartItems: CartItem[], total: number, customerData: CustomerData) {
   try {
     const supabase = await createSupabase()
     const { data: { user } } = await supabase.auth.getUser()

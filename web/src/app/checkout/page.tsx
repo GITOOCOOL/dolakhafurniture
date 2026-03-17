@@ -32,6 +32,9 @@ import {
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Modal from "@/components/ui/Modal";
 
 export default function CheckoutPage() {
   const supabase = createClient();
@@ -106,6 +109,7 @@ export default function CheckoutPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    // @ts-ignore
     const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     setFormData(prev => ({ ...prev, [name]: val }));
   };
@@ -213,32 +217,41 @@ export default function CheckoutPage() {
                    </div>
                    <h3 className="text-2xl font-serif italic mb-2">Claim your welcome gift.</h3>
                    <p className="text-xs text-[#a89f91] mb-8 max-w-xs mx-auto">Create an account now and get <strong>10% OFF</strong> your next handcrafted piece. Use code <span className="text-white border-b border-white/30">WELCOME10</span> at signup.</p>
-                   <Link 
-                    href="/auth" 
-                    className="inline-flex items-center gap-2 bg-white text-[#3d2b1f] px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[#a3573a] hover:text-white transition-all shadow-lg"
-                   >
-                     Sign Up & Claim <Ticket size={14} />
+                   <Link href="/auth">
+                    <Button
+                      variant="primary"
+                      className="bg-white text-[#3d2b1f] hover:bg-[#a3573a] hover:text-white"
+                      rightIcon={<Ticket size={14} />}
+                    >
+                      Sign Up & Claim
+                    </Button>
                    </Link>
                 </div>
              </motion.div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto mb-16">
-            <Link 
-              href="/shop" 
-              className="group flex items-center justify-center gap-2 bg-[#3d2b1f] text-white px-8 py-5 rounded-full font-sans font-bold uppercase tracking-widest hover:bg-[#a3573a] transition-all"
-            >
-              Continue Shopping <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <Link href="/shop" className="w-full">
+              <Button
+                fullWidth
+                size="lg"
+                rightIcon={<ArrowRight size={16} />}
+              >
+                Continue Shopping
+              </Button>
             </Link>
-            <button 
+            <Button
+              variant="outline"
+              fullWidth
+              size="lg"
               onClick={() => {
                 setInquiryData(prev => ({ ...prev, phone: formData.phone }));
                 setShowInquiryModal(true);
               }}
-              className="flex items-center justify-center gap-2 bg-white border border-[#e5dfd3] text-[#3d2b1f] px-8 py-5 rounded-full font-sans font-bold uppercase tracking-widest hover:border-[#a3573a] hover:text-[#a3573a] transition-all"
+              rightIcon={<Package size={16} />}
             >
-              Inquiry / Track <Package size={16} />
-            </button>
+              Inquiry / Track
+            </Button>
           </div>
 
           <div className="bg-white/50 border border-[#e5dfd3] rounded-[2rem] p-8 max-w-md mx-auto backdrop-blur-sm">
@@ -257,97 +270,65 @@ export default function CheckoutPage() {
         </motion.div>
 
         {/* Inquiry Modal */}
-        <AnimatePresence>
-          {showInquiryModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowInquiryModal(false)}
-                className="absolute inset-0 bg-[#3d2b1f]/20 backdrop-blur-sm"
+        <Modal
+          isOpen={showInquiryModal}
+          onClose={() => setShowInquiryModal(false)}
+          title="Track your Order"
+        >
+          <p className="text-xs text-[#a89f91] uppercase tracking-[0.2em] text-center mb-8">Our team will get back to you shortly</p>
+          <form onSubmit={handleInquirySubmit} className="space-y-6">
+            <div className="space-y-4">
+              <Input
+                required
+                name="name"
+                placeholder="Your Full Name"
+                value={inquiryData.name}
+                // @ts-ignore
+                onChange={(e: any) => handleInquiryChange(e)}
               />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-lg bg-[#fdfaf5] border border-[#e5dfd3] rounded-[2.5rem] shadow-2xl p-10 overflow-hidden"
-              >
-                <button 
-                  onClick={() => setShowInquiryModal(false)}
-                  className="absolute top-6 right-6 p-2 text-[#a89f91] hover:text-[#3d2b1f] transition-colors"
-                >
-                  <X size={24} />
-                </button>
-
-                <div className="mb-10 text-center">
-                  <div className="w-16 h-16 bg-[#3d2b1f]/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <Package className="text-[#3d2b1f]" size={32} />
-                  </div>
-                  <h3 className="text-3xl font-serif italic mb-2">Track your Order</h3>
-                  <p className="text-xs text-[#a89f91] uppercase tracking-[0.2em]">Our team will get back to you shortly</p>
-                </div>
-
-                <form onSubmit={handleInquirySubmit} className="space-y-6">
-                  <div className="space-y-4">
-                    <input
-                      required
-                      type="text"
-                      name="name"
-                      placeholder="Your Full Name"
-                      value={inquiryData.name}
-                      onChange={handleInquiryChange}
-                      className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <input
-                        required
-                        type="email"
-                        name="email"
-                        placeholder="Email Address"
-                        value={inquiryData.email}
-                        onChange={handleInquiryChange}
-                        className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
-                      />
-                      <input
-                        required
-                        type="tel"
-                        name="phone"
-                        placeholder="Phone Number"
-                        value={inquiryData.phone}
-                        onChange={handleInquiryChange}
-                        className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
-                      />
-                    </div>
-                    <textarea
-                      required
-                      name="message"
-                      rows={4}
-                      placeholder="Your message (Order ID, Inquiry detail, etc.)"
-                      value={inquiryData.message}
-                      onChange={handleInquiryChange}
-                      className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all resize-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={inquiryStatus === 'submitting'}
-                    className={`w-full py-5 rounded-full font-sans font-bold uppercase tracking-widest text-[10px] transition-all duration-500
-                      ${inquiryStatus === 'submitting' 
-                        ? 'bg-[#e5dfd3] text-[#a89f91]' 
-                        : inquiryStatus === 'success'
-                        ? 'bg-green-600 text-white'
-                        : 'bg-[#3d2b1f] text-white hover:bg-[#a3573a]'
-                      }`}
-                  >
-                    {inquiryStatus === 'submitting' ? "Sending..." : inquiryStatus === 'success' ? "Inquiry Sent!" : "Submit Inquiry"}
-                  </button>
-                </form>
-              </motion.div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  required
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={inquiryData.email}
+                  // @ts-ignore
+                  onChange={(e: any) => handleInquiryChange(e)}
+                />
+                <Input
+                  required
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone Number"
+                  value={inquiryData.phone}
+                  // @ts-ignore
+                  onChange={(e: any) => handleInquiryChange(e)}
+                />
+              </div>
+              <textarea
+                required
+                name="message"
+                rows={4}
+                placeholder="Your message (Order ID, Inquiry detail, etc.)"
+                value={inquiryData.message}
+                onChange={handleInquiryChange}
+                className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all resize-none"
+              />
             </div>
-          )}
-        </AnimatePresence>
+
+            <Button
+              type="submit"
+              fullWidth
+              size="lg"
+              isLoading={inquiryStatus === 'submitting'}
+              variant={inquiryStatus === 'success' ? 'primary' : 'primary'}
+              className={inquiryStatus === 'success' ? 'bg-green-600 hover:bg-green-700' : ''}
+            >
+              {inquiryStatus === 'submitting' ? "Sending..." : inquiryStatus === 'success' ? "Inquiry Sent!" : "Submit Inquiry"}
+            </Button>
+          </form>
+        </Modal>
       </div>
     );
   }
@@ -403,36 +384,34 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                {/* PHONE (Priority in Nepal) */}
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-2 border-r border-[#e5dfd3]">
-                    <span className="text-[10px] font-bold">NP</span>
-                    <span className="text-[10px] text-[#a89f91]">+977</span>
-                  </div>
-                  <input
-                    required
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone number"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full bg-white border border-[#e5dfd3] pl-20 pr-6 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
-                  />
-                </div>
+                <Input
+                  label="Phone number"
+                  type="tel"
+                  name="phone"
+                  required
+                  value={formData.phone}
+                  // @ts-ignore
+                  onChange={(e: any) => handleInputChange(e)}
+                  leftIcon={
+                    <div className="flex items-center gap-2 pr-2 border-r border-[#e5dfd3]">
+                      <span className="text-[10px] font-bold">NP</span>
+                      <span className="text-[10px] text-[#a89f91]">+977</span>
+                    </div>
+                  }
+                  className="pl-20"
+                />
 
-                {/* EMAIL */}
-                <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a89f91] group-focus-within:text-[#a3573a] transition-colors" size={18} />
-                  <input
-                    required
-                    type="email"
-                    name="email"
-                    placeholder="Email address"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full bg-white border border-[#e5dfd3] px-12 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
-                  />
-                </div>
+                <Input
+                  label="Email address"
+                  type="email"
+                  name="email"
+                  required
+                  icon={Mail}
+                  placeholder="your@email.com"
+                  value={formData.email}
+                  // @ts-ignore
+                  onChange={(e: any) => handleInputChange(e)}
+                />
 
                 <div className="flex items-center gap-3">
                   <input
@@ -449,75 +428,70 @@ export default function CheckoutPage() {
                 <h2 className="text-2xl font-serif italic">Delivery</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a89f91]" size={18} />
-                    <input
-                      required
-                      type="text"
-                      name="firstName"
-                      placeholder="First name"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border border-[#e5dfd3] px-12 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
-                    />
-                  </div>
-                  <input
+                  <Input
+                    label="First name"
                     required
-                    type="text"
+                    name="firstName"
+                    icon={User}
+                    value={formData.firstName}
+                    // @ts-ignore
+                    onChange={(e: any) => handleInputChange(e)}
+                  />
+                  <Input
+                    label="Last name"
+                    required
                     name="lastName"
-                    placeholder="Last name"
                     value={formData.lastName}
-                    onChange={handleInputChange}
-                    className="w-full bg-white border border-[#e5dfd3] px-6 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
+                    // @ts-ignore
+                    onChange={(e: any) => handleInputChange(e)}
                   />
                 </div>
 
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a89f91]" size={18} />
-                  <input
-                    required
-                    type="text"
-                    name="address"
-                    placeholder="Area, Building, or Street"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    className="w-full bg-white border border-[#e5dfd3] px-12 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
-                  />
-                </div>
-
-                <input
-                  type="text"
-                  name="apartment"
-                  placeholder="Apartment, suite, etc. (optional)"
-                  value={formData.apartment}
-                  onChange={handleInputChange}
-                  className="w-full bg-white border border-[#e5dfd3] px-6 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
+                <Input
+                  label="Address"
+                  required
+                  name="address"
+                  icon={MapPin}
+                  placeholder="Area, Building, or Street"
+                  value={formData.address}
+                  // @ts-ignore
+                  onChange={(e: any) => handleInputChange(e)}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input
+                <Input
+                  label="Apartment, suite, etc. (optional)"
+                  name="apartment"
+                  value={formData.apartment}
+                  // @ts-ignore
+                  onChange={(e: any) => handleInputChange(e)}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                  <Input
+                    label="City / Tole"
                     required
-                    type="text"
                     name="city"
-                    placeholder="City / Tole"
                     value={formData.city}
-                    onChange={handleInputChange}
-                    className="w-full bg-white border border-[#e5dfd3] px-6 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all"
+                    // @ts-ignore
+                    onChange={(e: any) => handleInputChange(e)}
                   />
-                  <select
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    className="w-full bg-white border border-[#e5dfd3] px-6 py-5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all appearance-none"
-                  >
-                    <option value="Bagmati">Bagmati</option>
-                    <option value="Gandaki">Gandaki</option>
-                    <option value="Lumbini">Lumbini</option>
-                    <option value="Koshi">Koshi</option>
-                    <option value="Madhesh">Madhesh</option>
-                    <option value="Karnali">Karnali</option>
-                    <option value="Sudurpashchim">Sudurpashchim</option>
-                  </select>
+                  <div className="flex flex-col gap-2 w-full">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91] ml-4 block">State / Province</label>
+                    <select
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      className="w-full bg-white border border-[#e5dfd3] px-6 py-4.5 rounded-2xl text-xs focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all appearance-none"
+                    >
+                      <option value="Bagmati">Bagmati</option>
+                      <option value="Gandaki">Gandaki</option>
+                      <option value="Lumbini">Lumbini</option>
+                      <option value="Koshi">Koshi</option>
+                      <option value="Madhesh">Madhesh</option>
+                      <option value="Karnali">Karnali</option>
+                      <option value="Sudurpashchim">Sudurpashchim</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -607,6 +581,7 @@ export default function CheckoutPage() {
                       </div>
                     </label>
 
+
                     {/* ACTIVE PAYMENT ACCOUNTS (Dynamic) */}
                     {paymentAccounts.length > 0 && (
                       <div className="space-y-4">
@@ -668,19 +643,15 @@ export default function CheckoutPage() {
               </section>
 
               {/* SUBMIT BUTTON */}
-              <button
+              <Button
                 type="submit"
-                disabled={isProcessing}
-                className={`w-full py-6 rounded-full font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-500 flex items-center justify-center gap-3 shadow-xl
-                  ${isProcessing
-                    ? 'bg-[#e5dfd3] text-[#a89f91] cursor-not-allowed'
-                    : 'bg-[#3d2b1f] text-[#fdfaf5] hover:bg-[#a3573a] hover:-translate-y-1'
-                  }`}
+                isLoading={isProcessing}
+                fullWidth
+                size="xl"
+                rightIcon={!isProcessing && <ShieldCheck size={16} />}
               >
-                {isProcessing ? "Processing Order..." : (
-                  <>Complete Purchase <ShieldCheck size={16} /></>
-                )}
-              </button>
+                {isProcessing ? "Processing Order..." : "Complete Purchase"}
+              </Button>
 
             </form>
           </div>
@@ -720,91 +691,87 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              {/* Voucher Section */}
               <div className="space-y-4 mb-10">
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    placeholder="Voucher code"
-                    value={voucherInput}
-                    onChange={(e) => setVoucherInput(e.target.value)}
-                    disabled={!!appliedVoucher}
-                    className="flex-1 bg-white border border-[#e5dfd3] px-6 py-4 rounded-2xl text-xs focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all disabled:opacity-50"
-                  />
-                  <button 
+                <div className="flex gap-3 items-end">
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Voucher code"
+                      value={voucherInput}
+                      onChange={(e) => setVoucherInput(e.target.value)}
+                      disabled={!!appliedVoucher}
+                    />
+                  </div>
+                  <Button
                     onClick={handleApplyVoucher}
                     disabled={isApplyingVoucher || !!appliedVoucher || !voucherInput}
-                    className={`px-6 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-colors
-                      ${appliedVoucher 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-[#e5dfd3] text-[#3d2b1f] hover:bg-[#d9d1c1]'
-                      }`}
+                    variant={appliedVoucher ? "secondary" : "secondary"}
+                    className={appliedVoucher ? "bg-green-100 text-green-700" : ""}
                   >
                     {isApplyingVoucher ? "..." : appliedVoucher ? "Applied" : "Apply"}
-                  </button>
+                  </Button>
                 </div>
-                {voucherError && <p className="text-[10px] text-red-500 pl-2">{voucherError}</p>}
+                {voucherError && <p className="text-[10px] text-red-500 pl-4">{voucherError}</p>}
                 {appliedVoucher && (
-                  <div className="flex items-center justify-between bg-green-50 border border-green-100 px-4 py-2 rounded-xl">
-                    <div className="flex items-center gap-2 text-[10px] text-green-700 font-bold uppercase">
-                      <Tag size={12} /> {appliedVoucher.code}
+                    <div className="flex items-center justify-between bg-green-50 border border-green-100 px-4 py-2 rounded-xl">
+                      <div className="flex items-center gap-2 text-[10px] text-green-700 font-bold uppercase">
+                        <Tag size={12} /> {appliedVoucher.code}
+                      </div>
+                      <button 
+                        onClick={() => {
+                          setAppliedVoucher(null);
+                          setDiscount(0);
+                          setVoucherInput("");
+                        }}
+                        className="text-[9px] text-green-700/50 hover:text-green-700 uppercase font-bold"
+                      >
+                        Remove
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => {
-                        setAppliedVoucher(null);
-                        setDiscount(0);
-                        setVoucherInput("");
-                      }}
-                      className="text-[9px] text-green-700/50 hover:text-green-700 uppercase font-bold"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* PRICE BREAKDOWN */}
-              <div className="space-y-4 pt-6 border-t border-[#e5dfd3] border-dotted">
-                <div className="flex justify-between items-center text-[11px] font-medium">
-                  <span className="text-[#a89f91]">Subtotal</span>
-                  <span className="font-bold">Rs. {subtotal}</span>
+                  )}
                 </div>
-                {discount > 0 && (
-                  <div className="flex justify-between items-center text-[11px] font-medium text-green-600">
-                    <span className="flex items-center gap-1"><Tag size={12} /> Discount</span>
-                    <span className="font-bold">- Rs. {discount}</span>
+  
+                {/* PRICE BREAKDOWN */}
+                <div className="space-y-4 pt-6 border-t border-[#e5dfd3] border-dotted">
+                  <div className="flex justify-between items-center text-[11px] font-medium">
+                    <span className="text-[#a89f91]">Subtotal</span>
+                    <span className="font-bold">Rs. {subtotal}</span>
                   </div>
-                )}
-                <div className="flex justify-between items-center text-[11px] font-medium">
-                  <span className="text-[#a89f91]">Shipping</span>
-                  <span className="font-bold">{shipping > 0 ? `Rs. ${shipping}` : "Free"}</span>
-                </div>
-                <div className="flex justify-between items-center pt-6 border-t border-[#e5dfd3] mt-4">
-                  <span className="text-lg font-serif italic">Total</span>
-                  <div className="flex flex-col items-end">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-[10px] text-[#a89f91] font-bold">NPR</span>
-                      <span className="text-4xl font-sans font-bold tracking-tighter text-[#3d2b1f]">Rs. {finalTotal}</span>
+                  {discount > 0 && (
+                    <div className="flex justify-between items-center text-[11px] font-medium text-green-600">
+                      <span className="flex items-center gap-1"><Tag size={12} /> Discount</span>
+                      <span className="font-bold">- Rs. {discount}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center text-[11px] font-medium">
+                    <span className="text-[#a89f91]">Shipping</span>
+                    <span className="font-bold">{shipping > 0 ? `Rs. ${shipping}` : "Free"}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-6 border-t border-[#e5dfd3] mt-4">
+                    <span className="text-lg font-serif italic">Total</span>
+                    <div className="flex flex-col items-end">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[10px] text-[#a89f91] font-bold">NPR</span>
+                        <span className="text-4xl font-sans font-bold tracking-tighter text-[#3d2b1f]">Rs. {finalTotal}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Trust badges */}
-              <div className="mt-12 flex flex-col items-center gap-4 opacity-40">
-                <div className="flex items-center gap-10">
-                  <Truck size={14} />
-                  <ShieldCheck size={14} />
-                  <ShoppingBag size={14} />
+  
+                {/* Trust badges */}
+                <div className="mt-12 flex flex-col items-center gap-4 opacity-40">
+                  <div className="flex items-center gap-10">
+                    <Truck size={14} />
+                    <ShieldCheck size={14} />
+                    <ShoppingBag size={14} />
+                  </div>
+                  <p className="text-[8px] font-sans font-bold uppercase tracking-[0.5em] text-[#a89f91]">Verified Furniture Purveyor</p>
                 </div>
-                <p className="text-[8px] font-sans font-bold uppercase tracking-[0.5em] text-[#a89f91]">Verified Furniture Purveyor</p>
+  
               </div>
-
             </div>
+  
           </div>
-
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }

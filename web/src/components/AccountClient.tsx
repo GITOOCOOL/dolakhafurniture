@@ -3,8 +3,16 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Leaf } from "lucide-react"; // Small boho accent
+import { User } from "@supabase/supabase-js";
+import { Order } from "@/types";
 
-export default function AccountClient({ user, orders, showSuccess }: any) {
+interface AccountClientProps {
+  user: User;
+  orders: Order[];
+  showSuccess?: boolean;
+}
+
+export default function AccountClient({ user, orders, showSuccess }: AccountClientProps) {
   const [visible, setVisible] = useState(showSuccess);
 
   useEffect(() => {
@@ -14,7 +22,7 @@ export default function AccountClient({ user, orders, showSuccess }: any) {
     }
   }, [showSuccess]);
 
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string) => {
     if (!name) return "U";
     const parts = name.split(" ");
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
@@ -57,7 +65,7 @@ export default function AccountClient({ user, orders, showSuccess }: any) {
                 />
               ) : (
                 <span className="text-3xl font-bold text-[#3d2b1f] tracking-tighter">
-                  {getInitials(user.user_metadata.full_name)}
+                  {getInitials(user.user_metadata?.full_name)}
                 </span>
               )}
             </div>
@@ -91,7 +99,7 @@ export default function AccountClient({ user, orders, showSuccess }: any) {
             </div>
           ) : (
             <div className="space-y-8">
-              {orders.map((order: any) => (
+              {orders.map((order: Order) => (
                 <div key={order._id} className="bg-white/60 backdrop-blur-sm p-10 rounded-[4rem] border border-[#e5dfd3] shadow-sm hover:border-[#a3573a]/40 transition-all duration-700 group">
                   <div className="flex justify-between items-start mb-10">
                     <div>
@@ -108,7 +116,7 @@ export default function AccountClient({ user, orders, showSuccess }: any) {
                   </div>
 
                   <div className="space-y-6">
-                    {order.items?.map((item: any, idx: number) => (
+                    {order.items?.map((item, idx: number) => (
                       <div key={idx} className="flex justify-between items-center text-sm border-b border-[#e5dfd3] border-dotted pb-5 last:border-0 last:pb-0">
                         <span className="text-[#a89f91] font-serif italic text-lg">
                           <span className="text-[#3d2b1f] font-sans font-bold not-italic mr-2">{item.quantity}x</span> 

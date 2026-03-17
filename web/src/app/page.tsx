@@ -1,11 +1,8 @@
 import { client } from "@/lib/sanity";
-import CategoryRow from "@/components/CategoryRow";
-import { Product } from '@/types/product';
+import CategoryRow from "@/components/CategoryRow"; 
+import { Product, Bulletin, HeroImage, Category } from '@/types';
 import Hero from "@/components/Hero";
-import { Bulletin } from '@/types/bulletin';
 import { bulletinQuery, heroImageQuery, categoriesQuery } from "@/lib/queries";
-import { HeroImage } from '@/types/heroImage';
-import { Category } from '@/types/category';
 
 export const dynamic = 'force-dynamic';
 
