@@ -1,6 +1,7 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
+import { webhooksTrigger } from 'sanity-plugin-webhooks-trigger'
 import { schemaTypes } from './schemaTypes'
 
 export default defineConfig({
@@ -10,7 +11,7 @@ export default defineConfig({
   projectId: 'b6iov2to',
   dataset: 'production',
 
-  plugins: [structureTool(), visionTool()],
+  plugins: [structureTool(), visionTool(), webhooksTrigger()],
 
   schema: {
     types: schemaTypes,
