@@ -58,7 +58,8 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
 
   return (
     <div className="flex items-center gap-6 md:gap-4 relative z-50 flex-shrink-0">
-      {/* Search Toggle Button - Grouped with Actions */}
+      {/* Search Toggle Button - Grouped with Actions - Commented out for minimalism */}
+      {/* 
       <button
         type="button"
         onPointerDown={() => onSearchClick()}
@@ -68,6 +69,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
       >
         <Search size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
       </button>
+      */}
 
       {/* --- ANIMATED CART SECTION --- */}
       <div className="relative flex-shrink-0">
@@ -87,7 +89,6 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           >
             <div className="flex items-center gap-1">
               <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
-              {/* <span className="text-[10px] font-medium hidden md:block">Cart</span> */}
             </div>
 
             {totalQuantity > 0 && (
@@ -127,6 +128,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           )}
         </AnimatePresence>
       </div>
+
       {/* --- ACCOUNT / AUTH SECTION --- */}
       <div className="relative flex-shrink-0">
         <button
@@ -261,8 +263,6 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           )}
         </AnimatePresence>
       </div>
-
-
     </div>
   );
 }
