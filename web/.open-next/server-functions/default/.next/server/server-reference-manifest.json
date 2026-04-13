@@ -1,0 +1,51 @@
+{
+  "node": {
+    "70c3d9539d077fd61b4571cbaa0516b03764c47eb3": {
+      "workers": {
+        "app/checkout/page": {
+          "moduleId": 32785,
+          "async": false,
+          "exportedName": "processOrder",
+          "filename": "src/app/actions/checkout.ts"
+        }
+      },
+      "layer": {
+        "app/checkout/page": "action-browser"
+      },
+      "filename": "src/app/actions/checkout.ts",
+      "exportedName": "processOrder"
+    },
+    "4070a7e9a693900eebeb01b9bfdc117695464cb4e0": {
+      "workers": {
+        "app/checkout/page": {
+          "moduleId": 32785,
+          "async": false,
+          "exportedName": "submitInquiry",
+          "filename": "src/app/actions/inquiry.ts"
+        }
+      },
+      "layer": {
+        "app/checkout/page": "action-browser"
+      },
+      "filename": "src/app/actions/inquiry.ts",
+      "exportedName": "submitInquiry"
+    },
+    "40c67d29f60aa768d4c399f104b93ece728e263e12": {
+      "workers": {
+        "app/checkout/page": {
+          "moduleId": 32785,
+          "async": false,
+          "exportedName": "validateVoucher",
+          "filename": "src/app/actions/vouchers.ts"
+        }
+      },
+      "layer": {
+        "app/checkout/page": "action-browser"
+      },
+      "filename": "src/app/actions/vouchers.ts",
+      "exportedName": "validateVoucher"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "ywhqBi3oSOpbhptImM9ZtNYuMwut7H88+nhlBnvGEfs="
+}

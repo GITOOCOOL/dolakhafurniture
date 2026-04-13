@@ -1,0 +1,7 @@
+name = "dolakha-furniture"
+compatibility_date = "2024-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+NEXT_PUBLIC_SANITY_PROJECT_ID = "b6iov2to"
+NEXT_PUBLIC_SANITY_DATASET = "production"
