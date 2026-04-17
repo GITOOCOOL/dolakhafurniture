@@ -141,6 +141,11 @@ export default function ProductDetail({ product }: { product: Product }) {
                   leftIcon={<Plus size={16} />}
                 />
               </div>
+              {product.stock !== undefined && product.stock <= 0 && (
+                <div className="text-[10px] font-bold uppercase tracking-widest text-[#a3573a] animate-pulse">
+                  Out of Stock — Get it made after you order
+                </div>
+              )}
             </div>
 
             {/* BUTTON: Changed to font-sans font-bold for a clear, modern action */}
@@ -152,7 +157,10 @@ export default function ProductDetail({ product }: { product: Product }) {
               className={isSuccess ? "shadow-[0_20px_40px_rgba(163,87,58,0.3)]" : "hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]"}
               leftIcon={isSuccess ? <ShieldCheck size={18} /> : undefined}
             >
-              {isSuccess ? "Added to home" : "Add to Cart"}
+              {isSuccess 
+                ? "Added to home" 
+                : (product.stock !== undefined && product.stock <= 0 ? "Order Custom Piece" : "Add to Cart")
+              }
             </Button>
             
             <p className="text-center text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-[#a89f91] opacity-60">

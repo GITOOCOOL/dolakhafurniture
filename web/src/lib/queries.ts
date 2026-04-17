@@ -1,9 +1,9 @@
 export const productsForHomeQuery = `*[_type == "product"]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current
+    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
 
 export const productsForCategoryQuery = `*[_type == "product" && category->slug.current == $category]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current
+    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
 
 export const productBySlugQuery = `*[_type == "product" && slug.current == $slug][0]{
@@ -35,7 +35,8 @@ export const allProductsQuery = `*[_type == "product"] | order(category->title a
     height,
     "category": category->{title, "slug": slug.current},
     description,
-    "slug": slug.current
+    "slug": slug.current,
+    stock
 }`
 
 export const paymentAccountsQuery = `*[_type == "paymentAccount" && isActive == true]{

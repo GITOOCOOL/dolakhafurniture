@@ -12,12 +12,12 @@ export default async function Home() {
   
   // Fetch only featured products for the top carousel
   const featuredProducts = await client.fetch<Product[]>(`*[_type == "product" && isFeatured == true] | order(_createdAt desc){
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description
+    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
   }`);
 
   // Fetch all products to group them by category for the bottom section
   const allProducts = await client.fetch<Product[]>(`*[_type == "product"]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description
+    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
   }`);
   
   const categoriesInOrder = await client.fetch<Category[]>(categoriesQuery);

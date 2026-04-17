@@ -74,6 +74,13 @@ export default async function CategoryPage({ params }: Props) {
                     className="object-cover w-full h-full transition-transform duration-[1.5s] group-hover:scale-110 group-hover:sepia-[0.1]"
                   />
                   
+                  {product.stock !== undefined && product.stock <= 0 && (
+                    <div className="absolute top-6 right-6 bg-white/80 backdrop-blur-lg border border-[#e5dfd3] text-[#3d2b1f] px-6 py-2.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-xl z-20 flex flex-col items-center gap-1 text-center leading-tight">
+                      <span className="text-[#a3573a]">Stock Out</span>
+                      <span className="opacity-70 text-[8px] normal-case font-medium italic">will be made after order</span>
+                    </div>
+                  )}
+                  
                   {/* View Details Label */}
                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                     <span className="bg-[#3d2b1f] text-[#fdfaf5] px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">
