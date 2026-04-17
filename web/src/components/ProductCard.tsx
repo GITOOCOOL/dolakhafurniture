@@ -27,7 +27,7 @@ const ProductCard = ({ product }: { product: Product }) => {
            <img 
              src={urlFor(product.mainImage).width(200).url()} 
              alt={product.title} 
-             className="object-cover w-full h-full transition-transform duration-[1.5s] group-hover:scale-105" 
+             className="object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105" 
            />
         </div>
 

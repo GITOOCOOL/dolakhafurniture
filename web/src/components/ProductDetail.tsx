@@ -39,7 +39,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                 src={urlFor(selectedImage).width(1000).url()}
                 alt={product.title}
                 fill
-                className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+                className="object-contain transition-transform duration-[1.5s] group-hover:scale-105"
                 priority
               />
             </div>
@@ -61,7 +61,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                     src={urlFor(img).width(200).url()}
                     alt={`${product.title} gallery ${idx}`}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                   />
                 </button>
               ))}
