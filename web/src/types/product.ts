@@ -20,6 +20,6 @@ export type Product = {
     material?: string;
     length?: number;
     breadth?: number;
-    width?: number;
+    height?: number;
     _createdAt?: string;
 }

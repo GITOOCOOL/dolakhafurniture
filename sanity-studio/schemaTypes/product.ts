@@ -91,19 +91,19 @@ export default defineType({
         }),
         defineField({
             name: 'length',
-            title: 'Length (cm)',
+            title: 'Length (in)',
             type: 'number',
             fieldset: 'specifications',
         }),
         defineField({
             name: 'breadth',
-            title: 'Breadth (cm)',
+            title: 'Breadth (in)',
             type: 'number',
             fieldset: 'specifications',
         }),
         defineField({
-            name: 'width',
-            title: 'Width (cm)',
+            name: 'height',
+            title: 'Height (in)',
             type: 'number',
             fieldset: 'specifications',
         }),

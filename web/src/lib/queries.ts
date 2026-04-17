@@ -7,7 +7,7 @@ export const productsForCategoryQuery = `*[_type == "product" && category->slug.
 }`
 
 export const productBySlugQuery = `*[_type == "product" && slug.current == $slug][0]{
-    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured, material, length, breadth, width
+    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured, material, length, breadth, height
 }`
 
 export const categoriesQuery = `*[_type == "category"]{
@@ -32,7 +32,7 @@ export const allProductsQuery = `*[_type == "product"] | order(category->title a
     material,
     length,
     breadth,
-    width,
+    height,
     "category": category->{title, "slug": slug.current},
     description,
     "slug": slug.current

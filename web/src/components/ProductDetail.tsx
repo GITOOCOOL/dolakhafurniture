@@ -104,11 +104,11 @@ export default function ProductDetail({ product }: { product: Product }) {
                     <span className="font-medium">{product.material}</span>
                   </div>
                 )}
-                {(product.length || product.breadth || product.width) && (
+                {(product.length || product.breadth || product.height) && (
                   <div className="flex flex-col gap-1">
                     <span className="text-[9px] font-bold uppercase text-[#a89f91] opacity-60">Dimensions</span>
                     <span className="font-sans font-semibold">
-                      {[product.length, product.breadth, product.width].filter(Boolean).join(" x ")} cm
+                      {[product.length, product.breadth, product.height].filter(Boolean).join(" x ")} in
                     </span>
                   </div>
                 )}
