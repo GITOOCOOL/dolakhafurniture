@@ -94,7 +94,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           </section>
 
           {/* SPECIFICATIONS */}
-          {(product.material || product.length || product.breadth || product.width) && (
+          {(product.material || product.length || product.breadth || product.height) && (
             <div className="space-y-4 pt-4">
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#a3573a]">Specifications</h3>
               <div className="grid grid-cols-2 gap-y-3 text-sm">

@@ -58,10 +58,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
         <div className="pt-4">
           <Link
-            href={`/shop?campaign=${campaign.slug}`}
+            href={`/campaign/${campaign.slug}`}
             className="inline-flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#3d2b1f] hover:text-[#a3573a] transition-all group/link"
           >
-            Explore Collection
+            Check it out
             <div 
               className="w-10 h-10 rounded-full flex items-center justify-center border border-[#e5dfd3] group-hover/link:border-[#a3573a] group-hover/link:bg-[#a3573a] group-hover/link:text-white transition-all duration-300"
             >

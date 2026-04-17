@@ -53,3 +53,17 @@ export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"
     startDate,
     endDate
 }`
+
+export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    themeColor,
+    tagline,
+    banner,
+    startDate,
+    endDate,
+    "products": promotedProducts[]-> {
+        _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
+    }
+}`

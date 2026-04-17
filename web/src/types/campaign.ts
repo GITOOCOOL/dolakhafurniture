@@ -1,4 +1,5 @@
 import { SanityImageSource } from "@sanity/image-url";
+import { Product } from "./product";
 
 export type Campaign = {
     _id: string;
@@ -11,4 +12,5 @@ export type Campaign = {
     platforms?: string[];
     tagline?: string;
     banner?: SanityImageSource;
+    products?: Product[];
 }

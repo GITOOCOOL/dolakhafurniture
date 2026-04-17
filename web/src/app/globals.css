@@ -48,3 +48,69 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 6. PRINT / PDF CATALOG STYLES */
+@media print {
+  @page {
+    margin: 15mm;
+    size: A4 portrait;
+  }
+
+  /* Force background colors and images */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide navigation and functional buttons */
+  .no-print, 
+  header, 
+  nav, 
+  button, 
+  footer,
+  aside {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: #3d2b1f !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  /* Adjust Hero for Print */
+  section.relative.h-\[70vh\], 
+  section.relative.h-\[85vh\] {
+    height: 100vh !important;
+    page-break-after: always !important;
+    margin: 0 !important;
+  }
+
+  /* Force Grid layouts specifically for paginated chunks */
+  .grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .page-break-after-always {
+    page-break-after: always !important;
+    display: block !important;
+    height: 100vh !important;
+    padding-top: 20mm !important;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  /* Fix for Next.js Image component in print */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
