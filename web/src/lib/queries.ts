@@ -7,7 +7,7 @@ export const productsForCategoryQuery = `*[_type == "product" && category->slug.
 }`
 
 export const productBySlugQuery = `*[_type == "product" && slug.current == $slug][0]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
+    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured, material, length, breadth, width
 }`
 
 export const categoriesQuery = `*[_type == "category"]{
@@ -28,6 +28,11 @@ export const allProductsQuery = `*[_type == "product"] | order(category->title a
     title,
     price,
     mainImage,
+    images,
+    material,
+    length,
+    breadth,
+    width,
     "category": category->{title, "slug": slug.current},
     description,
     "slug": slug.current
@@ -35,4 +40,15 @@ export const allProductsQuery = `*[_type == "product"] | order(category->title a
 
 export const paymentAccountsQuery = `*[_type == "paymentAccount" && isActive == true]{
     _id, accountName, accountNumber, bankNameOrWalletName, accountType, qrCodeImage, isActive
+}`
+
+export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"] | order(startDate desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    themeColor,
+    tagline,
+    banner,
+    startDate,
+    endDate
 }`

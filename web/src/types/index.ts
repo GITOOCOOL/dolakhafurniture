@@ -6,3 +6,4 @@ export * from './payment';
 export * from './order';
 export * from './customer';
 export * from './cart';
+export * from './campaign';

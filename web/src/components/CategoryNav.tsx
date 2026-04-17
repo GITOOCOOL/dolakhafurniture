@@ -42,6 +42,7 @@ export default function CategoryNav({
   const baseLinks = [
     { name: 'Shop All', href: '/shop' },
     { name: 'New Arrivals', href: '/new-arrivals' },
+    { name: 'Campaigns', href: '/campaigns' },
   ];
 
   const categoryLinks = categories.map((cat) => ({

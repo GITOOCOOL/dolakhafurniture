@@ -4,6 +4,13 @@ export default defineType({
     name: 'product',
     title: 'Decor Items',
     type: 'document',
+    fieldsets: [
+        {
+            name: 'specifications',
+            title: 'Physical Specifications',
+            options: { collapsible: true, collapsed: false }
+        }
+    ],
     fields: [
         defineField({
             name: 'title',
@@ -26,10 +33,29 @@ export default defineType({
         }),
         defineField({
             name: 'mainImage',
-            title: 'Main Photo',
+            title: 'Main/Cover Photo (for cards)',
             type: 'image',
             options: {hotspot: true},
             validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+            name: 'images',
+            title: 'Gallery Images (for detail page)',
+            type: 'array',
+            of: [
+                {
+                    type: 'image',
+                    options: {hotspot: true},
+                    fields: [
+                        {
+                            name: 'isVisible',
+                            type: 'boolean',
+                            title: 'Visible in Web UI',
+                            initialValue: true,
+                        }
+                    ]
+                }
+            ]
         }),
         defineField({
             name: 'category',
@@ -56,6 +82,30 @@ export default defineType({
             title: 'Featured Product',
             type: 'boolean',
             initialValue: false,
+        }),
+        defineField({
+            name: 'material',
+            title: 'Material',
+            type: 'string',
+            fieldset: 'specifications',
+        }),
+        defineField({
+            name: 'length',
+            title: 'Length (cm)',
+            type: 'number',
+            fieldset: 'specifications',
+        }),
+        defineField({
+            name: 'breadth',
+            title: 'Breadth (cm)',
+            type: 'number',
+            fieldset: 'specifications',
+        }),
+        defineField({
+            name: 'width',
+            title: 'Width (cm)',
+            type: 'number',
+            fieldset: 'specifications',
         }),
     ],
 });

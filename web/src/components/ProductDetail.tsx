@@ -11,6 +11,14 @@ import { Product } from "@/types";
 export default function ProductDetail({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  // Gallery Logic: Filter visible images
+  const galleryImages = product.images?.filter(img => img.isVisible) || [];
+  
+  // Use first gallery image if available, else fallback to mainImage
+  const initialImage = galleryImages.length > 0 ? galleryImages[0] : product.mainImage;
+  const [selectedImage, setSelectedImage] = useState<any>(initialImage);
+  
   const addItem = useCart((state) => state.addItem);
 
   const handleAddToCart = () => {
@@ -21,20 +29,44 @@ export default function ProductDetail({ product }: { product: Product }) {
 
   return (
     <div className="pt-32 pb-20 container mx-auto px-6 text-[#3d2b1f]">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         
         {/* LEFT: ORGANIC IMAGE GALLERY */}
-        <div className="relative group">
-          <div className="aspect-square relative overflow-hidden rounded-[4rem] bg-white border border-[#e5dfd3] shadow-sm transition-all duration-1000 group-hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] group-hover:border-[#a3573a]/20">
-            <Image
-              src={urlFor(product.mainImage).width(1000).url()}
-              alt={product.title}
-              fill
-              className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-              priority
-            />
+        <div className="space-y-6">
+          <div className="relative group">
+            <div className="aspect-square relative overflow-hidden rounded-[3rem] bg-white border border-[#e5dfd3] shadow-sm transition-all duration-1000 group-hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] group-hover:border-[#a3573a]/20">
+              <Image
+                src={urlFor(selectedImage).width(1000).url()}
+                alt={product.title}
+                fill
+                className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+                priority
+              />
+            </div>
+            <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#df9152]/10 blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-[2s]" />
           </div>
-          <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#df9152]/10 blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-[2s]" />
+
+          {/* THUMBNAILS */}
+          {galleryImages.length > 1 && (
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(img)}
+                  className={`relative w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
+                    selectedImage === img ? "border-[#a3573a] scale-95" : "border-[#e5dfd3] opacity-60 hover:opacity-100"
+                  }`}
+                >
+                  <Image
+                    src={urlFor(img).width(200).url()}
+                    alt={`${product.title} gallery ${idx}`}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* RIGHT: ARTISANAL CONTENT */}
@@ -60,6 +92,29 @@ export default function ProductDetail({ product }: { product: Product }) {
           <section className="text-[#a89f91] leading-relaxed font-light italic text-xl max-w-lg border-l-2 border-[#e5dfd3] pl-6 py-2">
             "{product.description || "Designed for the soulful home, this piece is thoughtfully handcrafted with artisanal precision in Kathmandu."}"
           </section>
+
+          {/* SPECIFICATIONS */}
+          {(product.material || product.length || product.breadth || product.width) && (
+            <div className="space-y-4 pt-4">
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#a3573a]">Specifications</h3>
+              <div className="grid grid-cols-2 gap-y-3 text-sm">
+                {product.material && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[9px] font-bold uppercase text-[#a89f91] opacity-60">Material</span>
+                    <span className="font-medium">{product.material}</span>
+                  </div>
+                )}
+                {(product.length || product.breadth || product.width) && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[9px] font-bold uppercase text-[#a89f91] opacity-60">Dimensions</span>
+                    <span className="font-sans font-semibold">
+                      {[product.length, product.breadth, product.width].filter(Boolean).join(" x ")} cm
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* QUANTITY & BUTTON */}
           <div className="space-y-8 pt-8 border-t border-[#e5dfd3] border-dotted">

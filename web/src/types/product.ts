@@ -6,6 +6,10 @@ export type Product = {
     slug: string;
     price: number;
     mainImage: SanityImageSource;
+    images?: {
+        asset: any;
+        isVisible: boolean;
+    }[];
     category?: {
         title: string;
         slug: string;
@@ -13,5 +17,9 @@ export type Product = {
     description?: string;
     stock?: number;
     isFeatured?: boolean;
+    material?: string;
+    length?: number;
+    breadth?: number;
+    width?: number;
     _createdAt?: string;
 }

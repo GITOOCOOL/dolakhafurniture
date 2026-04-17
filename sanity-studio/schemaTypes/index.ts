@@ -8,5 +8,6 @@ import promotion from './promotion'
 import paymentAccount from './paymentAccount'
 import discountVoucher from './discountVoucher'
 import inquiry from './inquiry'
+import campaign from './campaign'
 
-export const schemaTypes = [product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry]
+export const schemaTypes = [product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry, campaign]
