@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import DownloadButton from "@/components/DownloadButton";
+import PDFDownloadButton from "@/components/PDFDownloadButton";
 import PriceListTable from "@/components/PriceListTable";
 
 interface Props {
@@ -50,9 +50,8 @@ export default async function CampaignLandingPage({ params }: Props) {
             Back to Campaigns
           </Link>
 
-          <div className="flex flex-col md:flex-row gap-3">
-            <DownloadButton label="Download Catalog" variant="glass" className="!px-6 !py-2.5 !text-[10px]" />
-            <DownloadButton label="Download Price List" variant="glass" className="!px-6 !py-2.5 !text-[10px] !bg-white !text-black" />
+          <div className="flex gap-3">
+            <PDFDownloadButton campaign={campaign} label="Catalog / Price List" variant="glass" className="!px-8 !py-3 !text-[11px]" />
           </div>
         </div>
 
