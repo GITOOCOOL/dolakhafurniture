@@ -175,7 +175,7 @@ export default function CheckoutPage() {
         setOrderNumber(result.orderNumber || null);
         setIsSuccess(true);
         const purchaseData = {
-          currency: "USD",
+          currency: "NPR",
           value: Number(finalTotal) || 0
         };
         console.log("🚀 Meta Purchase Event Fired (Raw Number):", purchaseData);
