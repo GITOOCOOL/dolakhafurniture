@@ -7,6 +7,7 @@ import { bulletinQuery } from "@/lib/queries";
 import { Bulletin } from "@/types";
 import { ToastProvider } from "@/components/Toast";
 import MetaPixel from "@/components/MetaPixel";
+import FloatingContact from "@/components/FloatingContact";
 import { Suspense } from "react";
 
 const serif = Cormorant_Garamond({
@@ -66,6 +67,7 @@ export default async function RootLayout({
             </Suspense>
             <HeaderClient />
             <main className="w-full relative flex-1">{children}</main>
+            <FloatingContact />
           </ToastProvider>
 
           {/* FOOTER */}

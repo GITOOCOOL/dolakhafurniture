@@ -46,12 +46,7 @@ export default async function Home() {
         </section>
       )}
 
-      {/* 2. MIDDLE: SIMPLIFIED HERO SECTION (No big branding/images) */}
-      <div>
-        <Hero />
-      </div>
-
-      {/* 3. BOTTOM: CATEGORY CAROUSELS */}
+      {/* 2. TOP: CATEGORY CAROUSELS (Primary product discovery) */}
       <div id="category-rows-section" className="w-full bg-[#fdfaf5] pb-16">
         <div className="container mx-auto px-6 border-t border-[#e5dfd3] border-dotted pt-16 mt-8">
           <p className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91] mb-2 text-center">Full Catalogue</p>
@@ -82,6 +77,11 @@ export default async function Home() {
             </section>
           );
         })}
+      </div>
+
+      {/* 3. BOTTOM: BRAND STORY / MISSION (Moved from middle for better product-first flow) */}
+      <div className="border-t border-[#e5dfd3] border-dotted">
+        <Hero />
       </div>
     </div>
   );
