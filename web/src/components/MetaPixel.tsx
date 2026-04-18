@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 
-const FB_PIXEL_ID = "930361983127345";
+const FB_PIXEL_ID = "1192490926171504";
 
 export const trackEvent = (event: string, options = {}) => {
   // @ts-ignore
