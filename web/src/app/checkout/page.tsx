@@ -175,12 +175,10 @@ export default function CheckoutPage() {
         setOrderNumber(result.orderNumber || null);
         setIsSuccess(true);
         const purchaseData = {
-          value: parseFloat(finalTotal.toString()).toFixed(2),
           currency: "NPR",
-          content_type: "product",
-          content_ids: items.map(item => item._id)
+          value: Number(finalTotal) || 0
         };
-        console.log("🚀 Meta Purchase Event Fired:", purchaseData);
+        console.log("🚀 Meta Purchase Event Fired (Raw Number):", purchaseData);
         trackEvent("Purchase", purchaseData);
         clearCart();
         window.scrollTo({ top: 0, behavior: 'smooth' });
