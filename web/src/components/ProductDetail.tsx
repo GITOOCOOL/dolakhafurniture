@@ -7,10 +7,23 @@ import { useCart } from "@/store/useCart";
 import { Leaf, Minus, Plus, ShieldCheck } from "lucide-react";
 import Button from "./ui/Button";
 import { Product } from "@/types";
+import { trackEvent } from "./MetaPixel";
+import { useEffect } from "react";
 
 export default function ProductDetail({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    trackEvent("ViewContent", {
+      content_name: product.title,
+      content_category: product.category?.title,
+      content_ids: [product._id],
+      content_type: "product",
+      value: product.price,
+      currency: "NPR"
+    });
+  }, [product]);
   
   // Gallery Logic: Filter visible images
   const galleryImages = product.images?.filter(img => img.isVisible) || [];
@@ -23,6 +36,13 @@ export default function ProductDetail({ product }: { product: Product }) {
 
   const handleAddToCart = () => {
     addItem(product, quantity);
+    trackEvent("AddToCart", {
+      content_name: product.title,
+      content_ids: [product._id],
+      content_type: "product",
+      value: product.price * quantity,
+      currency: "NPR"
+    });
     setIsSuccess(true);
     setTimeout(() => setIsSuccess(false), 2000);
   };

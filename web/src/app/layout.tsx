@@ -6,6 +6,8 @@ import { client } from "@/lib/sanity";
 import { bulletinQuery } from "@/lib/queries";
 import { Bulletin } from "@/types";
 import { ToastProvider } from "@/components/Toast";
+import MetaPixel from "@/components/MetaPixel";
+import { Suspense } from "react";
 
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
@@ -48,6 +50,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* RIGHT MAIN CONTENT */}
         <div className="flex-1 min-w-0 flex flex-col relative w-full overflow-x-hidden">
           <ToastProvider>
+            <Suspense fallback={null}>
+              <MetaPixel />
+            </Suspense>
             <HeaderClient />
             <main className="w-full relative flex-1">{children}</main>
           </ToastProvider>

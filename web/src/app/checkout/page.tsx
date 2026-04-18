@@ -36,6 +36,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
+import { trackEvent } from "@/components/MetaPixel";
 
 export default function CheckoutPage() {
   const supabase = createClient();
@@ -84,6 +85,14 @@ export default function CheckoutPage() {
   const shipping = formData.shippingMethod === "express" ? 500 : 0;
   const total = subtotal + shipping;
   const finalTotal = Math.max(0, total - discount);
+
+  useEffect(() => {
+    trackEvent("InitiateCheckout", {
+      num_items: items.length,
+      value: finalTotal,
+      currency: "NPR"
+    });
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -165,6 +174,13 @@ export default function CheckoutPage() {
       if (result.success) {
         setOrderNumber(result.orderNumber || null);
         setIsSuccess(true);
+        trackEvent("Purchase", {
+          content_ids: items.map(item => item._id),
+          content_type: "product",
+          value: finalTotal,
+          currency: "NPR",
+          num_items: items.length
+        });
         clearCart();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
