@@ -7,6 +7,7 @@ import { Leaf, User, Ticket, ArrowLeft, ShieldCheck, Mail, LogIn, UserPlus } fro
 import { useRouter } from "next/navigation";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
+import { trackEvent } from "./MetaPixel";
 
 interface AuthFormProps {
   onSuccess?: () => void;
@@ -25,6 +26,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleGoogleLogin = () => {
+    trackEvent("Contact", { method: "social_login_google" });
     const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
     supabase.auth.signInWithOAuth({
       provider: "google",
@@ -35,6 +37,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
   };
 
   const handleFacebookLogin = () => {
+    trackEvent("Contact", { method: "social_login_facebook" });
     const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
     supabase.auth.signInWithOAuth({
       provider: "facebook",
@@ -70,6 +73,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
           },
         });
         if (error) throw error;
+        trackEvent("CompleteRegistration");
         setError("Success! Please check your email for the confirmation link.");
       }
     } catch (err: any) {

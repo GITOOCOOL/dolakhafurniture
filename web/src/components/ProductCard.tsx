@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Product } from "@/types";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "./Toast";
+import { trackEvent } from "./MetaPixel";
 
 const ProductCard = ({ 
   product, 
@@ -72,7 +73,10 @@ const ProductCard = ({
           href={whatsappLink}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            trackEvent("Contact", { method: "whatsapp", product: product.title });
+          }}
           className="flex-1 h-8 md:h-10 flex items-center justify-center rounded-lg bg-[#25D366]/5 border border-[#25D366]/20 shadow-sm active:translate-y-[1px] transition-all duration-150"
           title="WhatsApp"
         >
@@ -92,7 +96,10 @@ const ProductCard = ({
           href={messengerLink}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            trackEvent("Contact", { method: "messenger", product: product.title });
+          }}
           className="flex-1 h-8 md:h-10 flex items-center justify-center rounded-lg bg-[#0084FF]/5 border border-[#0084FF]/20 shadow-sm active:translate-y-[1px] transition-all duration-150"
           title="Messenger"
         >

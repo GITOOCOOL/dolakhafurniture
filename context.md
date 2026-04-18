@@ -67,6 +67,19 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 - **Customer Account Portal**: Personalized dashboards for order tracking and voucher management.
 - **B2B Quote Generator**: Allowing bulk buyers to generate custom priced PDFs directly from the dashboard.
 
+- **Meta Business Assets**:
+    - **Active Dataset (Pixel)**: `1192490926171504` (Primary tracking for website)
+    - **Active Ad Account**: `385134134880141`
+    - **Auth Dataset (Legacy)**: `1259206078984085` (Automatically created for FB Login)
+    - **Admin Profile**: Using the profile with **no profile picture** (Profile A) for managing the Dolakha Bhimeshwor Furniture business portfolio.
+
+---
+
+## 🚀 Important Future Features
+- **Offline Conversions Sync (Meta CAPI)**: 
+    - **Goal**: Perfect attribution for Cash-on-Delivery (COD) orders.
+    - **Logic**: A script or webhook that triggers when an order is marked as "Paid/Delivered" in Sanity, sending a final "Purchase" signal to Meta via the Conversions API. This ensures Meta only optimizes for customers who actually handed over the cash.
+
 ---
 
 ## 📜 Governance & Workflows
