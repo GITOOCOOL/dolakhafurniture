@@ -22,6 +22,14 @@ export default async function Home() {
   
   const categoriesInOrder = await client.fetch<Category[]>(categoriesQuery);
 
+  const activeCampaign = await client.fetch<any>(`*[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
+    title,
+    "slug": slug.current,
+    "products": promotedProducts[]-> {
+      _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
+    }
+  }`);
+
   const productsByCategory = allProducts.reduce((acc, product) => {
     const key = product.category?.slug || 'other';
     if (!acc[key]) acc[key] = [];
@@ -31,6 +39,20 @@ export default async function Home() {
 
   return (
     <div className="w-full bg-[#fdfaf5]">
+
+      {/* 0. TOPMOST: ACTIVE CAMPAIGN (High visibility) */}
+      {activeCampaign?.products?.length > 0 && (
+        <section className="w-full py-6 md:py-10 border-b-2 border-[#a3573a]/20 bg-[#a3573a]/5">
+          <div className="container mx-auto px-6">
+            <CategoryRow 
+              title={activeCampaign.title}
+              slug={`campaign/${activeCampaign.slug}`}
+              products={activeCampaign.products}
+              autoScroll={true}
+            />
+          </div>
+        </section>
+      )}
 
       {/* 1. TOP: FEATURED PRODUCTS (Using exactly the same design as Category rows) */}
       {featuredProducts.length > 0 && (

@@ -10,15 +10,6 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function HeaderClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     if (isMenuOpen || isSearchOpen) {
@@ -30,21 +21,16 @@ export default function HeaderClient() {
 
   return (
     <>
-      <header className={`sticky top-0 z-50 w-full transition-all duration-500 ${
-        isScrolled 
-          ? "bg-[#fdfaf5]/80 backdrop-blur-md py-1 md:py-2 border-b border-[#e5dfd3] shadow-md pl-0 lg:pl-12" 
-          : "bg-[#fdfaf5] py-3 md:py-4 border-b border-transparent pl-0 lg:pl-12"
-      }`}>
-        <div className="container mx-auto px-2 md:px-6 w-full flex items-center justify-between gap-2 overflow-hidden">
+      <header className="sticky top-0 z-50 w-full bg-[#fdfaf5] border-b border-[#e5dfd3] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="container mx-auto px-2 md:px-6 w-full flex items-center justify-between py-3 md:py-4 gap-2">
           
           <div className="flex-none flex items-center gap-2 md:gap-4">
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="px-2 h-[38px] flex items-center justify-center gap-2 text-[#3d2b1f] hover:text-[#a3573a] transition-all -ml-1 md:-ml-2 flex-shrink-0"
+              className="w-[38px] h-[38px] flex items-center justify-center text-[#3d2b1f] hover:text-[#a3573a] transition-all -ml-1 md:-ml-2 flex-shrink-0"
               aria-label="Menu"
             >
               <Menu size={26} className="md:w-7 md:h-7" strokeWidth={1.5} />
-              <span className="text-[10px] md:text-[12px] font-bold uppercase tracking-[0.2em] mt-0.5">Menu</span>
             </button>
             <div className="bg-[#3d2b1f] rounded-full">
               <Link
@@ -160,10 +146,9 @@ export default function HeaderClient() {
               </div>
               <button
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-2 p-2 px-4 bg-[#3d2b1f] text-[#fdfaf5] rounded-full shadow-lg transition-all"
+                className="p-4 bg-[#3d2b1f] text-[#fdfaf5] rounded-full shadow-lg transition-all"
               >
-                <span className="text-[10px] font-bold uppercase tracking-widest">Close</span>
-                <X size={18} strokeWidth={2} />
+                <X size={20} strokeWidth={2} />
               </button>
             </div>
             <div className="w-full">

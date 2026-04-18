@@ -8,6 +8,7 @@ import { Bulletin } from "@/types";
 import { ToastProvider } from "@/components/Toast";
 import MetaPixel from "@/components/MetaPixel";
 import FloatingContact from "@/components/FloatingContact";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import { Suspense } from "react";
 
 const serif = Cormorant_Garamond({
@@ -52,23 +53,25 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${serif.variable} ${sans.variable} antialiased bg-[#fdfaf5] text-[#3d2b1f] font-sans w-full max-w-full m-0 p-0 overflow-x-hidden flex`}
+        className={`${serif.variable} ${sans.variable} antialiased bg-[#fdfaf5] text-[#3d2b1f] font-sans w-full min-h-screen flex flex-col`}
       >
-        {/* LEFT SIDEBAR: Persistent Vertical Bulletin (Desktop only) */}
-        <aside className="hidden lg:block w-[80px] h-screen sticky top-0 flex-shrink-0 z-50 overflow-hidden">
-          <VerticalBulletinTicker bulletins={bulletins} />
-        </aside>
-
-        {/* RIGHT MAIN CONTENT */}
-        <div className="flex-1 min-w-0 flex flex-col relative w-full overflow-x-hidden">
-          <ToastProvider>
-            <Suspense fallback={null}>
-              <MetaPixel />
-            </Suspense>
-            <HeaderClient />
-            <main className="w-full relative flex-1">{children}</main>
-            <FloatingContact />
-          </ToastProvider>
+        <ToastProvider>
+          <Suspense fallback={null}>
+            <MetaPixel />
+          </Suspense>
+          
+          {/* 1. TOP ANNOUNCEMENT (Scrolls away) */}
+          <AnnouncementBar bulletins={bulletins} />
+          
+          {/* 2. STICKY HEADER (Persistent) */}
+          <HeaderClient />
+          
+          {/* 3. MAIN CONTENT */}
+          <main className="w-full relative flex-1">{children}</main>
+          
+          {/* 4. GLOBAL ELEMENTS */}
+          <FloatingContact />
+        </ToastProvider>
 
           {/* FOOTER */}
           <footer className="border-t border-[#e5dfd3] border-dotted bg-[#1a1c13] text-[#e2e8da] py-20 w-full">
@@ -127,7 +130,6 @@ export default async function RootLayout({
               </div>
             </div>
           </footer>
-        </div>
       </body>
     </html>
   );
