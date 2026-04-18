@@ -16,6 +16,15 @@ export async function submitInquiry(data: {
   phone: string;
   message: string;
 }) {
+  // 1.5 Safety Check: Verify Write Token
+  if (!process.env.SANITY_API_WRITE_TOKEN) {
+    console.error("❌ ERROR: SANITY_API_WRITE_TOKEN is missing in environment variables.")
+    return { 
+      success: false, 
+      message: "Configuration error: Missing write permissions for inquiries." 
+    }
+  }
+
   try {
     const inquiryDocument = {
       _type: "inquiry",
@@ -31,6 +40,12 @@ export async function submitInquiry(data: {
     return { success: true, message: "Inquiry submitted successfully!" };
   } catch (error: any) {
     console.error("Error submitting inquiry:", error);
+    if (error.message?.includes("insufficient permissions")) {
+      return { 
+        success: false, 
+        message: "Permission Denied: Inquiry token is not 'Editor' level." 
+      }
+    }
     return {
       success: false,
       message: error.message || "Failed to submit inquiry. Please try again."

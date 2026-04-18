@@ -14,6 +14,15 @@ const sanityAdmin = createSanity({
 })
 
 export async function processOrder(cartItems: CartItem[], total: number, customerData: CustomerData) {
+  // 1.5 Safety Check: Verify Write Token
+  if (!process.env.SANITY_API_WRITE_TOKEN) {
+    console.error("❌ ERROR: SANITY_API_WRITE_TOKEN is missing in environment variables.")
+    return { 
+      success: false, 
+      message: "Store configuration error: Missing write permissions. Please contact support." 
+    }
+  }
+
   try {
     const supabase = await createSupabase()
     const { data: { user } } = await supabase.auth.getUser()
@@ -54,6 +63,13 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
     return { success: true, orderId: result._id }
   } catch (error: any) {
     console.error("❌ Checkout Error:", error.message)
+    // Handle specific Sanity permission errors
+    if (error.message?.includes("insufficient permissions")) {
+      return { 
+        success: false, 
+        message: "Permission Denied: The Sanity token does not have 'Editor' rights. Please check Cloudflare environment variables." 
+      }
+    }
     return { success: false, message: error.message || "An unexpected error occurred." }
   }
 }

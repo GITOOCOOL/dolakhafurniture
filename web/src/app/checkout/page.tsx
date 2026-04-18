@@ -160,7 +160,11 @@ export default function CheckoutPage() {
       }
     } catch (error: any) {
       console.error("Checkout error:", error);
-      alert(error.message || "An error occurred during checkout.");
+      if (error.message.includes("configuration error") || error.message.includes("Permission Denied")) {
+        alert("🚨 Store Configuration Error: " + error.message + "\n\nPlease notify our support team.");
+      } else {
+        alert(error.message || "An error occurred during checkout. Please try again.");
+      }
     } finally {
       setIsProcessing(false);
     }
