@@ -422,10 +422,9 @@ export default function CheckoutPage() {
                 />
 
                 <Input
-                  label="Email address"
+                  label="Email address (optional)"
                   type="email"
                   name="email"
-                  required
                   icon={Mail}
                   placeholder="your@email.com"
                   value={formData.email}
