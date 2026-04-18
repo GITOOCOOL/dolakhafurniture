@@ -50,9 +50,11 @@ export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"
     "slug": slug.current,
     themeColor,
     tagline,
+    description,
     banner,
     startDate,
-    endDate
+    endDate,
+    "vouchers": vouchers[]->{code, details}
 }`
 
 export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $slug][0] {
@@ -61,9 +63,11 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     "slug": slug.current,
     themeColor,
     tagline,
+    description,
     banner,
     startDate,
     endDate,
+    "vouchers": vouchers[]->{code, details},
     "products": promotedProducts[]-> {
         _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
     }

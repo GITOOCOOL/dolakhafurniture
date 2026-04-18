@@ -35,23 +35,43 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
       {/* Content Side */}
       <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center space-y-6">
-        <header className="space-y-3">
+        <header className="space-y-2">
           <div className="flex items-center gap-2">
             <div 
               className="w-8 h-[2px] rounded-full" 
               style={{ backgroundColor: themeColor }}
             />
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: themeColor }}>
+            <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: themeColor }}>
               Active Campaign
             </p>
           </div>
-          <h2 className="text-4xl md:text-5xl font-serif italic text-[#3d2b1f] leading-tight">
+          <h2 className="text-3xl md:text-4xl font-serif italic text-[#3d2b1f] leading-tight">
             {campaign.title}
           </h2>
+          
+          {/* Metadata: Ends on & Vouchers */}
+          {(campaign.endDate || (campaign.vouchers && campaign.vouchers.length > 0)) && (
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              {campaign.endDate && (
+                <p className="text-[9px] font-sans font-extrabold uppercase tracking-widest text-[#a3573a] flex items-center gap-1.5">
+                  <div className="w-1 h-1 rounded-full bg-[#a3573a] animate-pulse" />
+                  Ends: {new Date(campaign.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </p>
+              )}
+              {campaign.vouchers && campaign.vouchers.map(v => (
+                <span 
+                  key={v.code}
+                  className="px-2 py-0.5 bg-[#a3573a] text-[8px] font-bold text-white rounded-sm uppercase tracking-widest shadow-sm"
+                >
+                  {v.code}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
 
         {campaign.tagline && (
-          <p className="text-[#a89f91] text-lg font-light leading-relaxed italic border-l-2 border-[#e5dfd3] pl-6 py-1">
+          <p className="text-[#a89f91] text-md font-light leading-relaxed italic border-l-2 border-[#e5dfd3] pl-6 py-1">
             "{campaign.tagline}"
           </p>
         )}

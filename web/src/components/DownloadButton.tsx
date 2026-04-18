@@ -4,10 +4,12 @@ import { Download } from "lucide-react";
 
 export default function DownloadButton({ 
   label = "Download Catalog",
-  variant = "glass"
+  variant = "glass",
+  className
 }: { 
   label?: string;
   variant?: "glass" | "outline";
+  className?: string;
 }) {
   const handleDownload = () => {
     if (typeof window !== "undefined") {
@@ -24,7 +26,7 @@ export default function DownloadButton({
   return (
     <button
       onClick={handleDownload}
-      className={`${baseStyles} ${variants[variant]}`}
+      className={`${baseStyles} ${variants[variant]} ${className || ""}`}
     >
       <Download size={16} />
       {label}

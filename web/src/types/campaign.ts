@@ -11,7 +11,12 @@ export type Campaign = {
     endDate?: string;
     platforms?: string[];
     tagline?: string;
+    description?: string;
     banner?: SanityImageSource;
+    vouchers?: {
+        code: string;
+        details?: string;
+    }[];
     products?: Product[];
     marketingAssets?: {
         asset: SanityImageSource;

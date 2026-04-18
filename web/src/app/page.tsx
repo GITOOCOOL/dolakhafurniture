@@ -25,6 +25,8 @@ export default async function Home() {
   const activeCampaign = await client.fetch<any>(`*[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
     title,
     "slug": slug.current,
+    endDate,
+    "vouchers": vouchers[]->code,
     "products": promotedProducts[]-> {
       _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
     }
@@ -45,9 +47,11 @@ export default async function Home() {
         <section className="w-full py-6 md:py-10 border-b-2 border-[#a3573a]/20 bg-[#a3573a]/5">
           <div className="container mx-auto px-6">
             <CategoryRow 
-              title={activeCampaign.title}
+              title={`Campaign: ${activeCampaign.title}`}
               slug={`campaign/${activeCampaign.slug}`}
               products={activeCampaign.products}
+              subtitle={activeCampaign.endDate}
+              vouchers={activeCampaign.vouchers}
               autoScroll={true}
             />
           </div>

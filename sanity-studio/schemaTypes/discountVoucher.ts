@@ -42,5 +42,12 @@ export default defineType({
             title: "Ends At",
             type: "datetime",
         }),
+        defineField({
+            name: "details",
+            title: "Voucher Terms / Details",
+            type: "text",
+            description: "Describe the terms, e.g. 'Valid for orders above Rs. 10,000'",
+            rows: 2,
+        }),
     ],
 });

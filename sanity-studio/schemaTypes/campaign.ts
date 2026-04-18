@@ -78,9 +78,16 @@ export default defineType({
         }),
         defineField({
             name: "tagline",
-            title: "Ad Copy / Tagline",
+            title: "Short Tagline (Editorial)",
             type: "text",
-            rows: 3,
+            rows: 2,
+        }),
+        defineField({
+            name: "description",
+            title: "Campaign Description",
+            type: "text",
+            description: "A longer description of the campaign, its story, and what makes it special.",
+            rows: 5,
         }),
         defineField({
             name: "banner",
