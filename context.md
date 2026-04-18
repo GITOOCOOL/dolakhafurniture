@@ -19,7 +19,7 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 ### **Production Environments**
 - **Main Storefront**: [https://dolakhafurniture.com](https://dolakhafurniture.com)
 - **Sanity CMS Dashboard**: [https://dolakhafurniture.pages.dev](https://dolakhafurniture.pages.dev)
-- **Facebook Data Feed**: [https://dolakhafurniture.com/api/catalog/facebook](https://dolakhafurniture.com/api/catalog/facebook)
+- **Facebook Data Feed**: [https://dolakhafurniture.com/api/feed/facebook](https://dolakhafurniture.com/api/feed/facebook)
 - **Supabase Dashboard**: [https://app.supabase.com](https://app.supabase.com)
 
 ### **Local Development (Docker)**

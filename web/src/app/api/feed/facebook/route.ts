@@ -6,6 +6,19 @@ import { urlFor } from "@/lib/sanity";
 
 export const dynamic = "force-dynamic";
 
+function escapeXml(unsafe: string) {
+  return unsafe.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case "&": return "&amp;";
+      case "'": return "&apos;";
+      case '"': return "&quot;";
+      default: return c;
+    }
+  });
+}
+
 export async function GET() {
   try {
     const products: Product[] = await client.fetch(allProductsQuery);
@@ -15,24 +28,24 @@ export async function GET() {
     const xmlItems = products
       .filter((p) => p.mainImage && p.price && p.slug) // Defensive filtering
       .map((product) => {
-        const title = product.title || "Untitled Product";
-        const description = product.description || `High-quality handcrafted ${product.category?.title || "furniture"} from Dolakha Furniture. Material: ${product.material || "Artisanal Wood"}.`;
+        const title = escapeXml(product.title || "Untitled Product");
+        const description = escapeXml(product.description || `High-quality handcrafted ${product.category?.title || "furniture"} from Dolakha Furniture. Material: ${product.material || "Artisanal Wood"}.`);
         const availability = product.stock && product.stock > 0 ? "in stock" : "out of stock";
-        const imageLink = urlFor(product.mainImage).width(1200).url();
+        const imageLink = escapeXml(urlFor(product.mainImage).width(1200).url());
         
         return `
       <item>
-        <g:id>${product._id}</g:id>
+        <g:id>${escapeXml(product._id)}</g:id>
         <g:title><![CDATA[${title}]]></g:title>
         <g:description><![CDATA[${description}]]></g:description>
-        <g:link>${DOMAIN}/product/${product.slug}</g:link>
+        <g:link>${escapeXml(`${DOMAIN}/product/${product.slug}`)}</g:link>
         <g:image_link>${imageLink}</g:image_link>
         <g:brand>Dolakha Furniture</g:brand>
         <g:condition>new</g:condition>
         <g:availability>${availability}</g:availability>
         <g:price>${product.price}.00 ${CURRENCY}</g:price>
         <g:google_product_category>603</g:google_product_category>
-        <g:material>${product.material || "Wood"}</g:material>
+        <g:material>${escapeXml(product.material || "Wood")}</g:material>
         <g:quantity_to_sell>${product.stock || 0}</g:quantity_to_sell>
       </item>`;
       })
