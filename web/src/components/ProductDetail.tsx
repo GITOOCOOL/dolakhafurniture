@@ -40,7 +40,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       content_name: product.title,
       content_ids: [product._id],
       content_type: "product",
-      value: product.price * quantity,
+      value: Number(product.price * quantity) || 0,
       currency: "NPR"
     });
     setIsSuccess(true);
