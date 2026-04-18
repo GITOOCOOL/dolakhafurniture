@@ -177,9 +177,8 @@ export default function CheckoutPage() {
         trackEvent("Purchase", {
           content_ids: items.map(item => item._id),
           content_type: "product",
-          value: finalTotal,
-          currency: "NPR",
-          num_items: items.length
+          value: Number(finalTotal) || 0,
+          currency: "NPR"
         });
         clearCart();
         window.scrollTo({ top: 0, behavior: 'smooth' });
