@@ -13,4 +13,10 @@ export type Campaign = {
     tagline?: string;
     banner?: SanityImageSource;
     products?: Product[];
+    marketingAssets?: {
+        asset: SanityImageSource;
+        alt?: string;
+        assetType: "square" | "story" | "fb_banner" | "other";
+    }[];
+    campaignBrief?: string;
 }

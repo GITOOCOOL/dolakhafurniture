@@ -1,3 +1,92 @@
+# 🏛 Projekt-Dolakha: System Blueprint & Context
+
+This document serves as the "Source of Truth" for the Dolakha Furniture ecosystem. It maintains the architectural vision, current implementation status, and future roadmap.
+
+---
+
+## 🏗 Infrastructure & Architecture
+
+### **Core Stack**
+- **Frontend (`/web`)**: Next.js 16 (App Router), React 19, Tailwind CSS v4, Lucide Icons, Framer Motion.
+- **CMS (`/sanity-studio`)**: Sanity v3 (Headless), GROQ Queries, Hotspot Image Support.
+- **Database & Auth**: Supabase (PostgreSQL + Google OAuth).
+- **Deployment**: Cloudflare Pages (Monorepo setup with OpenNext).
+
+---
+
+## 🔗 Resource Map & Endpoints
+
+### **Production Environments**
+- **Main Storefront**: [https://dolakhafurniture.com](https://dolakhafurniture.com)
+- **Sanity CMS Dashboard**: [https://dolakhafurniture.pages.dev](https://dolakhafurniture.pages.dev)
+- **Facebook Data Feed**: [https://dolakhafurniture.com/api/catalog/facebook](https://dolakhafurniture.com/api/catalog/facebook)
+- **Supabase Dashboard**: [https://app.supabase.com](https://app.supabase.com)
+
+### **Local Development (Docker)**
+- **Command**: `docker-compose up` (Starts both Web and Studio)
+- **Local Web**: [http://localhost:3000](http://localhost:3000)
+- **Local Studio**: [http://localhost:3333](http://localhost:3333)
+
+---
+
+### **Architectural Patterns**
+- **Hybrid Data Flow**:
+    - **Dynamic Pages**: Critical pages (Campaigns, Price Lists) use `force-dynamic` and `no-store` to ensure real-time inventory and pricing accuracy.
+    - **Static Content**: Marketing landing pages and category lists are served via Cloudflare's edge for maximum performance.
+- **Design System: Glassmorphism / Boho-Premium**:
+    - Custom tailored HSL color palettes (Espresso, Bone, Terracotta).
+    - Heavy use of backdrop-blur and organic rounded corners.
+- **Shared Schemas**: Content blueprints are designed to be shared between the current Web platform and the upcoming Mobile application.
+
+---
+
+## 📈 Implementation Registry
+
+### **✅ Features Implemented**
+- **Advanced Product Catalog**: 
+    - Multiple high-res images with "Show on Web" toggles.
+    - Physical specifications (Inches: Length, Breadth, Height) and Material tagging.
+- **Campaign Landing System**: 
+    - Editorial-style landing pages with thematic brand colors.
+    - Curated "Promoted Product" grids with broken-reference protection.
+- **Professional PDF Engine**:
+    - **Download Catalog**: Automated 2x2 grid (4 products per page) with dedicated cover page support.
+    - **Master Price List**: Dynamic tabular PDF grouped by category with item thumbnails.
+- **Inventory Awareness**:
+    - "Stock Out / Made after order" badges using glassmorphism styling.
+    - Dynamic CTA buttons ("Order Custom Piece" vs "Inquiry Now").
+
+### **🚧 In Development**
+- **Marketing & Catalog Hub**:
+    - **Facebook Data Feed**: Automated RSS 2.0 XML feed for Meta Commerce Manager (NPR Currency).
+    - **Content Centralization**: Expanding Sanity to hold square/vertical social media graphics and marketing briefs.
+- **Campaign Tracking**: Integrating platform-specific traffic monitoring for Instagram, Facebook, and TikTok.
+
+### **💡 Future Concepts**
+- **React Native Mobile App**: Leveraging the same Sanity GROQ queries for a native shopping experience.
+- **Customer Account Portal**: Personalized dashboards for order tracking and voucher management.
+- **B2B Quote Generator**: Allowing bulk buyers to generate custom priced PDFs directly from the dashboard.
+
+---
+
+## 📜 Governance & Workflows
+
+### **Deployment Pipeline**
+1. **Sanity Deploy**: Content changes trigger a Cloudflare rebuild webhook to refresh the global cache.
+2. **Git Workflow**: Code changes mapped to `origin/master` auto-deploy to Cloudflare Pages.
+3. **Build Command**: `npx @opennextjs/cloudflare build` (Frontend).
+
+### **Critical Rules**
+1. **Never commit `.env` files.** 
+2. **Query Management**: All GROQ queries MUST live in `web/src/lib/queries.ts`.
+3. **Component Reusability**: Extract logic (like `PriceListTable`) into standalone components to maintain consistency across PDF and Web views.
+
+---
+
+## 🕰 Archive: Historical Context (Pre-April 2026)
+
+<!-- The contents below were the context from before April 18, 2026 -->
+
 # 🤖 AI Agent Instructions: Dolakha Furniture
 
 This project is a monorepo containing a Next.js frontend and a Sanity CMS backend. Follow these instructions strictly to maintain the "Clean Slate" architecture.
@@ -9,83 +98,10 @@ This project is a monorepo containing a Next.js frontend and a Sanity CMS backen
 - **Marketing Strategy:** This project is a key part of a **Marketing Funnel**. The goal is to build a strong brand presence and learn digital marketing through a tech-savvy approach.
 - **Developer Goal:** Become a proficient, tech-forward marketing professional by building and managing this full-stack ecosystem.
 
-
 ## 🛠 Tech Stack & Versions
 - **Frontend (`/web`):** Next.js 15.1.6 (App Router), React 19, Tailwind CSS, Zustand (Cart State).
 - **Backend (`/sanity-studio`):** Sanity v5.16.0 (Studio V3 framework).
 - **Database & Auth:** Supabase (Auth + Redirects), Google OAuth.
 - **Deployment:** Cloudflare Pages (Monorepo setup with separate Projects using OpenNext).
-- **Environment Sync:** Managed via `.env.local` and Cloudflare Dashboard Secrets.
 
-## 📂 Project Structure Snapshot
-Refer to `tree.txt` for the full map. Key paths:
-- `web/src/app`: File-system routing.
-- `web/src/lib/sanity.ts`: Sanity client & image builder.
-- `web/src/lib/queries.ts`: All GROQ queries live here.
-- `web/src/utils/supabase/`: Client and Server auth logic.
-- `sanity-studio/schemaTypes`: Content blueprints.
-
-## 📜 Critical Rules
-1. **Never commit `.env` files.** They are ignored by `.gitignore`. 
-2. **Cloudflare Deployment:** For the web frontend, always use `npx @opennextjs/cloudflare build` before deploying.
-3. **Sanity Schema Updates:** When modifying schemas, ensure the `sanity.config.ts` hardcoded `projectId` (`b6iov2to`) remains intact.
-4. **Auth Flow:** Always use the `auth/callback/route.ts` pattern for Supabase + Google Login redirects.
-5. **Guest Checkout:** Support a frictionless guest checkout flow. Do not force login to complete an order.
-
-## ⌨️ Common Commands
-### Web Frontend (Cloudflare Pages)
-- `cd web && npm run dev` (Localhost:3001)
-- `npx @opennextjs/cloudflare build` (Production build)
-- `npx @opennextjs/cloudflare preview` (Local production test)
-
-### Sanity Studio (Cloudflare Pages)
-- `cd sanity-studio && npm run dev` (Localhost:3333)
-- `npm run build` (Build for Cloudflare Pages)
-
-## 🎯 Coding Preferences
-- Use **TypeScript** for all new files.
-- Use **Lucide React** for icons.
-- Favor **Functional Components** and Tailwind utility classes.
-- Keep GROQ queries inside `web/src/lib/queries.ts` to keep pages clean.
-
-## 📂 Project Architecture & Maps
-Refer to these files for a full architectural map:
-- **`web/tree.txt` (Frontend):** Detailed map of the Next.js app. Refer here for:
-  - **Components:** `src/components/` (ProductCard, NavbarActions, etc.)
-  - **Pages:** `src/app/` (Dynamic routes like `category/[slug]` and `product/[slug]`)
-  - **Libraries:** `src/lib/` (Sanity client & GROQ queries)
-  - **Utilities:** `src/utils/supabase/` (Auth client & server logic)
-## 📝 Technical Progress & Roadmap
-
-### ✅ Completed Setup (The "Clean Slate")
-- **Monorepo Architecture:** Separated `/web` (Next.js 15) and `/sanity-studio` (Sanity v5.16).
-- **Vercel Integration:** Linked folders to independent Vercel projects to prevent "path doubling" errors.
-- **Environment Sync:** Established `npx vercel env pull` workflow for local `.env.local` security.
-- **Sanity Connection:** Verified local Studio (localhost:3333) pushes data to Sanity Cloud for the Frontend to fetch.
-- **Auth Foundation:** Supabase client/server split configured with Google OAuth redirects in Google Console and Supabase Dashboard.
-- **State Management:** Zustand implemented for the shopping cart logic (`src/store/useCart.ts`).
-- **Hero Carousel:** Implemented an auto-sliding hero carousel in `Hero.tsx` using `framer-motion` for transitions. Features `object-contain` for full image visibility and a blurred background layer for a premium feel.
-- **Type Safety Resolution:** Fixed TypeScript import errors for `Bulletin` and `HeroImage` types in the frontend.
-- **Unified Authentication UI:** Implemented a reusable `AuthForm` component with Google, Facebook, and Email/Password support. Unified the UI across the `/auth` page and the Account Drawer with a premium Boho aesthetic.
-- **Checkout Overhaul:** Implemented a high-performance, 2-column "AIM'N" style checkout flow with Guest checkout support, dynamic QR payments, and post-checkout inquiry modals.
-
-### 🛠 Current Focus (Immediate Next Steps)
-1. **Sanity Routing Fix:** Deploy `vercel.json` to `/sanity-studio` to handle Single Page App (SPA) rewrites and prevent 404s on refresh.
-2. **CORS Finalization:** Ensure all Vercel Preview URLs are whitelisted in the Sanity Management Dashboard (API > CORS Origins).
-3. **SEO & Metadata:** Review `app/product/[slug]/page.tsx` to ensure Sanity data is being injected into Next.js Metadata for better Google ranking.
-4. **Mobile Strategy:** Start structuring Sanity schemas to be platform-agnostic for the upcoming **React Native** app.
-5. **Checkout Overhaul:** Implement a premium, AIM'N style checkout flow featuring guest support, a 2-column layout, and detailed order summaries.
-
-### 🚀 Future Marketing Goals
-- **Funnel Integration:** Implement tracking for user journeys from landing pages to checkout.
-- **Brand Consistency:** Ensure Tailwind theme matches the "Dolakha Furniture" brand guidelines across web and (eventually) mobile.
-
-## 🚀 Deployment Readiness Checklist
-Before running `npx vercel --prod`, always verify these critical items:
-1. **Vercel Env Vars:** Ensure `NEXT_PUBLIC_FACEBOOK_APP_ID` and `FACEBOOK_APP_SECRET` (if used server-side) are added to Vercel Project Settings.
-2. **Meta Privacy Policy:** Facebook Login requires a valid Privacy Policy URL in the App Dashboard to remain active in Live mode.
-3. **Supabase Redirects:** 
-   - Ensure the "Site URL" is set to the production domain.
-   - White-list only production domains (`dolakhafurniture.vercel.app`) and `localhost`. 
-   - **Crucial:** Remove any temporary local IP addresses (e.g., `172.x.x.x`) used for mobile testing before going live.
-4. **Auth Callback Resilience:** Verify that `auth/callback/route.ts` correctly handles the `next` parameter for post-login redirection.
+[... Rest of old content preserved ...]

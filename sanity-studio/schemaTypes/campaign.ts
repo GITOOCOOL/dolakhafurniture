@@ -88,5 +88,43 @@ export default defineType({
             type: "image",
             options: { hotspot: true },
         }),
+        defineField({
+            name: "marketingAssets",
+            title: "Marketing Assets (Logos, Graphics, social media)",
+            type: "array",
+            of: [
+                {
+                    type: "image",
+                    options: { hotspot: true },
+                    fields: [
+                        {
+                            name: "alt",
+                            title: "Alt Text",
+                            type: "string",
+                        },
+                        {
+                            name: "assetType",
+                            title: "Asset Type",
+                            type: "string",
+                            options: {
+                                list: [
+                                    { title: "Square Post (Instagram)", value: "square" },
+                                    { title: "Story / Vertical (IG/TikTok)", value: "story" },
+                                    { title: "Facebook Banner", value: "fb_banner" },
+                                    { title: "Other", value: "other" },
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ],
+        }),
+        defineField({
+            name: "campaignBrief",
+            title: "Internal Campaign Brief",
+            type: "text",
+            description: "Notes for the marketing team about strategy, hashtags, or goals.",
+            rows: 5,
+        }),
     ],
 });
