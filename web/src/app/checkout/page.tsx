@@ -174,12 +174,14 @@ export default function CheckoutPage() {
       if (result.success) {
         setOrderNumber(result.orderNumber || null);
         setIsSuccess(true);
-        trackEvent("Purchase", {
-          content_ids: items.map(item => item._id),
+        const purchaseData = {
+          value: parseFloat(finalTotal.toString()).toFixed(2),
+          currency: "NPR",
           content_type: "product",
-          value: Number(finalTotal) || 0,
-          currency: "NPR"
-        });
+          content_ids: items.map(item => item._id)
+        };
+        console.log("🚀 Meta Purchase Event Fired:", purchaseData);
+        trackEvent("Purchase", purchaseData);
         clearCart();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
