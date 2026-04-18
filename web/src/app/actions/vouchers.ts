@@ -4,10 +4,10 @@ import { client } from "@/lib/sanity";
 
 export async function validateVoucher(code: string) {
   try {
-    const normalizedCode = code.trim().toUpperCase();
+    const normalizedCode = code.trim().toLowerCase();
     
     const voucher = await client.fetch(
-      `*[_type == "discountVoucher" && upper(code) == $code && isActive == true][0]`,
+      `*[_type == "discountVoucher" && lower(code) == $code && isActive == true][0]`,
       { code: normalizedCode }
     );
 
@@ -27,7 +27,7 @@ export async function validateVoucher(code: string) {
       discountValue: voucher.discountValue 
     };
   } catch (error: any) {
-    console.error("Voucher validation error:", error);
+    console.error("❌ Voucher validation error:", error.message || error);
     return { success: false, message: "Error validating voucher." };
   }
 }
