@@ -6,7 +6,15 @@ import { Product } from "@/types";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "./Toast";
 
-const ProductCard = ({ product }: { product: Product }) => {
+const ProductCard = ({ 
+  product, 
+  variant = 'default',
+  accentColor = '#a3573a'
+}: { 
+  product: Product;
+  variant?: 'default' | 'ribbon';
+  accentColor?: string;
+}) => {
   const { showToast } = useToast();
   // Pre-filled WhatsApp link
   const whatsappNumber = "61410765748"; 
@@ -29,21 +37,31 @@ const ProductCard = ({ product }: { product: Product }) => {
              alt={product.title} 
              className="object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105" 
            />
-            {product.stock !== undefined && product.stock <= 0 && (
+            {product.stock !== undefined && product.stock <= 0 && variant !== 'ribbon' && (
               <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md border border-[#e5dfd3] text-[#3d2b1f] px-3 py-1.5 rounded-lg text-[8px] font-bold uppercase tracking-widest shadow-sm z-20 flex flex-col items-center gap-0.5 text-center leading-tight">
                 <span className="text-[#a3573a]">Stock Out</span>
                 <span className="opacity-70 text-[6px] md:text-[7px] normal-case font-medium italic">will be made after order</span>
               </div>
             )}
+
+            {variant === 'ribbon' && (
+              <div className="absolute top-0 right-0 h-full w-8 md:w-10 z-30 flex items-center justify-center shadow-[left_4px_10px_rgba(0,0,0,0.1)]" style={{ backgroundColor: accentColor }}>
+                <div className="rotate-90 text-white font-bold text-[10px] md:text-[12px] whitespace-nowrap tracking-[0.2em] uppercase">
+                  NPR <span className="text-[14px] md:text-[16px] ml-1">{product.price}</span>
+                </div>
+              </div>
+            )}
         </div>
 
-        <div className="p-2 flex-1 flex flex-col gap-0.5 overflow-hidden">
-          <h3 className="text-[9px] md:text-[11px] font-sans font-extrabold text-[#3d2b1f] group-hover:text-[#a3573a] transition-colors truncate">
+        <div className="p-3 flex-1 flex flex-col gap-1 overflow-hidden">
+          <h3 className="text-[10px] md:text-[12px] font-sans font-extrabold text-[#3d2b1f] group-hover:text-[#a3573a] transition-colors truncate uppercase tracking-wider">
             {product.title}
           </h3>
-          <p className="text-[8px] md:text-[9px] font-sans font-semibold text-[#a3573a]">
-            Rs. {product.price}
-          </p>
+          {variant !== 'ribbon' && (
+            <p className="text-[8px] md:text-[9px] font-sans font-semibold text-[#a3573a]">
+              Rs. {product.price}
+            </p>
+          )}
         </div>
       </Link>
 

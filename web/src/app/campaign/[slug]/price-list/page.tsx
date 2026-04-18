@@ -26,29 +26,31 @@ export default async function CampaignPriceListPage({ params }: Props) {
   });
 
   return (
-    <main className="min-h-screen bg-[#fdfaf5] pb-24 font-sans text-[#3d2b1f] pt-32">
+    <main className="min-h-screen bg-[#fdfaf5] pb-24 font-sans text-[#3d2b1f] pt-12">
       
       {/* HEADER SECTION */}
-      <div className="container mx-auto px-6 md:px-12 mb-16">
-        <div className="flex justify-between items-start mb-12 no-print">
+      <div className="container mx-auto px-6 md:px-12 mb-8">
+        <div className="flex justify-between items-center mb-8 no-print">
           <Link 
             href={`/campaign/${slug}`} 
-            className="flex items-center gap-3 bg-white border border-[#e5dfd3] text-[#3d2b1f] px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-stone-50 transition-all"
+            className="flex items-center gap-2 text-[#a89f91] hover:text-[#3d2b1f] transition-all text-[10px] uppercase tracking-widest font-bold"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={14} />
             Back to Story
           </Link>
-          <DownloadButton label="Download Campaign Price List" variant="outline" />
+          <div className="scale-90 origin-right">
+            <DownloadButton label="Price List" variant="outline" />
+          </div>
         </div>
 
-        <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <div className="flex justify-center mb-6">
-            <Sparkles size={40} className="text-[#a3573a]" />
+        <div className="text-center space-y-2 max-w-xl mx-auto border-b border-[#e5dfd3]/50 pb-8">
+          <div className="flex justify-center mb-2 opacity-30">
+            <Sparkles size={24} className="text-[#a3573a]" />
           </div>
-          <h1 className="text-5xl md:text-7xl font-serif italic font-medium leading-tight">
+          <h1 className="text-3xl md:text-5xl font-serif italic font-medium leading-tight">
             {campaign.title}<span className="text-[#a3573a]">.</span>
           </h1>
-          <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#a89f91] py-4 border-y border-[#e5dfd3]/50">
+          <p className="text-[8px] font-bold uppercase tracking-[0.4em] text-[#a89f91]">
             Campaign Price List — {currentDate}
           </p>
         </div>

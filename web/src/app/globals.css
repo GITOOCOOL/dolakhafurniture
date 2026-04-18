@@ -83,12 +83,15 @@ body {
     padding-top: 0 !important;
   }
 
-  /* Adjust Hero for Print */
+  /* Adjust Hero for Print - Ensure cover page takes full page in PDF */
   section.relative.h-\[70vh\], 
-  section.relative.h-\[85vh\] {
+  section.relative.h-\[85vh\],
+  section.relative.h-\[35vh\],
+  section.relative.h-\[45vh\] {
     height: 100vh !important;
     page-break-after: always !important;
     margin: 0 !important;
+    display: flex !important;
   }
 
   /* Force Grid layouts specifically for paginated chunks */

@@ -27,7 +27,7 @@ export default async function CampaignLandingPage({ params }: Props) {
     <main className="min-h-screen bg-[#fdfaf5] pb-24 font-sans text-[#3d2b1f]">
       
       {/* HERO SECTION */}
-      <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden flex flex-col justify-end">
+      <section className="relative w-full h-[35vh] md:h-[45vh] overflow-hidden flex flex-col justify-end">
         {campaign.banner && (
           <Image
             src={urlFor(campaign.banner).width(2000).url()}
@@ -38,29 +38,28 @@ export default async function CampaignLandingPage({ params }: Props) {
           />
         )}
         
-        {/* Navigation & Branding */}
-        <div className="absolute top-0 left-0 w-full p-8 md:p-12 z-20 flex justify-between items-start">
-          <div className="flex flex-col md:flex-row gap-4 items-start">
-            <Link 
-              href="/campaigns" 
-              className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/20 transition-all no-print"
+        <div className="absolute top-0 right-0 p-4 md:p-6 z-20 flex flex-col items-end gap-3 no-print">
+          <Link 
+            href="/campaigns" 
+            className="flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/10 text-white px-4 py-2 rounded-full text-[10px] uppercase tracking-widest hover:bg-black/60 transition-all shadow-lg"
+          >
+            <ArrowLeft size={12} />
+            Back
+          </Link>
+          <div className="flex flex-col gap-2">
+            <DownloadButton label="Catalog" />
+            <Link
+              href={`/campaign/${slug}/price-list`}
+              className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 text-white px-4 py-2 rounded-full text-[10px] uppercase tracking-widest hover:bg-white/20 transition-all"
             >
-              <ArrowLeft size={16} />
-              Other Stories
+              Price List
             </Link>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <DownloadButton label="Download Catalog" />
-              <Link
-                href={`/campaign/${slug}/price-list`}
-                className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/20 transition-all no-print"
-              >
-                Download Price List
-              </Link>
-            </div>
           </div>
-          <div className="text-white flex flex-col items-end opacity-80 no-print">
-            <Leaf size={24} />
-            <p className="text-[10px] uppercase tracking-[0.4em] font-bold mt-2">Dolakha Archive</p>
+        </div>
+
+        <div className="absolute top-0 left-0 p-8 z-20 flex items-center gap-3 no-print">
+          <div className="text-white opacity-40">
+            <Leaf size={20} />
           </div>
         </div>
 
@@ -71,30 +70,30 @@ export default async function CampaignLandingPage({ params }: Props) {
         />
 
         {/* Hero Content */}
-        <div className="relative z-20 container mx-auto px-6 md:px-12 pb-16 md:pb-24 space-y-6">
-          <div className="flex items-center gap-3 text-white/60">
-            <Sparkles size={18} />
-            <p className="text-xs uppercase tracking-[0.4em] font-bold">Featured Collection</p>
+        <div className="relative z-20 container mx-auto px-6 md:px-12 pb-8 md:pb-12 space-y-4">
+          <div className="flex items-center gap-2 text-white/50">
+            <Sparkles size={14} />
+            <p className="text-[8px] uppercase tracking-[0.4em] font-bold">Collection</p>
           </div>
-          <h1 className="text-6xl md:text-9xl font-serif italic text-white leading-tight">
+          <h1 className="text-4xl md:text-7xl font-serif italic text-white leading-tight">
             {campaign.title}
           </h1>
         </div>
       </section>
 
-      {/* EDITORIAL BLOCK */}
-      <section className="container mx-auto px-6 md:px-12 py-24 md:py-32 grid md:grid-cols-2 gap-16 items-center">
-        <div className="space-y-8">
+      {/* EDITORIAL BLOCK (Shrunk) */}
+      <section className="container mx-auto px-6 md:px-12 py-12 md:py-16 grid md:grid-cols-2 gap-8 items-center border-b border-[#e5dfd3]/30">
+        <div className="space-y-4">
           <div 
-            className="w-16 h-[1.5px] rounded-full" 
+            className="w-12 h-[1px]" 
             style={{ backgroundColor: themeColor }}
           />
-          <h2 className="text-4xl md:text-6xl font-serif italic text-balance leading-tight">
-            {campaign.tagline || `A curated selection of handcrafted pieces designed for the modern sanctuary.`}
+          <h2 className="text-2xl md:text-3xl font-serif italic text-balance leading-tight">
+            {campaign.tagline || `A curated selection of handcrafted pieces.`}
           </h2>
         </div>
-        <div className="text-[#a89f91] text-lg font-light leading-relaxed max-w-lg italic border-l-2 border-[#e5dfd3] pl-8 py-2">
-          "Each piece in this collection has been thoughtfully selected to bring harmony, character, and the essence of artisanal craftsmanship into your home. Discover the story behind every curve, grain, and finish."
+        <div className="text-[#a89f91] text-xs font-light leading-relaxed max-w-md italic border-l border-[#e5dfd3] pl-6">
+          Explore the intersection of traditional craftsmanship and modern living.
         </div>
       </section>
 
@@ -110,7 +109,12 @@ export default async function CampaignLandingPage({ params }: Props) {
             {/* 1. WEB VIEW: Continuous Responsive Grid (Hidden on Print) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 print:hidden">
               {campaign.products.filter(p => p !== null && p !== undefined).map((product, idx) => (
-                <ProductCard key={`${product._id}-${idx}`} product={product} />
+                <ProductCard 
+                  key={`${product._id}-${idx}`} 
+                  product={product} 
+                  variant="ribbon" 
+                  accentColor={themeColor} 
+                />
               ))}
             </div>
 
@@ -124,16 +128,21 @@ export default async function CampaignLandingPage({ params }: Props) {
                 }
                 
                 return chunks.map((chunk, chunkIdx) => (
-                  <div key={chunkIdx} className="page-break-after-always pt-12">
-                    <div className="flex items-center gap-4 mb-12">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#a3573a] whitespace-nowrap">
-                        Collection Part {chunkIdx + 1}
+                  <div key={chunkIdx} className="page-break-after-always pt-8">
+                    <div className="flex items-center gap-4 mb-8">
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-[#a3573a] whitespace-nowrap">
+                        {campaign.title} / Part {chunkIdx + 1}
                       </p>
-                      <div className="flex-1 h-[1px] bg-[#e5dfd3] opacity-30" />
+                      <div className="flex-1 h-[0.5px] bg-[#e5dfd3] opacity-20" />
                     </div>
                     <div className="grid grid-cols-2 gap-x-12 gap-y-20">
                       {chunk.map((product, pIdx) => (
-                        <ProductCard key={`${product._id}-${pIdx}`} product={product} />
+                        <ProductCard 
+                          key={`${product._id}-${pIdx}`} 
+                          product={product} 
+                          variant="ribbon" 
+                          accentColor={themeColor} 
+                        />
                       ))}
                     </div>
                   </div>
