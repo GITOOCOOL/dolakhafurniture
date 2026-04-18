@@ -44,6 +44,7 @@ export default function CheckoutPage() {
   const [paymentAccounts, setPaymentAccounts] = useState<any[]>([]);
   const [activeStep, setActiveStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
   const [inquiryStatus, setInquiryStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   
@@ -147,11 +148,21 @@ export default function CheckoutPage() {
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 1. Validate Phone Number (Nepal Mobile 10-digits starting with 9)
+    const phoneRegex = /^9\d{9}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert("Please enter a valid 10-digit Nepal phone number starting with 9.");
+      setIsProcessing(false);
+      return;
+    }
+
     setIsProcessing(true);
     try {
       // Pass finalTotal to processOrder
       const result = await processOrder(items, finalTotal, formData);
       if (result.success) {
+        setOrderNumber(result.orderNumber || null);
         setIsSuccess(true);
         clearCart();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -202,6 +213,11 @@ export default function CheckoutPage() {
           </div>
           
           <h1 className="text-5xl font-serif italic mb-6">Order Received.</h1>
+          {orderNumber && (
+            <div className="inline-block bg-[#a3573a] text-white px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-8">
+              Order #{orderNumber}
+            </div>
+          )}
           <p className="text-lg text-[#a89f91] mb-12 max-w-lg mx-auto leading-relaxed">
             Thank you for choosing Dolakha Furniture. We have received your order and will contact you shortly to confirm the details.
           </p>

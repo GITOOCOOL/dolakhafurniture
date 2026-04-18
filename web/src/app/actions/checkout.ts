@@ -13,6 +13,15 @@ const sanityAdmin = createSanity({
   apiVersion: "2024-03-12"
 })
 
+function generateOrderNumber() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed ambiguous characters like O, 0, I, 1
+  let result = "DF-";
+  for (let i = 0; i < 4; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 export async function processOrder(cartItems: CartItem[], total: number, customerData: CustomerData) {
   // 1.5 Safety Check: Verify Write Token
   if (!process.env.SANITY_API_WRITE_TOKEN) {
@@ -26,10 +35,12 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
   try {
     const supabase = await createSupabase()
     const { data: { user } } = await supabase.auth.getUser()
+    const orderNumber = generateOrderNumber();
 
     // 2. Prepare the Order Document for Sanity
     const orderDocument = {
       _type: 'order',
+      orderNumber,
       supabaseUserId: user?.id || 'guest',
       customerName: user ? (user.user_metadata.full_name || user.email) : `${customerData.firstName} ${customerData.lastName}`,
       customerEmail: user?.email || customerData.email,
@@ -60,7 +71,7 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
     }
 
     const result = await sanityAdmin.create(orderDocument)
-    return { success: true, orderId: result._id }
+    return { success: true, orderId: result._id, orderNumber }
   } catch (error: any) {
     console.error("❌ Checkout Error:", error.message)
     // Handle specific Sanity permission errors
