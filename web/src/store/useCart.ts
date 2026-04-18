@@ -12,6 +12,7 @@ interface CartStore {
   items: CartItem[];
   addItem: (product: Product, quantity: number) => void;
   removeItem: (productId: string) => void;
+  removeSingleItem: (productId: string) => void;
   clearCart: () => void;
 }
 
@@ -33,6 +34,19 @@ export const useCart = create<CartStore>()(
       removeItem: (productId) => set((state) => ({
         items: state.items.filter((i) => i._id !== productId),
       })),
+      removeSingleItem: (productId) => set((state) => {
+        const item = state.items.find((i) => i._id === productId);
+        if (item && item.quantity > 1) {
+          return {
+            items: state.items.map((i) =>
+              i._id === productId ? { ...i, quantity: i.quantity - 1 } : i
+            ),
+          };
+        }
+        return {
+          items: state.items.filter((i) => i._id !== productId),
+        };
+      }),
       clearCart: () => set({ items: [] }),
     }),
     { name: 'cart-storage' } // This saves the cart to LocalStorage automatically!

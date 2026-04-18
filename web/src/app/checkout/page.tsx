@@ -28,7 +28,8 @@ import {
   ArrowRight,
   X,
   Tag,
-  Ticket
+  Ticket,
+  Trash2
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,7 +39,7 @@ import Modal from "@/components/ui/Modal";
 
 export default function CheckoutPage() {
   const supabase = createClient();
-  const { items, removeItem, clearCart } = useCart();
+  const { items, removeItem, removeSingleItem, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [paymentAccounts, setPaymentAccounts] = useState<any[]>([]);
@@ -684,30 +685,38 @@ export default function CheckoutPage() {
                 <span className="bg-[#3d2b1f] text-white text-[9px] px-3 py-1 rounded-full">{items.length} Items</span>
               </div>
 
-              {/* ITEM LIST */}
-              <div className="max-h-[40vh] overflow-y-auto no-scrollbar space-y-8 pr-2 mb-10">
-                {items.map((item) => (
-                  <div key={item._id} className="flex gap-6 group">
-                    <div className="w-20 h-24 bg-white rounded-2xl overflow-hidden border border-[#e5dfd3] flex-shrink-0 relative">
-                      {item.mainImage ? (
-                        <img
-                          src={urlFor(item.mainImage).width(200).url()}
-                          alt={item.title}
-                          className="object-cover w-full h-full opacity-90 transition-transform duration-1000 group-hover:scale-110"
-                        />
-                      ) : <div className="w-full h-full flex items-center justify-center text-[10px] opacity-20">VOID</div>}
-                      <span className="absolute -top-1 -right-1 bg-[#3d2b1f] text-white text-[9px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{item.quantity}</span>
+              {/* ITEM LIST - Individualized */}
+              <div className="max-h-[50vh] overflow-y-auto no-scrollbar space-y-4 pr-2 mb-10">
+                {items.flatMap(item => 
+                  Array.from({ length: item.quantity }).map((_, idx) => (
+                    <div key={`${item._id}-${idx}`} className="flex gap-4 group p-4 bg-white/50 rounded-2xl border border-transparent hover:border-[#e5dfd3] transition-all">
+                      <div className="w-16 h-20 bg-white rounded-xl overflow-hidden border border-[#e5dfd3] flex-shrink-0 relative">
+                        {item.mainImage ? (
+                          <img
+                            src={urlFor(item.mainImage).width(200).url()}
+                            alt={item.title}
+                            className="object-cover w-full h-full opacity-90 transition-transform duration-1000 group-hover:scale-110"
+                          />
+                        ) : <div className="w-full h-full flex items-center justify-center text-[10px] opacity-20">VOID</div>}
+                      </div>
+                      <div className="flex flex-col justify-center flex-1 min-w-0">
+                        <h4 className="text-xs font-bold text-[#3d2b1f] truncate mb-0.5">{item.title}</h4>
+                        <p className="text-[9px] text-[#a89f91] font-medium tracking-wider">Unit Price: Rs. {item.price}</p>
+                      </div>
+                      <div className="flex flex-col items-end justify-center gap-2">
+                        <span className="text-sm font-bold text-[#3d2b1f]">Rs. {item.price}</span>
+                        <button 
+                          type="button"
+                          onClick={() => removeSingleItem(item._id)} 
+                          className="bg-red-50 text-red-600 p-2 rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center"
+                          title="Remove this item"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex flex-col justify-center flex-1 min-w-0">
-                      <h4 className="text-sm font-bold text-[#3d2b1f] truncate mb-1">{item.title}</h4>
-                      <p className="text-[10px] text-[#a89f91] font-medium tracking-wider">Rs. {item.price}</p>
-                    </div>
-                    <div className="flex flex-col items-end justify-center">
-                      <span className="text-sm font-bold text-[#3d2b1f]">Rs. {item.price * item.quantity}</span>
-                      <button onClick={() => removeItem(item._id)} className="text-[9px] text-[#a89f91] uppercase font-bold hover:text-[#a3573a] mt-1">Remove</button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
 
               <div className="space-y-4 mb-10">
@@ -774,16 +783,6 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   </div>
-                </div>
-  
-                {/* Trust badges */}
-                <div className="mt-12 flex flex-col items-center gap-4 opacity-40">
-                  <div className="flex items-center gap-10">
-                    <Truck size={14} />
-                    <ShieldCheck size={14} />
-                    <ShoppingBag size={14} />
-                  </div>
-                  <p className="text-[8px] font-sans font-bold uppercase tracking-[0.5em] text-[#a89f91]">Verified Furniture Purveyor</p>
                 </div>
   
               </div>
