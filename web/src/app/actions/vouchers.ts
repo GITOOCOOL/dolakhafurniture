@@ -4,12 +4,15 @@ import { client } from "@/lib/sanity";
 
 export async function validateVoucher(code: string) {
   try {
+    const normalizedCode = code.trim().toUpperCase();
+    
     const voucher = await client.fetch(
-      `*[_type == "discountVoucher" && code == $code && isActive == true][0]`,
-      { code }
+      `*[_type == "discountVoucher" && upper(code) == $code && isActive == true][0]`,
+      { code: normalizedCode }
     );
 
     if (!voucher) {
+      console.log(`🔍 Voucher lookup failed for: ${normalizedCode}`);
       return { success: false, message: "Invalid or inactive voucher code." };
     }
 
