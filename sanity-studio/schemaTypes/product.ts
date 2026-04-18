@@ -29,7 +29,14 @@ export default defineType({
             name: 'price',
             title: 'Price (NPR)',
             type: 'number',
-            validation: (Rule) => Rule.required(),
+            validation: (Rule) => Rule.required().min(1),
+        }),
+        defineField({
+            name: 'syncToFacebook',
+            title: 'Sync to Facebook/Instagram',
+            type: 'boolean',
+            initialValue: false,
+            description: 'If turned ON, this product will appear in the automated social media catalog feed.',
         }),
         defineField({
             name: 'mainImage',

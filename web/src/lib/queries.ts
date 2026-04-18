@@ -36,7 +36,8 @@ export const allProductsQuery = `*[_type == "product"] | order(category->title a
     "category": category->{title, "slug": slug.current},
     description,
     "slug": slug.current,
-    stock
+    stock,
+    syncToFacebook
 }`
 
 export const paymentAccountsQuery = `*[_type == "paymentAccount" && isActive == true]{

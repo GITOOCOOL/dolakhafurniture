@@ -26,11 +26,11 @@ export async function GET() {
     const CURRENCY = "NPR";
 
     const xmlItems = products
-      .filter((p) => p.mainImage && p.price && p.slug) // Defensive filtering
+      .filter((p) => p.syncToFacebook === true && p.mainImage && p.price && p.slug) // Only sync manually approved and complete products
       .map((product) => {
         const title = escapeXml(product.title || "Untitled Product");
         const description = escapeXml(product.description || `High-quality handcrafted ${product.category?.title || "furniture"} from Dolakha Furniture. Material: ${product.material || "Artisanal Wood"}.`);
-        const availability = product.stock && product.stock > 0 ? "in stock" : "out of stock";
+        const availability = product.stock && product.stock > 0 ? "in stock" : "available for order";
         const imageLink = escapeXml(urlFor(product.mainImage).width(1200).url());
         
         return `

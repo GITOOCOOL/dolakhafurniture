@@ -18,6 +18,7 @@ export type Product = {
     stock?: number;
     isFeatured?: boolean;
     material?: string;
+    syncToFacebook?: boolean;
     length?: number;
     breadth?: number;
     height?: number;
