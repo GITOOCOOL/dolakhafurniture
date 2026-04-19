@@ -6,6 +6,7 @@ import { Leaf, Sparkles, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
 import PDFDownloadButton from "@/components/PDFDownloadButton";
 import PriceListTable from "@/components/PriceListTable";
@@ -15,6 +16,23 @@ interface Props {
 }
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const campaign: Campaign = await client.fetch(campaignBySlugQuery, { slug });
+  
+  if (!campaign) return { title: "Campaign Not Found" };
+  
+  return {
+    title: `${campaign.title} | Dolakha Furniture`,
+    description: campaign.description || campaign.tagline || 'Exclusive Campaign from Dolakha Furniture.',
+    openGraph: {
+      title: `${campaign.title} | Dolakha Furniture`,
+      description: campaign.description || campaign.tagline || 'Exclusive Campaign from Dolakha Furniture.',
+      images: campaign.banner ? [urlFor(campaign.banner).width(1200).height(630).url()] : [],
+    }
+  };
+}
 
 export default async function CampaignLandingPage({ params }: Props) {
   const { slug } = await params;

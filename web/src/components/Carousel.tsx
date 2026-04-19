@@ -118,11 +118,14 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
           }}
           className="flex gap-4 md:gap-8 lg:gap-12 overflow-x-auto pb-6 no-scrollbar w-full touch-pan-x touch-pan-y scroll-smooth"
         >
-          {infiniteChildren.map((child, index) => (
-            <div key={index} className="min-w-[calc(15%-8px)] md:min-w-[calc(25%-24px)] lg:min-w-[calc(25%-36px)] flex-shrink-0">
-              {child}
-            </div>
-          ))}
+          {infiniteChildren.map((child, index) => {
+            const safeKey = (child as React.ReactElement)?.key || `carousel-item-${index}`;
+            return (
+              <div key={safeKey} className="min-w-[calc(15%-8px)] md:min-w-[calc(25%-24px)] lg:min-w-[calc(25%-36px)] flex-shrink-0">
+                {child}
+              </div>
+            );
+          })}
         </div>
       </div>
 

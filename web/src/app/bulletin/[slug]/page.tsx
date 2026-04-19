@@ -1,48 +1,28 @@
-// import { client, urlFor } from "@/lib/sanity";
-// import Link from "next/link";
-// import { Metadata } from "next";
-// import { notFound } from "next/navigation";
-// import { Leaf } from "lucide-react";
-
-// interface Props {
-//     params: Promise<{ slug: string }>;
-// }
-
-// export async function generateMetadata({ params }: Props): Promise<Metadata> {
-//     const { slug } = await params;
-//     const category = await client.fetch(`*[_type == "category" && slug.current == $slug][0]`, { slug });
-//     if (!category) return { title: "Collection Not Found" };
-//     return { title: `${category.title} | Dolakha ` };
-// }
-
-// export default async function CategoryPage({ params }: Props) {
-//     const { slug } = await params;
-
-//     const data = await client.fetch(
-//         `{
-//       "category": *[_type == "category" && slug.current == $slug][0],
-//       "products": *[_type == "product" && category->slug.current == $slug] | order(_createdAt desc)
-//     }`,
-//         { slug }
-//     );
-
-//     if (!data.category) notFound();
-
-//     return (
-//         <div className="bg-[#fdfaf5] min-h-screen pt-32 pb-20 font-sans text-[#3d2b1f]">
-
-//         </div>
-//     );
-// }
-
 import { client } from "@/lib/sanity";
 import { urlFor } from "@/lib/sanity";
-
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
 
 interface Props {
     params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
+    const data = await client.fetch(`*[_type == "bulletin" && slug.current == $slug][0]`, { slug });
+    
+    if (!data) return { title: "Bulletin Not Found" };
+    
+    return {
+        title: `${data.title} | Dolakha Furniture News`,
+        description: data.content ? String(data.content).substring(0, 160) : 'Updates from Dolakha Furniture',
+        openGraph: {
+            title: `${data.title} | Dolakha Furniture News`,
+            description: data.content ? String(data.content).substring(0, 160) : 'Updates from Dolakha Furniture',
+            images: data.mainImage ? [urlFor(data.mainImage).width(1200).height(630).url()] : [],
+        }
+    };
 }
 
 export default async function BulletinPage({ params }: Props) {

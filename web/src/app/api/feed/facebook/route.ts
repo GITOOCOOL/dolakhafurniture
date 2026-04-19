@@ -85,7 +85,9 @@ export async function GET() {
     return new NextResponse(rssFeed, {
       headers: {
         "Content-Type": "application/xml",
-        "Cache-Control": "s-maxage=3600, stale-while-revalidate",
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
       },
     });
   } catch (error) {
