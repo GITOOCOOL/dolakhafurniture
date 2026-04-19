@@ -15,7 +15,8 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
   const [maxScroll, setMaxScroll] = useState(1);
 
   const childrenArray = React.Children.toArray(children);
-  const infiniteChildren = [...childrenArray, ...childrenArray];
+  // Disabled the infinite cloning hack to prevent double-displaying products
+  const infiniteChildren = childrenArray;
 
   // SYNC SCROLL -> SCRUBBER
   useEffect(() => {

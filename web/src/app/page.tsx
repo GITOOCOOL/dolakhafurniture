@@ -11,14 +11,14 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   
   // Fetch only featured products for the top carousel
-  const featuredProducts = await client.fetch<Product[]>(featuredProductsQuery);
+  const featuredProducts = (await client.fetch<Product[]>(featuredProductsQuery)) || [];
 
   // Fetch all products to group them by category for the bottom section
-  const allProducts = await client.fetch<Product[]>(allProductsQuery);
+  const allProducts = (await client.fetch<Product[]>(allProductsQuery)) || [];
   
-  const categoriesInOrder = await client.fetch<Category[]>(categoriesQuery);
+  const categoriesInOrder = (await client.fetch<Category[]>(categoriesQuery)) || [];
 
-  const activeCampaign = await client.fetch<any>(activeCampaignHomeQuery);
+  const activeCampaign = (await client.fetch<any>(activeCampaignHomeQuery)) || null;
 
   const productsByCategory = allProducts.reduce((acc, product) => {
     const key = product.category?.slug || 'other';

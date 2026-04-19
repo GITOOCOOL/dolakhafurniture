@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function NewArrivalsPage() {
   const products = await client.fetch(
-    `*[_type == "product"] | order(_createdAt desc) [0...4] {
+    `*[_type == "product" && isActive == true] | order(_createdAt desc) [0...4] {
       _id,
       title,
       price,

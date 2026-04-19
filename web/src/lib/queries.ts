@@ -70,13 +70,13 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     startDate,
     endDate,
     "vouchers": vouchers[]->{code, details},
-    "products": promotedProducts[]-> {
+    "products": promotedProducts[@->isActive == true]-> {
         _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
     }
 } `
 
 export const facebookMelaProductsQuery = `*[_type == "campaign" && slug.current == "new-year-maha-mela-2083"][0] {
-    "products": promotedProducts[]->[isActive == true && syncToFacebook == true] {
+    "products": promotedProducts[@->isActive == true && @->syncToFacebook == true]-> {
         _id,
         title,
         price,
@@ -100,7 +100,7 @@ export const activeCampaignHomeQuery = `*[_type == "campaign" && status == "acti
     "slug": slug.current,
     endDate,
     "vouchers": vouchers[]->code,
-    "products": promotedProducts[]->[isActive == true] {
+    "products": promotedProducts[@->isActive == true]-> {
       _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
     }
 }`
