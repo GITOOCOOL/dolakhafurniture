@@ -67,7 +67,7 @@ export async function GET() {
         <g:price>${product.price}.00 ${CURRENCY}</g:price>
         <g:google_product_category>603</g:google_product_category>
         <g:material>${escapeXml(product.material || "Wood")}</g:material>
-        <g:quantity_to_sell>${product.stock || 0}</g:quantity_to_sell>
+        <g:quantity_to_sell>${product.stock && product.stock > 0 ? product.stock : 1}</g:quantity_to_sell>
       </item>`;
       })
       .join("");
