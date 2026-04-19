@@ -22,7 +22,7 @@ function generateOrderNumber() {
   return result;
 }
 
-export async function processOrder(cartItems: CartItem[], total: number, customerData: CustomerData) {
+export async function processOrder(cartItems: CartItem[], total: number, customerData: CustomerData, voucherCode?: string) {
   // 1.5 Safety Check: Verify Write Token
   if (!process.env.SANITY_API_WRITE_TOKEN) {
     console.error("❌ ERROR: SANITY_API_WRITE_TOKEN is missing in environment variables.")
@@ -42,6 +42,7 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
       _type: 'order',
       orderNumber,
       supabaseUserId: user?.id || 'guest',
+      voucherCode: voucherCode?.toLowerCase() || null,
       customerName: user ? (user.user_metadata.full_name || user.email) : `${customerData.firstName} ${customerData.lastName}`,
       customerEmail: user?.email || customerData.email,
       customerPhone: customerData.phone,

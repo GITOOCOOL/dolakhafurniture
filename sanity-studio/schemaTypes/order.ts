@@ -13,6 +13,7 @@ export default {
     { name: "supabaseUserId", title: "Supabase User ID", type: "string" },
     { name: "customerName", title: "Customer Name", type: "string" },
     { name: "customerEmail", title: "Customer Email", type: "string" },
+    { name: "voucherCode", title: "Applied Voucher Code", type: "string", readOnly: true },
     {
       name: "customerPhone",
       title: "Customer Phone",

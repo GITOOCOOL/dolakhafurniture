@@ -27,9 +27,28 @@ export default async function CampaignLandingPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-[#fdfaf5] pb-24 font-sans text-[#3d2b1f]">
       
+      {/* TOP NAVIGATION STRIP: Unified and clean */}
+      <div className="bg-[#fdfaf5] border-b border-[#e5dfd3] no-print">
+        <div className="container mx-auto px-6 md:px-12 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+          <Link 
+            href="/campaigns" 
+            className="flex items-center gap-2 text-[#3d2b1f] hover:text-[#a3573a] transition-all text-[10px] uppercase tracking-widest font-bold group"
+          >
+            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+            Back to Campaigns
+          </Link>
+
+          <PDFDownloadButton 
+            campaign={campaign} 
+            label="DOWNLOAD CATALOG / PRICE LIST" 
+            variant="outline" 
+            className="!px-8 !py-2.5 !text-[11px] !border-[#e5dfd3] !text-[#3d2b1f] hover:!bg-[#fdfaf5] hover:!border-[#a3573a]" 
+          />
+        </div>
+      </div>
+
       {/* HERO SECTION */}
-      {/* HERO SECTION: Tighter and cleaner */}
-      <section className="relative w-full h-[25vh] md:h-[30vh] overflow-hidden flex flex-col justify-end">
+      <section className="relative w-full h-[30vh] md:h-[35vh] overflow-hidden flex flex-col justify-end">
         {campaign.banner && (
           <Image
             src={urlFor(campaign.banner).width(2000).url()}
@@ -40,42 +59,21 @@ export default async function CampaignLandingPage({ params }: Props) {
           />
         )}
         
-        {/* Simplified Back Button & Download Tools */}
-        <div className="absolute top-0 left-0 right-0 p-4 md:p-8 z-20 flex justify-between items-start no-print">
-          <Link 
-            href="/campaigns" 
-            className="flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/10 text-white px-4 py-2 rounded-full text-[10px] uppercase tracking-widest hover:bg-black/60 transition-all shadow-lg"
-          >
-            <ArrowLeft size={12} />
-            Back to Campaigns
-          </Link>
-
-          <div className="flex gap-3">
-            <PDFDownloadButton campaign={campaign} label="Catalog / Price List" variant="glass" className="!px-8 !py-3 !text-[11px]" />
-          </div>
-        </div>
-
         {/* Overlay Gradient */}
         <div 
           className="absolute inset-0 z-10" 
-          style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%)` }} 
+          style={{ background: `linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%)` }} 
         />
 
         {/* Hero Content */}
-        <div className="relative z-20 container mx-auto px-6 md:px-12 pb-8 md:pb-12 space-y-3">
-          <div className="flex items-center gap-2 text-white/60">
-            <Sparkles size={12} />
-            <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold">Active Campaign</p>
+        <div className="relative z-20 container mx-auto px-6 md:px-12 pb-10 md:pb-14 space-y-4">
+          <div className="flex items-center gap-2 text-white/70">
+            <Sparkles size={14} />
+            <p className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] font-bold">Active Campaign</p>
           </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif italic text-white leading-tight">
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-serif italic text-white leading-none">
             {campaign.title}
           </h1>
-
-          {/* Scroll Indicator */}
-          <div className="pt-4 flex items-center gap-3 animate-pulse opacity-50">
-            <div className="w-[1px] h-4 bg-white" />
-            <p className="text-[7px] uppercase tracking-[0.3em] text-white">Scroll to browse collection</p>
-          </div>
         </div>
       </section>
 
@@ -100,7 +98,7 @@ export default async function CampaignLandingPage({ params }: Props) {
                 {campaign.vouchers.map(v => (
                   <div key={v.code} className="flex flex-col gap-1 items-start md:items-end">
                     <div className="flex items-center gap-2">
-                      <span className="text-[8px] uppercase tracking-widest opacity-60">Coupon:</span>
+                      <span className="text-[8px] uppercase tracking-widest opacity-60">Voucher:</span>
                       <span className="px-3 py-1 bg-white text-[#a3573a] text-[10px] font-bold rounded-sm tracking-widest shadow-sm">
                         {v.code}
                       </span>

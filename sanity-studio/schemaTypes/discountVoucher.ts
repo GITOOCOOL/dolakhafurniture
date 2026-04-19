@@ -38,6 +38,11 @@ export default defineType({
             type: "datetime",
         }),
         defineField({
+            name: "startsAt",
+            title: "Starts At",
+            type: "datetime",
+        }),
+        defineField({
             name: "endsAt",
             title: "Ends At",
             type: "datetime",

@@ -169,8 +169,8 @@ export default function CheckoutPage() {
 
     setIsProcessing(true);
     try {
-      // Pass finalTotal to processOrder
-      const result = await processOrder(items, finalTotal, formData);
+      // Pass finalTotal and appliedVoucher.code to processOrder
+      const result = await processOrder(items, finalTotal, formData, appliedVoucher?.code);
       if (result.success) {
         setOrderNumber(result.orderNumber || null);
         setIsSuccess(true);
