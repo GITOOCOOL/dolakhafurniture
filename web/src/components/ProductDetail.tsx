@@ -48,10 +48,13 @@ export default function ProductDetail({ product }: { product: Product }) {
     addItem(product, quantity);
     trackEvent("AddToCart", {
       content_name: product.title,
-      content_ids: [product._id],
+      content_category: product.category?.title,
+      content_ids: [cleanId],
       content_type: "product",
       value: Number(product.price * quantity) || 0,
       currency: "NPR",
+      brand: "Dolakha Furniture",
+      availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order"
     });
     setIsSuccess(true);
     showToast(`${quantity} x ${product.title} added to cart`);
@@ -66,7 +69,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           <div className="relative group">
             <div className="aspect-square relative overflow-hidden rounded-[3rem] bg-white border border-[#e5dfd3] shadow-sm transition-all duration-1000 group-hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] group-hover:border-[#a3573a]/20">
               <Image
-                src={urlFor(selectedImage).width(1000).url()}
+                src={urlFor(selectedImage).width(1000).format("webp").url()}
                 alt={product.title}
                 fill
                 className="object-contain transition-transform duration-[1.5s] group-hover:scale-105"
@@ -90,7 +93,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   }`}
                 >
                   <Image
-                    src={urlFor(img).width(200).url()}
+                    src={urlFor(img).width(300).format("webp").url()}
                     alt={`${product.title} gallery ${idx}`}
                     fill
                     className="object-contain"

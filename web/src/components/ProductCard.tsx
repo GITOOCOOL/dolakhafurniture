@@ -36,7 +36,8 @@ const ProductCard = ({
       >
         <div className="aspect-square bg-[#fdfaf5] overflow-hidden relative">
            <img 
-             src={urlFor(product.mainImage).width(200).url()} 
+             loading="lazy"
+             src={urlFor(product.mainImage).width(400).format("webp").url()} 
              alt={product.title} 
              className="object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105" 
            />
@@ -121,9 +122,19 @@ const ProductCard = ({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            const cleanId = product._id.replace("drafts.", ""); 
             addItem(product, 1);
             showToast(`1 x ${product.title} added to cart`);
-            trackEvent("AddToCart", { content_name: product.title, value: product.price, currency: "NPR" });
+            trackEvent("AddToCart", { 
+              content_name: product.title, 
+              content_category: product.category?.title,
+              content_ids: [cleanId],
+              content_type: "product",
+              value: product.price, 
+              currency: "NPR",
+              brand: "Dolakha Furniture",
+              availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order"
+            });
           }}
           className="flex-1 h-8 md:h-10 flex items-center justify-center gap-2 rounded-lg bg-[#3d2b1f] shadow-sm active:translate-y-[1px] hover:bg-[#a3573a] transition-all duration-150"
           title="Add to Cart"
