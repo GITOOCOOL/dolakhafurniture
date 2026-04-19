@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
   },
   // This is the clean way to hide the "N" in Next.js 15
   devIndicators: false, 
-  serverComponentsExternalPackages: ['@react-pdf/renderer'],
+  serverExternalPackages: ['@react-pdf/renderer'],
 };
 
 export default nextConfig;
