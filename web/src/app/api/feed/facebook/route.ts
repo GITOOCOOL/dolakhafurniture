@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { client } from "@/lib/sanity";
-import { allProductsQuery } from "@/lib/queries";
+import { facebookMelaProductsQuery } from "@/lib/queries";
 import { Product } from "@/types";
 import { urlFor } from "@/lib/sanity";
 
@@ -27,16 +27,21 @@ function escapeXml(unsafe: string) {
 
 export async function GET() {
   try {
-    const products: Product[] = await client.fetch(allProductsQuery);
+    const products: Product[] = await client.fetch(facebookMelaProductsQuery);
+    const melaProducts = Array.isArray(products) ? products : [];
+    
     const DOMAIN = "https://dolakhafurniture.com";
     const CURRENCY = "NPR";
 
-    const xmlItems = products
+    const xmlItems = melaProducts
       .filter(
         (p) => p.syncToFacebook === true && p.mainImage && p.price && p.slug,
       ) // Only sync manually approved and complete products
       .map((product) => {
         const title = escapeXml(product.title || "Untitled Product");
+        // Sanitize ID: Remove Sanity drafts prefix to ensure match with tracker ID
+        const cleanId = product._id.replace("drafts.", "");
+        
         const description = escapeXml(
           product.description ||
             `High-quality handcrafted ${product.category?.title || "furniture"} from Dolakha Furniture. Material: ${product.material || " Wood"}.`,
@@ -51,7 +56,7 @@ export async function GET() {
 
         return `
       <item>
-        <g:id>${escapeXml(product._id)}</g:id>
+        <g:id>${escapeXml(cleanId)}</g:id>
         <g:title><![CDATA[${title}]]></g:title>
         <g:description><![CDATA[${description}]]></g:description>
         <g:link>${escapeXml(`${DOMAIN}/product/${product.slug}`)}</g:link>

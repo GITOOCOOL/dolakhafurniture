@@ -16,15 +16,21 @@ export default function ProductDetail({ product }: { product: Product }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const { showToast } = useToast();
 
+  // Tracking: ViewContent and AddToCart
   useEffect(() => {
-    trackEvent("ViewContent", {
-      content_name: product.title,
-      content_category: product.category?.title,
-      content_ids: [product._id],
-      content_type: "product",
-      value: product.price,
-      currency: "NPR",
-    });
+    if (product) {
+      const cleanId = product._id.replace("drafts.", "");
+      trackEvent("ViewContent", {
+        content_name: product.title,
+        content_category: product.category?.title,
+        content_ids: [cleanId],
+        content_type: "product",
+        value: product.price,
+        currency: "NPR",
+        brand: "Dolakha Furniture",
+        availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order"
+      });
+    }
   }, [product]);
 
   // Combined Gallery: mainImage + visible gallery images
@@ -37,6 +43,8 @@ export default function ProductDetail({ product }: { product: Product }) {
   const addItem = useCart((state) => state.addItem);
 
   const handleAddToCart = () => {
+    if (!product) return;
+    const cleanId = product._id.replace("drafts.", "");
     addItem(product, quantity);
     trackEvent("AddToCart", {
       content_name: product.title,

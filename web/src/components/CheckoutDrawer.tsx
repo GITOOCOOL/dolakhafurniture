@@ -123,11 +123,16 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
   const finalTotal = Math.max(0, total - discount);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && items.length > 0) {
+      const contentIds = items.map(item => item._id.replace("drafts.", ""));
       trackEvent("InitiateCheckout", {
+        content_ids: contentIds,
+        content_type: "product",
         num_items: totalPieces,
         value: finalTotal,
-        currency: "NPR"
+        currency: "NPR",
+        brand: "Dolakha Furniture",
+        availability: "in stock"
       });
     }
   }, [isOpen]);
@@ -267,9 +272,14 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
       if (result.success) {
         setOrderNumber(result.orderNumber || null);
         setIsSuccess(true);
+        const contentIds = items.map(item => item._id.replace("drafts.", ""));
         trackEvent("Purchase", {
+          content_ids: contentIds,
+          content_type: "product",
           currency: "NPR",
-          value: Number(finalTotal) || 0
+          value: Number(finalTotal) || 0,
+          brand: "Dolakha Furniture",
+          num_items: totalPieces
         });
         clearCart();
       } else {

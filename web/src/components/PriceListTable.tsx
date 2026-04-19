@@ -95,9 +95,18 @@ export default function PriceListTable({ products }: PriceListTableProps) {
                     </a>
                     <button 
                       onClick={() => {
+                        const cleanId = product._id.replace("drafts.", "");
                         addItem(product, 1);
                         showToast(`1 x ${product.title} added to cart`);
-                        trackEvent("AddToCart", { content_name: product.title, value: product.price, currency: "NPR" });
+                        trackEvent("AddToCart", {
+                          content_ids: [cleanId],
+                          content_type: "product",
+                          content_name: product.title,
+                          value: product.price,
+                          currency: "NPR",
+                          brand: "Dolakha Furniture",
+                          availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order"
+                        });
                       }}
                       className="flex-1 h-8 flex items-center justify-center gap-2 rounded-lg bg-[#3d2b1f] text-white hover:bg-[#a3573a] transition-all duration-300"
                     >
