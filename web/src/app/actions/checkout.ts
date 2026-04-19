@@ -22,7 +22,7 @@ function generateOrderNumber() {
   return result;
 }
 
-export async function processOrder(cartItems: CartItem[], total: number, customerData: CustomerData, voucherCode?: string) {
+export async function processOrder(cartItems: CartItem[], total: number, customerData: CustomerData, voucherCodes: string[] = []) {
   // 1.5 Safety Check: Verify Write Token
   if (!process.env.SANITY_API_WRITE_TOKEN) {
     console.error("❌ ERROR: SANITY_API_WRITE_TOKEN is missing in environment variables.")
@@ -37,12 +37,33 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
     const { data: { user } } = await supabase.auth.getUser()
     const orderNumber = generateOrderNumber();
 
-    // 2. Prepare the Order Document for Sanity
+    // 2. Server-side Recalculation (Integrity Check)
+    const serverSubtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    let serverShipping = customerData.shippingMethod === 'express' ? 500 : 0;
+    
+    // Multi-Voucher Calculation
+    let serverDiscount = 0;
+    const { validateVoucher } = await import("./vouchers");
+
+    for (const code of voucherCodes) {
+       const voucherResult = await validateVoucher(code);
+       if (voucherResult.success) {
+          if (voucherResult.discountType === 'percentage') {
+             serverDiscount += Math.floor((serverSubtotal * (voucherResult.discountValue || 0)) / 100);
+          } else {
+             serverDiscount += voucherResult.discountValue || 0;
+          }
+       }
+    }
+
+    const serverTotal = Math.max(0, serverSubtotal + serverShipping - serverDiscount);
+
+    // 3. Prepare the Order Document for Sanity
     const orderDocument = {
       _type: 'order',
       orderNumber,
       supabaseUserId: user?.id || 'guest',
-      voucherCode: voucherCode?.toLowerCase() || null,
+      voucherCodes: voucherCodes.map(c => c.toLowerCase()),
       customerName: user ? (user.user_metadata.full_name || user.email) : `${customerData.firstName} ${customerData.lastName}`,
       customerEmail: user?.email || customerData.email,
       customerPhone: customerData.phone,
@@ -59,7 +80,7 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
       },
       shippingMethod: customerData.shippingMethod,
       paymentMethod: customerData.paymentMethod,
-      totalPrice: total,
+      totalPrice: serverTotal,
       status: 'pending',
       items: cartItems.map((item) => ({
         _key: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

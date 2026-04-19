@@ -21,7 +21,7 @@ export default function HeaderClient() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-[#fdfaf5] border-b border-[#e5dfd3] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+      <header className="sticky top-0 z-[100] w-full bg-[#fdfaf5] border-b border-[#e5dfd3] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
         <div className="container mx-auto px-2 md:px-6 w-full flex items-center justify-between py-3 md:py-4 gap-2">
           
           <div className="flex-none flex items-center gap-2 md:gap-4">

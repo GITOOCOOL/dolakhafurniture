@@ -8,11 +8,13 @@ import { Leaf, Minus, Plus, ShieldCheck } from "lucide-react";
 import Button from "./ui/Button";
 import { Product } from "@/types";
 import { trackEvent } from "./MetaPixel";
+import { useToast } from "./Toast";
 import { useEffect } from "react";
 
 export default function ProductDetail({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     trackEvent("ViewContent", {
@@ -45,6 +47,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       currency: "NPR",
     });
     setIsSuccess(true);
+    showToast(`${quantity} x ${product.title} added to cart`);
     setTimeout(() => setIsSuccess(false), 2000);
   };
 

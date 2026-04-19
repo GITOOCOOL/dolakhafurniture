@@ -1,12 +1,20 @@
+"use client";
+
 import { urlFor } from "@/lib/sanity";
 import { Product } from "@/types";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, MessageCircle, Facebook, ShoppingCart } from "lucide-react";
+import { useCart } from "@/store/useCart";
+import { useToast } from "./Toast";
+import { trackEvent } from "./MetaPixel";
 
 interface PriceListTableProps {
   products: Product[];
 }
 
 export default function PriceListTable({ products }: PriceListTableProps) {
+  const { addItem } = useCart();
+  const { showToast } = useToast();
+
   // Group products by category
   const groupedProducts = products.reduce((acc, product) => {
     const categoryTitle = product.category?.title || "Other";
@@ -63,6 +71,39 @@ export default function PriceListTable({ products }: PriceListTableProps) {
                         ? `${product.length}" × ${product.breadth}" × ${product.height}"`
                         : "Custom Dimensions"}
                     </div>
+                  </div>
+
+                  {/* CONVERSION TOOLBAR */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <a 
+                      href={`https://wa.me/61410765748?text=${encodeURIComponent(`Hi! I'm interested in the ${product.title}.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 h-8 flex items-center justify-center rounded-lg bg-[#25D366]/5 border border-[#25D366]/20 text-[#128C7E] hover:bg-[#25D366] hover:text-white transition-all duration-300"
+                      title="WhatsApp Inquiry"
+                    >
+                      <MessageCircle size={14} />
+                    </a>
+                    <a 
+                      href="https://m.me/224061751418570"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 h-8 flex items-center justify-center rounded-lg bg-[#0084FF]/5 border border-[#0084FF]/20 text-[#0084FF] hover:bg-[#0084FF] hover:text-white transition-all duration-300"
+                      title="Messenger Inquiry"
+                    >
+                      <Facebook size={14} />
+                    </a>
+                    <button 
+                      onClick={() => {
+                        addItem(product, 1);
+                        showToast(`1 x ${product.title} added to cart`);
+                        trackEvent("AddToCart", { content_name: product.title, value: product.price, currency: "NPR" });
+                      }}
+                      className="flex-1 h-8 flex items-center justify-center gap-2 rounded-lg bg-[#3d2b1f] text-white hover:bg-[#a3573a] transition-all duration-300"
+                    >
+                      <ShoppingCart size={16} />
+                      <span className="text-[10px] font-bold tracking-tighter tracking-widest">+1</span>
+                    </button>
                   </div>
                 </div>
               </div>

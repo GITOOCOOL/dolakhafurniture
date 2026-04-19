@@ -6,6 +6,7 @@ import { Product } from "@/types";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "./Toast";
 import { trackEvent } from "./MetaPixel";
+import { useCart } from "@/store/useCart";
 
 const ProductCard = ({ 
   product, 
@@ -17,6 +18,7 @@ const ProductCard = ({
   accentColor?: string;
 }) => {
   const { showToast } = useToast();
+  const { addItem } = useCart();
   // Pre-filled WhatsApp link
   const whatsappNumber = "61410765748"; 
   const whatsappMessage = encodeURIComponent(`Hi Dolakha! I'm interested in buying ${product.title}.`);
@@ -115,13 +117,20 @@ const ProductCard = ({
         </a>
 
         {/* CART BUTTON */}
-        <Link 
-          href={`/product/${product.slug}`}
-          className="flex-1 h-8 md:h-10 flex items-center justify-center rounded-lg bg-[#3d2b1f] shadow-sm active:translate-y-[1px] hover:bg-[#4d3b2f] transition-all duration-150"
-          title="View Product"
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            addItem(product, 1);
+            showToast(`1 x ${product.title} added to cart`);
+            trackEvent("AddToCart", { content_name: product.title, value: product.price, currency: "NPR" });
+          }}
+          className="flex-1 h-8 md:h-10 flex items-center justify-center gap-2 rounded-lg bg-[#3d2b1f] shadow-sm active:translate-y-[1px] hover:bg-[#a3573a] transition-all duration-150"
+          title="Add to Cart"
         >
-          <ShoppingCart size={22} strokeWidth={2} className="text-white" />
-        </Link>
+          <ShoppingCart size={20} strokeWidth={2} className="text-white" />
+          <span className="text-[10px] font-bold text-white tracking-tighter tracking-widest">+1</span>
+        </button>
       </div>
     </div>
   );

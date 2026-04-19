@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity";
 import { Campaign } from "@/types";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, MessageCircle, Facebook } from "lucide-react";
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const themeColor = campaign.themeColor || "#a3573a";
@@ -53,10 +53,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           {(campaign.endDate || (campaign.vouchers && campaign.vouchers.length > 0)) && (
             <div className="flex flex-wrap items-center gap-3 pt-1">
               {campaign.endDate && (
-                <p className="text-[9px] font-sans font-extrabold uppercase tracking-widest text-[#a3573a] flex items-center gap-1.5">
+                <div className="text-[9px] font-sans font-extrabold uppercase tracking-widest text-[#a3573a] flex items-center gap-1.5">
                   <div className="w-1 h-1 rounded-full bg-[#a3573a] animate-pulse" />
                   Ends: {new Date(campaign.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </p>
+                </div>
               )}
               {campaign.vouchers && campaign.vouchers.map(v => (
                 <span 
@@ -76,7 +76,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           </p>
         )}
 
-        <div className="pt-4">
+        <div className="pt-4 flex items-center justify-between gap-4">
           <Link
             href={`/campaign/${campaign.slug}`}
             className="inline-flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#3d2b1f] hover:text-[#a3573a] transition-all group/link"
@@ -88,6 +88,27 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               <ArrowRight size={16} />
             </div>
           </Link>
+
+          <div className="flex items-center gap-2">
+            <a 
+              href={`https://wa.me/61410765748?text=${encodeURIComponent(`Hi! I'm interested in the ${campaign.title} collection.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25D366]/5 border border-[#25D366]/20 text-[#128C7E] hover:bg-[#25D366] hover:text-white transition-all duration-300"
+              title="WhatsApp Inquiry"
+            >
+              <MessageCircle size={18} />
+            </a>
+            <a 
+              href="https://m.me/224061751418570"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#0084FF]/5 border border-[#0084FF]/20 text-[#0084FF] hover:bg-[#0084FF] hover:text-white transition-all duration-300"
+              title="Messenger Inquiry"
+            >
+              <Facebook size={18} />
+            </a>
+          </div>
         </div>
       </div>
       

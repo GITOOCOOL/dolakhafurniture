@@ -6,8 +6,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Leaf, User, Search } from "lucide-react";
+import { ShoppingBag, Leaf, User, Search, ArrowRight } from "lucide-react";
 import AuthForm from "./AuthForm";
+import CheckoutDrawer from "./CheckoutDrawer";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface NavbarActionsProps {
   onSearchClick: () => void;
@@ -19,10 +21,13 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [isCheckoutDrawerOpen, setIsCheckoutDrawerOpen] = useState(false);
+  
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const items = useCart((state) => state.items);
   const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
-  const isCheckoutPage = pathname === "/checkout";
 
   useEffect(() => {
     const checkUser = async () => {
@@ -39,6 +44,15 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
 
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
+
+  // Deep linking to checkout
+  useEffect(() => {
+    if (searchParams.get("checkout") === "true") {
+      setIsCheckoutDrawerOpen(true);
+      // Clean up the URL without a full page refresh
+      router.replace(pathname);
+    }
+  }, [searchParams, pathname, router]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -73,57 +87,65 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
 
       {/* --- ANIMATED CART SECTION --- */}
       <div className="relative flex-shrink-0">
-        <Link href="/checkout">
-          <motion.button
-            key={totalQuantity}
-            type="button"
-            initial={{ scale: 1 }}
-            animate={{
-              scale: totalQuantity > 0 ? [1, 1.15, 1] : 1,
-            }}
-            transition={{ duration: 0.4 }}
-            className={`relative flex items-center justify-center w-[38px] h-[38px] bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
-              ${totalQuantity > 0
-                ? 'text-[#a3573a]'
-                : 'text-[#3d2b1f]'}`}
-          >
-            <div className="flex items-center gap-1">
-              <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
-            </div>
+        <motion.button
+          key={totalQuantity}
+          type="button"
+          onClick={() => setIsCheckoutDrawerOpen(true)}
+          initial={{ scale: 1 }}
+          animate={{
+            scale: totalQuantity > 0 ? [1, 1.15, 1] : 1,
+          }}
+          transition={{ duration: 0.4 }}
+          className={`relative flex items-center justify-center w-[38px] h-[38px] bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
+            ${totalQuantity > 0
+              ? 'text-[#a3573a]'
+              : 'text-[#3d2b1f]'}`}
+        >
+          <div className="flex items-center gap-1">
+            <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
+          </div>
 
-            {totalQuantity > 0 && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 bg-[#fdfaf5] text-[#3d2b1f] text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-[#a3573a]"
-              >
-                {totalQuantity}
-              </motion.span>
-            )}
-          </motion.button>
-        </Link>
-
-        {/* Floating Tooltip: Softer, Boho styling */}
-        <AnimatePresence>
-          {totalQuantity > 0 && !isCheckoutPage && (
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="absolute top-full right-0 mt-4 w-56 bg-white border border-[#e5dfd3] rounded-[2.5rem] shadow-[0_20px_50px_rgba(61,43,31,0.12)] p-6 z-50 pointer-events-auto"
+          {totalQuantity > 0 && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-1 -right-1 bg-[#fdfaf5] text-[#3d2b1f] text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-[#a3573a]"
             >
-              <div className="absolute -top-2 right-4 w-4 h-4 bg-white rotate-45 border-t border-l border-[#e5dfd3]" />
-              <div className="space-y-4 text-center">
-                <div className="flex flex-col items-center gap-1">
-                  <Leaf size={14} className="text-[#a3573a] opacity-60" />
-                  <p className="text-sm font-serif italic text-[#3d2b1f]">Ready to finalize?</p>
-                </div>
-                <Link href="/checkout">
-                  <button className="w-full bg-[#3d2b1f] text-[#fdfaf5] py-3 rounded-none text-[9px] font-bold uppercase tracking-widest hover:bg-[#a3573a] transition-all">
-                    checkout here →
-                  </button>
-                </Link>
-              </div>
+              {totalQuantity}
+            </motion.span>
+          )}
+        </motion.button>
+
+        {/* Minimal Checkout Nudge: To the left of the cart icon */}
+        <AnimatePresence>
+          {totalQuantity > 0 && (
+            <motion.div
+              initial={{ opacity: 0, x: 10, scale: 0.95 }}
+              animate={{ 
+                opacity: 1, 
+                x: 0, 
+                scale: [1, 1.02, 1],
+              }}
+              transition={{
+                scale: {
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                },
+                opacity: { duration: 0.3 },
+                x: { duration: 0.3 }
+              }}
+              exit={{ opacity: 0, x: 5, scale: 0.95 }}
+              className="absolute top-1/2 -translate-y-1/2 right-full mr-3 w-32 bg-white border border-[#e5dfd3] rounded-full shadow-lg p-1.5 z-50 overflow-hidden hidden md:block"
+            >
+              <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-white rotate-45 border-t border-r border-[#e5dfd3] -translate-y-1/2" />
+              <button 
+                 onClick={() => setIsCheckoutDrawerOpen(true)}
+                 className="w-full bg-[#3d2b1f] text-[#fdfaf5] py-2 rounded-full text-[8px] font-bold uppercase tracking-[0.1em] hover:bg-[#a3573a] transition-all flex items-center justify-center gap-1.5 group"
+              >
+                Checkout here
+                <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -263,6 +285,16 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           )}
         </AnimatePresence>
       </div>
+
+      {/* --- CHECKOUT DRAWER --- */}
+      <CheckoutDrawer 
+        isOpen={isCheckoutDrawerOpen} 
+        onClose={() => setIsCheckoutDrawerOpen(false)} 
+        onSignUp={() => {
+          setIsCheckoutDrawerOpen(false);
+          setIsAccountModalOpen(true);
+        }}
+      />
     </div>
   );
 }

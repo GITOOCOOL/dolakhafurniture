@@ -40,11 +40,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={`
-              w-full bg-white border border-[#e5dfd3] rounded-2xl text-xs 
+              w-full bg-white border border-[#e5dfd3] rounded-2xl text-sm 
+              text-[#1a1c13] font-medium placeholder:text-[#a89f91]/40
               focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all
               disabled:opacity-50 disabled:cursor-not-allowed
               ${LeftIcon ? "pl-12 pr-6" : "px-6"} 
-              py-4.5
+              py-4
               ${error ? "border-red-500 focus:ring-red-500" : ""}
               ${className}
             `}
