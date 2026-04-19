@@ -92,10 +92,16 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           type="button"
           onClick={() => setIsCheckoutDrawerOpen(true)}
           initial={{ scale: 1 }}
-          animate={{
-            scale: totalQuantity > 0 ? [1, 1.15, 1] : 1,
+          animate={totalQuantity > 0 ? {
+            rotate: [0, -15, 15, -15, 15, 0],
+          } : {}}
+          transition={{
+            rotate: {
+              duration: 1,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }
           }}
-          transition={{ duration: 0.4 }}
           className={`relative flex items-center justify-center w-[38px] h-[38px] bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
             ${totalQuantity > 0
               ? 'text-[#a3573a]'
@@ -116,39 +122,6 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           )}
         </motion.button>
 
-        {/* Minimal Checkout Nudge: To the left of the cart icon */}
-        <AnimatePresence>
-          {totalQuantity > 0 && (
-            <motion.div
-              initial={{ opacity: 0, x: 10, scale: 0.95 }}
-              animate={{ 
-                opacity: 1, 
-                x: 0, 
-                scale: [1, 1.02, 1],
-              }}
-              transition={{
-                scale: {
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                },
-                opacity: { duration: 0.3 },
-                x: { duration: 0.3 }
-              }}
-              exit={{ opacity: 0, x: 5, scale: 0.95 }}
-              className="absolute top-1/2 -translate-y-1/2 right-full mr-3 w-32 bg-white border border-[#e5dfd3] rounded-full shadow-lg p-1.5 z-50 overflow-hidden hidden md:block"
-            >
-              <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-white rotate-45 border-t border-r border-[#e5dfd3] -translate-y-1/2" />
-              <button 
-                 onClick={() => setIsCheckoutDrawerOpen(true)}
-                 className="w-full bg-[#3d2b1f] text-[#fdfaf5] py-2 rounded-full text-[8px] font-bold uppercase tracking-[0.1em] hover:bg-[#a3573a] transition-all flex items-center justify-center gap-1.5 group"
-              >
-                Checkout here
-                <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* --- ACCOUNT / AUTH SECTION --- */}

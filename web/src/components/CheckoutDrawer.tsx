@@ -55,6 +55,7 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
   const [activeStep, setActiveStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
   
   // Voucher State
@@ -130,24 +131,42 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        setFormData(prev => ({
-          ...prev,
-          email: user.email || "",
-          firstName: user.user_metadata.full_name?.split(" ")[0] || "",
-          lastName: user.user_metadata.full_name?.split(" ").slice(1).join(" ") || ""
-        }));
-        setInquiryData(prev => ({
-          ...prev,
-          name: user.user_metadata.full_name || "",
-          email: user.email || ""
-        }));
-      }
+      try {
+        setIsInitialLoading(true);
+        const campaigns = await client.fetch(activeCampaignsQuery);
+        setCampaigns(campaigns);
+        
+        // Pre-apply signup incentive if applicable
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUser(user);
+          setFormData(prev => ({
+            ...prev,
+            email: user.email || "",
+            firstName: user.user_metadata.full_name?.split(" ")[0] || "",
+            lastName: user.user_metadata.full_name?.split(" ").slice(1).join(" ") || ""
+          }));
+          setInquiryData(prev => ({
+            ...prev,
+            name: user.user_metadata.full_name || "",
+            email: user.email || ""
+          }));
 
-      const accounts = await client.fetch(paymentAccountsQuery);
-      setPaymentAccounts(accounts);
+          const signupVoucher = campaigns.flatMap((c: any) => c.vouchers || []).find((v: any) => v.code === "WELCOME5");
+          if (signupVoucher && !appliedVouchers.some(v => v.code === "WELCOME5")) {
+              const discountVal = Math.floor((subtotal * 5) / 100);
+              setDiscount(prev => prev + discountVal);
+              setAppliedVouchers(prev => [...prev, { code: "WELCOME5", discountType: "percentage", discountValue: 5, amount: discountVal }]);
+          }
+        }
+
+        const accounts = await client.fetch(paymentAccountsQuery);
+        setPaymentAccounts(accounts);
+      } catch (error) {
+        console.error("Error loading checkout data:", error);
+      } finally {
+        setIsInitialLoading(false);
+      }
     };
     if (isOpen) fetchData();
   }, [supabase, isOpen]);
@@ -389,7 +408,15 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                   </div>
 
                   {/* Dynamic Campaign Hero Cards */}
-                  {campaigns.slice(0, 2).map((campaign, idx) => (
+                  {isInitialLoading ? (
+                    <div className="space-y-6">
+                      {[1, 2].map((i) => (
+                        <div key={i} className="h-[280px] w-full bg-[#3d2b1f]/10 rounded-[40px] animate-pulse relative overflow-hidden">
+                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : campaigns.slice(0, 2).map((campaign, idx) => (
                     <div 
                       key={campaign._id}
                       className={`relative p-8 rounded-[40px] overflow-hidden text-white shadow-2xl border border-white/10 group animate-in fade-in slide-in-from-bottom-4 delay-${(idx + 1) * 100}`}
@@ -543,8 +570,8 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                                             <p className="text-[10px] font-sans font-bold text-[#a3573a]">Rs. {(item.price * item.quantity).toLocaleString()}</p>
                                          </div>
                                          
-                                         {/* Controls */}
-                                         <div className="flex items-center justify-between mt-2">
+                                         {/* Quantity Controls */}
+                                         <div className="flex items-center mt-2">
                                             <div className="flex items-center bg-[#fdfaf5] border border-[#e5dfd3] rounded-full px-1.5 py-1 gap-3">
                                                <button 
                                                   type="button"
@@ -562,15 +589,19 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                                                   <Plus size={14} />
                                                </button>
                                             </div>
-
-                                            <button 
-                                               type="button"
-                                               onClick={() => removeItem(item._id)}
-                                               className="p-2 text-[#a89f91] hover:text-[#a3573a] transition-all opacity-0 group-hover:opacity-100"
-                                            >
-                                               <Trash2 size={16} strokeWidth={1.5} />
-                                            </button>
                                          </div>
+                                      </div>
+
+                                      {/* Delete Action - Red Bin */}
+                                      <div className="flex items-center pl-2">
+                                        <button 
+                                           type="button"
+                                           onClick={() => removeItem(item._id)}
+                                           className="p-3 text-red-100 hover:text-white bg-red-500/10 hover:bg-red-500 rounded-2xl transition-all group/delete"
+                                           title="Remove from cart"
+                                        >
+                                           <Trash2 size={18} strokeWidth={2} className="text-red-500 group-hover/delete:text-white transition-colors" />
+                                        </button>
                                       </div>
                                    </motion.div>
                                  ))}
@@ -865,7 +896,8 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                 <Button
                   form="checkout-form"
                   type="submit"
-                  isLoading={isProcessing}
+                  isLoading={isProcessing || (activeStep === 1 && items.length > 0 && isInitialLoading)}
+                  disabled={activeStep === 1 && items.length > 0 && isInitialLoading}
                   className="px-8 !py-4"
                   rightIcon={activeStep < 4 ? <ChevronRight size={16} /> : <ShieldCheck size={16} />}
                 >

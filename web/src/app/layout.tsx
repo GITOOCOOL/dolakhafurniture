@@ -9,6 +9,7 @@ import { ToastProvider } from "@/components/Toast";
 import MetaPixel from "@/components/MetaPixel";
 import FloatingContact from "@/components/FloatingContact";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import NextTopLoader from 'nextjs-toploader';
 import { Suspense } from "react";
 
 const serif = Cormorant_Garamond({
@@ -34,7 +35,7 @@ export default async function RootLayout({
   const bulletins = await client.fetch<Bulletin[]>(bulletinQuery);
 
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning={true}>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning={true} data-scroll-behavior="smooth">
       <head>
         <meta
           name="viewport"
@@ -55,6 +56,18 @@ export default async function RootLayout({
       <body
         className={`${serif.variable} ${sans.variable} antialiased bg-[#fdfaf5] text-[#3d2b1f] font-sans w-full min-h-screen flex flex-col`}
       >
+        <NextTopLoader 
+          color="#22c55e"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={5}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 15px rgba(34,197,94,0.6), 0 0 10px rgba(34,197,94,0.4)"
+          zIndex={999999}
+        />
         <ToastProvider>
           <Suspense fallback={null}>
             <MetaPixel />
