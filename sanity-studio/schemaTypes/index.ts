@@ -9,5 +9,6 @@ import paymentAccount from './paymentAccount'
 import discountVoucher from './discountVoucher'
 import inquiry from './inquiry'
 import campaign from './campaign'
+import faq from './faq'
 
-export const schemaTypes = [product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry, campaign]
+export const schemaTypes = [product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry, campaign, faq]

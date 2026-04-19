@@ -3,9 +3,11 @@
 import { MessageCircle, Facebook, MessageSquare, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import InquiryModal from "./InquiryModal";
 
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
 
   // Pre-filled WhatsApp link
   const whatsappNumber = "61410765748";
@@ -20,23 +22,23 @@ const FloatingContact = () => {
       label: "WhatsApp",
       href: whatsappLink,
       color: "bg-[#25D366]",
-      textColor: "text-white"
+      textColor: "text-white",
     },
     {
       icon: <Facebook size={24} className="fill-[#0084FF] stroke-[0.5]" />,
       label: "Messenger",
       href: messengerLink,
       color: "bg-[#0084FF]",
-      textColor: "text-white"
+      textColor: "text-white",
     },
     {
       icon: <MessageSquare size={24} />,
-      label: "Chat Now",
-      href: "#",
+      label: "Inquiry",
+      onClick: () => setShowInquiryModal(true),
       color: "bg-[#a3573a]",
       textColor: "text-white",
-      showLabel: true
-    }
+      showLabel: true,
+    },
   ];
 
   return (
@@ -49,22 +51,36 @@ const FloatingContact = () => {
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             className="flex flex-col items-end gap-3 mb-2"
           >
-            {buttons.map((btn, idx) => (
-              <a
-                key={idx}
-                href={btn.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`flex items-center gap-3 px-4 py-3 rounded-full shadow-lg ${btn.color} ${btn.textColor} hover:scale-105 transition-transform duration-200`}
-              >
-                {(btn.label === "Chat Now" || isOpen) && (
+            {buttons.map((btn, idx) =>
+              btn.onClick ? (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    btn.onClick();
+                    setIsOpen(false);
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-full shadow-lg ${btn.color} ${btn.textColor} hover:scale-105 transition-transform duration-200 w-full justify-end`}
+                >
                   <span className="text-[12px] font-sans font-bold uppercase tracking-widest">
                     {btn.label}
                   </span>
-                )}
-                {btn.icon}
-              </a>
-            ))}
+                  {btn.icon}
+                </button>
+              ) : (
+                <a
+                  key={idx}
+                  href={btn.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-full shadow-lg ${btn.color} ${btn.textColor} hover:scale-105 transition-transform duration-200`}
+                >
+                  <span className="text-[12px] font-sans font-bold uppercase tracking-widest">
+                    {btn.label}
+                  </span>
+                  {btn.icon}
+                </a>
+              ),
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -98,6 +114,13 @@ const FloatingContact = () => {
           )}
         </AnimatePresence>
       </button>
+
+      <InquiryModal
+        isOpen={showInquiryModal}
+        onClose={() => setShowInquiryModal(false)}
+        title=" Inquiry"
+        subtitle="How can we assist you today?"
+      />
     </div>
   );
 };

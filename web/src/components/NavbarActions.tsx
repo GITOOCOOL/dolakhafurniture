@@ -220,7 +220,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
                           onClick={() => setIsAccountModalOpen(false)}
                           className="flex items-center justify-between p-4 bg-white border border-[#e5dfd3] rounded-xl hover:border-[#a3573a] hover:shadow-sm transition-all group"
                         >
-                          <span className="font-medium text-[#3d2b1f]">Profile Settings</span>
+                          <span className="font-medium text-[#3d2b1f]">Account</span>
                           <span className="text-[#a89f91] group-hover:text-[#a3573a] transition-colors">→</span>
                         </Link>
                         <Link
@@ -228,7 +228,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
                           onClick={() => setIsAccountModalOpen(false)}
                           className="flex items-center justify-between p-4 bg-white border border-[#e5dfd3] rounded-xl hover:border-[#a3573a] hover:shadow-sm transition-all group"
                         >
-                          <span className="font-medium text-[#3d2b1f]">Order History</span>
+                          <span className="font-medium text-[#3d2b1f]">View Orders</span>
                           <span className="text-[#a89f91] group-hover:text-[#a3573a] transition-colors">→</span>
                         </Link>
                       </div>

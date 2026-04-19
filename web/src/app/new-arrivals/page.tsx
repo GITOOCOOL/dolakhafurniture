@@ -88,7 +88,7 @@ export default async function NewArrivalsPage() {
                 </div>
                 
                 <p className="text-[#a89f91] text-sm md:text-base font-light italic leading-relaxed max-w-xl">
-                  {product.description || "A fresh addition to our  archive, handcrafted with precision and soul in Kathmandu."}
+                  {product.description || "A fresh addition to our store, made with care in Kathmandu."}
                 </p>
 
                 <div className="pt-6">

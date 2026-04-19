@@ -65,7 +65,7 @@ export default function AuthPage() {
 
               <div className="mt-10 pt-8 border-t border-[#e5dfd3] flex items-center justify-center gap-6 opacity-30 w-full">
                  <ShieldCheck size={20} />
-                 <span className="text-[9px] font-bold uppercase tracking-widest">Secure Handcrafted Auth</span>
+                 <span className="text-[9px] font-bold uppercase tracking-widest">Secure Login</span>
               </div>
             </div>
           </div>

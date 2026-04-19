@@ -11,7 +11,10 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = await client.fetch(`*[_type == "category" && slug.current == $slug][0]`, { slug });
+  const category = await client.fetch(
+    `*[_type == "category" && slug.current == $slug][0]`,
+    { slug },
+  );
   if (!category) return { title: "Collection Not Found" };
   return { title: `${category.title} | Dolakha ` };
 }
@@ -26,7 +29,7 @@ export default async function CategoryPage({ params }: Props) {
         _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
       }
     }`,
-    { slug }
+    { slug },
   );
 
   if (!data.category) notFound();
@@ -34,7 +37,6 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <div className="bg-[#fdfaf5] min-h-screen pt-32 pb-20 font-sans text-[#3d2b1f]">
       <div className="container mx-auto px-6">
-        
         {/* SECTION HEADER */}
         <header className="mb-20 max-w-6xl">
           <div className="flex items-center gap-3 mb-6">
@@ -44,10 +46,14 @@ export default async function CategoryPage({ params }: Props) {
             </p>
           </div>
           <h1 className="text-6xl md:text-8xl font-serif italic font-medium text-[#3d2b1f] leading-none mb-10">
-            {data.category.title}<span className="text-[#a3573a]">.</span>
+            {data.category.title}
+            <span className="text-[#a3573a]">.</span>
           </h1>
           <p className="text-lg md:text-xl font-serif italic text-[#a89f91] max-w-2xl leading-relaxed border-l-2 border-[#e5dfd3] pl-6">
-            "{data.category.description || `Artisanal pieces designed to elevate your home with the essence of Dolakha.`}"
+            "
+            {data.category.description ||
+              ` pieces designed to elevate your home with the essence of Dolakha.`}
+            "
           </p>
         </header>
 
@@ -55,14 +61,15 @@ export default async function CategoryPage({ params }: Props) {
         {data.products.length === 0 ? (
           <div className="py-24 border-t border-[#e5dfd3] border-dotted text-center">
             <p className="text-[#a89f91] italic font-serif text-2xl">
-              "New treasures for this collection are currently being handcrafted."
+              "New treasures for this collection are currently being
+              handcrafted."
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-[#e5dfd3] border-dotted pt-16">
             {data.products.map((product: Product, index: number) => (
-              <Link 
-                href={`/product/${product.slug}`} 
+              <Link
+                href={`/product/${product.slug}`}
                 key={product._id}
                 className="group flex flex-col space-y-6"
               >
@@ -73,14 +80,16 @@ export default async function CategoryPage({ params }: Props) {
                     alt={product.title}
                     className="object-cover w-full h-full transition-transform duration-[1.5s] group-hover:scale-110 group-hover:sepia-[0.1]"
                   />
-                  
+
                   {product.stock !== undefined && product.stock <= 0 && (
                     <div className="absolute top-6 right-6 bg-white/80 backdrop-blur-lg border border-[#e5dfd3] text-[#3d2b1f] px-6 py-2.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-xl z-20 flex flex-col items-center gap-1 text-center leading-tight">
                       <span className="text-[#a3573a]">Stock Out</span>
-                      <span className="opacity-70 text-[8px] normal-case font-medium italic">will be made after order</span>
+                      <span className="opacity-70 text-[8px] normal-case font-medium italic">
+                        will be made after order
+                      </span>
                     </div>
                   )}
-                  
+
                   {/* View Details Label */}
                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                     <span className="bg-[#3d2b1f] text-[#fdfaf5] px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">
@@ -100,15 +109,19 @@ export default async function CategoryPage({ params }: Props) {
                       Rs. {product.price}
                     </span>
                   </div>
-                  
+
                   <p className="text-[#a89f91] text-sm font-light italic leading-relaxed line-clamp-2">
-                    {product.description || "Handcrafted with precision in Dolakha, bringing artisanal elegance to your sanctuary."}
+                    {product.description ||
+                      "Made with care in Nepal, bringing elegance to your home."}
                   </p>
-                  
+
                   <div className="pt-4">
                     {/* FONT CORRECTION: Numbers set to font-sans */}
                     <span className="inline-block border-b border-[#e5dfd3] pb-1 text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#e5dfd3] group-hover:text-[#a3573a] group-hover:border-[#a3573a] transition-all duration-300">
-                      Archive No. <span className="font-sans">{String(index + 1).padStart(2, '0')}</span>
+                      Archive No.{" "}
+                      <span className="font-sans">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -119,18 +132,18 @@ export default async function CategoryPage({ params }: Props) {
 
         {/* BOTTOM NAVIGATION */}
         <div className="mt-48 pt-16 border-t border-[#e5dfd3] border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="text-[10px] font-medium uppercase tracking-[0.4em] text-[#a89f91]">
-                Dolakha  / {data.category.title}
-            </div>
-            <Link 
-              href="/" 
-              className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#3d2b1f] hover:text-[#a3573a] transition-colors border-b border-[#3d2b1f] hover:border-[#a3573a] pb-1"
-            >
-              Back to Showroom ↑
-            </Link>
-            <div className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
-                EST. 2024
-            </div>
+          <div className="text-[10px] font-medium uppercase tracking-[0.4em] text-[#a89f91]">
+            Dolakha / {data.category.title}
+          </div>
+          <Link
+            href="/"
+            className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#3d2b1f] hover:text-[#a3573a] transition-colors border-b border-[#3d2b1f] hover:border-[#a3573a] pb-1"
+          >
+            Back to Showroom ↑
+          </Link>
+          <div className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+            EST. 2024
+          </div>
         </div>
       </div>
     </div>

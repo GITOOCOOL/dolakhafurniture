@@ -79,6 +79,7 @@ export default {
             { name: "price", type: "number" },
             { name: "quantity", type: "number" },
             { name: "productId", type: 'string' },
+            { name: "image", title: "Product Image", type: "image", options: { hotspot: true } },
           ],
         },
       ],

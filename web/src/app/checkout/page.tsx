@@ -9,6 +9,7 @@ import { submitInquiry } from "@/app/actions/inquiry";
 import { validateVoucher } from "@/app/actions/vouchers";
 import { paymentAccountsQuery } from "@/lib/queries";
 import { useRouter } from "next/navigation";
+import InquiryModal from "@/components/InquiryModal";
 import {
   ShoppingBag,
   ArrowLeft,
@@ -48,7 +49,6 @@ export default function CheckoutPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
-  const [inquiryStatus, setInquiryStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   
   // Voucher State
   const [voucherInput, setVoucherInput] = useState("");
@@ -197,24 +197,6 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleInquirySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setInquiryStatus('submitting');
-    try {
-      const result = await submitInquiry(inquiryData);
-      if (result.success) {
-        setInquiryStatus('success');
-        setTimeout(() => {
-          setShowInquiryModal(false);
-          setInquiryStatus('idle');
-        }, 2000);
-      } else {
-        setInquiryStatus('error');
-      }
-    } catch (error) {
-      setInquiryStatus('error');
-    }
-  };
 
   if (isSuccess) {
     return (
@@ -252,7 +234,7 @@ export default function CheckoutPage() {
                       Special Offer <Tag size={10} />
                    </div>
                    <h3 className="text-2xl font-serif italic mb-2">Claim your welcome gift.</h3>
-                   <p className="text-xs text-[#a89f91] mb-8 max-w-xs mx-auto">Create an account now and get <strong>10% OFF</strong> your next handcrafted piece. Use code <span className="text-white border-b border-white/30">WELCOME10</span> at signup.</p>
+                   <p className="text-xs text-[#a89f91] mb-8 max-w-xs mx-auto">Create an account now and get <strong>10% OFF</strong> your next order. Use code <span className="text-white border-b border-white/30">WELCOME10</span> at signup.</p>
                    <Link href="/auth">
                     <Button
                       variant="primary"
@@ -306,65 +288,12 @@ export default function CheckoutPage() {
         </motion.div>
 
         {/* Inquiry Modal */}
-        <Modal
+        <InquiryModal
           isOpen={showInquiryModal}
           onClose={() => setShowInquiryModal(false)}
           title="Track your Order"
-        >
-          <p className="text-xs text-[#a89f91] uppercase tracking-[0.2em] text-center mb-8">Our team will get back to you shortly</p>
-          <form onSubmit={handleInquirySubmit} className="space-y-6">
-            <div className="space-y-4">
-              <Input
-                required
-                name="name"
-                placeholder="Your Full Name"
-                value={inquiryData.name}
-                // @ts-ignore
-                onChange={(e: any) => handleInquiryChange(e)}
-              />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  required
-                  type="email"
-                  name="email"
-                  placeholder="Email Address"
-                  value={inquiryData.email}
-                  // @ts-ignore
-                  onChange={(e: any) => handleInquiryChange(e)}
-                />
-                <Input
-                  required
-                  type="tel"
-                  name="phone"
-                  placeholder="Phone Number"
-                  value={inquiryData.phone}
-                  // @ts-ignore
-                  onChange={(e: any) => handleInquiryChange(e)}
-                />
-              </div>
-              <textarea
-                required
-                name="message"
-                rows={4}
-                placeholder="Your message (Order ID, Inquiry detail, etc.)"
-                value={inquiryData.message}
-                onChange={handleInquiryChange}
-                className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all resize-none"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              fullWidth
-              size="lg"
-              isLoading={inquiryStatus === 'submitting'}
-              variant={inquiryStatus === 'success' ? 'primary' : 'primary'}
-              className={inquiryStatus === 'success' ? 'bg-green-600 hover:bg-green-700' : ''}
-            >
-              {inquiryStatus === 'submitting' ? "Sending..." : inquiryStatus === 'success' ? "Inquiry Sent!" : "Submit Inquiry"}
-            </Button>
-          </form>
-        </Modal>
+          initialData={inquiryData}
+        />
       </div>
     );
   }
@@ -375,7 +304,7 @@ export default function CheckoutPage() {
         <div className="container mx-auto px-6 max-w-xl text-center">
           <ShoppingBag className="w-16 h-16 text-[#e5dfd3] mx-auto mb-8" />
           <h1 className="text-4xl font-serif italic mb-6">Your spaces await.</h1>
-          <p className="text-[#a89f91] mb-12">Your cart is currently empty. Explore our handcrafted pieces to find your next favorite.</p>
+          <p className="text-[#a89f91] mb-12">Your cart is currently empty. Explore our collection to find your next piece.</p>
           <Link href="/shop" className="inline-block bg-[#3d2b1f] text-white px-12 py-5 rounded-full font-sans font-bold uppercase tracking-widest hover:bg-[#a3573a] transition-all">
             Return to Collection
           </Link>

@@ -10,20 +10,20 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// 1. DYNAMIC SEO METADATA - Updated for a boutique, artisanal feel
+// 1. DYNAMIC SEO METADATA - Updated for a boutique,  feel
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await client.fetch<Product | null>(
-    productBySlugQuery, 
-    { slug }
-  );
+  const product = await client.fetch<Product | null>(productBySlugQuery, {
+    slug,
+  });
 
   if (!product) return { title: "Piece Not Found" };
 
-  const defaultDescription = "A unique, artisanal addition to your home, handcrafted in Kathmandu.";
-  const imageUrl = product.mainImage 
-    ? urlFor(product.mainImage).width(1200).height(630).url() 
-    : '/logo.png'; // Fallback image
+  const defaultDescription =
+    "A unique,  addition to your home, handcrafted in Kathmandu.";
+  const imageUrl = product.mainImage
+    ? urlFor(product.mainImage).width(1200).height(630).url()
+    : "/logo.png"; // Fallback image
 
   return {
     title: `${product.title} | Handcrafted at Dolakha Furniture`,
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: `${product.title} | Handcrafted at Dolakha Furniture`,
       description: product.description || defaultDescription,
       images: [imageUrl],
@@ -52,11 +52,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // 2. THE PAGE COMPONENT
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  
-  const product = await client.fetch<Product | null>(
-    productBySlugQuery,
-    { slug }
-  );
+
+  const product = await client.fetch<Product | null>(productBySlugQuery, {
+    slug,
+  });
 
   if (!product) {
     notFound();

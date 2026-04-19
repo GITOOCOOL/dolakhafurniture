@@ -26,6 +26,31 @@ export default defineType({
             type: "text",
         }),
         defineField({
+            name: "inquiryType",
+            title: "Inquiry Type",
+            type: "string",
+            options: {
+                list: [
+                    { title: "📦 Order Question", value: "order" },
+                    { title: "🪑 Product Customization", value: "custom" },
+                    { title: "❓ General FAQ", value: "general" },
+                    { title: "🏢 Bulk / Corporate", value: "bulk" },
+                ]
+            }
+        }),
+        defineField({
+            name: "orderReference",
+            title: "Order Reference",
+            type: "string",
+            description: "Selected order number for context"
+        }),
+        defineField({
+            name: "topic",
+            title: "FAQ Topic",
+            type: "string",
+            description: "Selected FAQ category"
+        }),
+        defineField({
             name: "createdAt",
             title: "Created At",
             type: "datetime",

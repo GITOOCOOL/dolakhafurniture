@@ -12,7 +12,6 @@ export default async function CampaignsPage() {
   return (
     <main className="min-h-screen bg-[#fdfaf5] pt-24 pb-20 px-6 md:px-12">
       <div className="container mx-auto max-w-7xl">
-        
         {/* HEADER: Compressed for better focus on content */}
         <header className="mb-12 text-center space-y-4">
           <div className="flex items-center justify-center gap-3 text-[#a3573a] opacity-30">
@@ -21,10 +20,10 @@ export default async function CampaignsPage() {
             <Sparkles size={16} />
           </div>
           <h1 className="text-4xl md:text-6xl font-serif italic text-[#3d2b1f] leading-tight">
-            Our <span className="text-[#a3573a] font-light">Curated</span> Campaigns
+            Our <span className="text-[#a3573a] font-light"></span> Campaigns
           </h1>
           <p className="text-[#a89f91] max-w-xl mx-auto text-sm md:text-md font-light italic leading-relaxed pt-2">
-            Explore our curated collections, limited-time offers, and special projects 
+            Explore our collections, limited-time offers, and special projects
             handcrafted for the soulful home.
           </p>
         </header>
@@ -44,7 +43,6 @@ export default async function CampaignsPage() {
             </div>
           )}
         </div>
-
       </div>
     </main>
   );

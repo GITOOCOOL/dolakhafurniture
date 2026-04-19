@@ -21,17 +21,18 @@ export default function ProductDetail({ product }: { product: Product }) {
       content_ids: [product._id],
       content_type: "product",
       value: product.price,
-      currency: "NPR"
+      currency: "NPR",
     });
   }, [product]);
-  
+
   // Gallery Logic: Filter visible images
-  const galleryImages = product.images?.filter(img => img.isVisible) || [];
-  
+  const galleryImages = product.images?.filter((img) => img.isVisible) || [];
+
   // Use first gallery image if available, else fallback to mainImage
-  const initialImage = galleryImages.length > 0 ? galleryImages[0] : product.mainImage;
+  const initialImage =
+    galleryImages.length > 0 ? galleryImages[0] : product.mainImage;
   const [selectedImage, setSelectedImage] = useState<any>(initialImage);
-  
+
   const addItem = useCart((state) => state.addItem);
 
   const handleAddToCart = () => {
@@ -41,7 +42,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       content_ids: [product._id],
       content_type: "product",
       value: Number(product.price * quantity) || 0,
-      currency: "NPR"
+      currency: "NPR",
     });
     setIsSuccess(true);
     setTimeout(() => setIsSuccess(false), 2000);
@@ -50,7 +51,6 @@ export default function ProductDetail({ product }: { product: Product }) {
   return (
     <div className="pt-32 pb-20 container mx-auto px-6 text-[#3d2b1f]">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-        
         {/* LEFT: ORGANIC IMAGE GALLERY */}
         <div className="space-y-6">
           <div className="relative group">
@@ -74,7 +74,9 @@ export default function ProductDetail({ product }: { product: Product }) {
                   key={idx}
                   onClick={() => setSelectedImage(img)}
                   className={`relative w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
-                    selectedImage === img ? "border-[#a3573a] scale-95" : "border-[#e5dfd3] opacity-60 hover:opacity-100"
+                    selectedImage === img
+                      ? "border-[#a3573a] scale-95"
+                      : "border-[#e5dfd3] opacity-60 hover:opacity-100"
                   }`}
                 >
                   <Image
@@ -89,20 +91,20 @@ export default function ProductDetail({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* RIGHT: ARTISANAL CONTENT */}
+        {/* RIGHT:  CONTENT */}
         <div className="space-y-10 lg:pl-10">
           <header>
             <div className="flex items-center gap-3 mb-4">
               <Leaf size={14} className="text-[#a3573a] opacity-70" />
               <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#a3573a]">
-                {product.category?.title || "Handcrafted Piece"}
+                {product.category?.title || "Furniture Piece"}
               </p>
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-[#3d2b1f] leading-[1.1] mb-6">
               {product.title}
             </h1>
-            
+
             {/* PRICE: Changed to font-sans for better readability */}
             <p className="text-3xl font-sans font-bold text-[#a3573a] tracking-tight">
               Rs. {product.price}
@@ -110,25 +112,40 @@ export default function ProductDetail({ product }: { product: Product }) {
           </header>
 
           <section className="text-[#a89f91] leading-relaxed font-light italic text-xl max-w-lg border-l-2 border-[#e5dfd3] pl-6 py-2">
-            "{product.description || "Designed for the soulful home, this piece is thoughtfully handcrafted with artisanal precision in Kathmandu."}"
+            "
+            {product.description ||
+              "Designed for your home, this piece is made with care in Kathmandu."}
+            "
           </section>
 
           {/* SPECIFICATIONS */}
-          {(product.material || product.length || product.breadth || product.height) && (
+          {(product.material ||
+            product.length ||
+            product.breadth ||
+            product.height) && (
             <div className="space-y-4 pt-4">
-              <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#a3573a]">Specifications</h3>
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#a3573a]">
+                Specifications
+              </h3>
               <div className="grid grid-cols-2 gap-y-3 text-sm">
                 {product.material && (
                   <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-bold uppercase text-[#a89f91] opacity-60">Material</span>
+                    <span className="text-[9px] font-bold uppercase text-[#a89f91] opacity-60">
+                      Material
+                    </span>
                     <span className="font-medium">{product.material}</span>
                   </div>
                 )}
                 {(product.length || product.breadth || product.height) && (
                   <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-bold uppercase text-[#a89f91] opacity-60">Dimensions</span>
+                    <span className="text-[9px] font-bold uppercase text-[#a89f91] opacity-60">
+                      Dimensions
+                    </span>
                     <span className="font-sans font-semibold">
-                      {[product.length, product.breadth, product.height].filter(Boolean).join(" x ")} in
+                      {[product.length, product.breadth, product.height]
+                        .filter(Boolean)
+                        .join(" x ")}{" "}
+                      in
                     </span>
                   </div>
                 )}
@@ -139,7 +156,9 @@ export default function ProductDetail({ product }: { product: Product }) {
           {/* QUANTITY & BUTTON */}
           <div className="space-y-8 pt-8 border-t border-[#e5dfd3] border-dotted">
             <div className="flex items-center gap-8">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91]">Quantity</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91]">
+                Quantity
+              </span>
               <div className="flex items-center border border-[#e5dfd3] rounded-full px-2 py-2 gap-4 bg-white shadow-sm">
                 <Button
                   variant="ghost"
@@ -148,7 +167,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   className="p-2 min-h-0 text-[#a89f91]"
                   leftIcon={<Minus size={16} />}
                 />
-                
+
                 <span className="font-sans font-bold text-lg w-6 text-center">
                   {quantity}
                 </span>
@@ -174,15 +193,20 @@ export default function ProductDetail({ product }: { product: Product }) {
               fullWidth
               size="xl"
               variant={isSuccess ? "accent" : "primary"}
-              className={isSuccess ? "shadow-[0_20px_40px_rgba(163,87,58,0.3)]" : "hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]"}
+              className={
+                isSuccess
+                  ? "shadow-[0_20px_40px_rgba(163,87,58,0.3)]"
+                  : "hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]"
+              }
               leftIcon={isSuccess ? <ShieldCheck size={18} /> : undefined}
             >
-              {isSuccess 
-                ? "Added to home" 
-                : (product.stock !== undefined && product.stock <= 0 ? "Order Custom Piece" : "Add to Cart")
-              }
+              {isSuccess
+                ? "Added to home"
+                : product.stock !== undefined && product.stock <= 0
+                  ? "Order Custom Piece"
+                  : "Add to Cart"}
             </Button>
-            
+
             <p className="text-center text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-[#a89f91] opacity-60">
               * Locally Sourced • Hand-Finished • Delivered in Kathmandu
             </p>

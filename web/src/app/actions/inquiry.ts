@@ -15,6 +15,9 @@ export async function submitInquiry(data: {
   email: string;
   phone: string;
   message: string;
+  inquiryType?: string;
+  orderReference?: string;
+  topic?: string;
 }) {
   // 1.5 Safety Check: Verify Write Token
   if (!process.env.SANITY_API_WRITE_TOKEN) {

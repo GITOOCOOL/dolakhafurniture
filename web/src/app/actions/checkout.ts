@@ -66,7 +66,8 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
         title: item.title,
         price: item.price,
         quantity: item.quantity,
-        productId: item._id
+        productId: item._id,
+        image: item.mainImage
       })),
       orderDate: new Date().toISOString(),
     }

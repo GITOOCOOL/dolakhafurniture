@@ -1,3 +1,1006 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,81418,e=>{"use strict";let t=(0,e.i(75254).default)("shield-check",[["path",{d:"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",key:"oel41y"}],["path",{d:"m9 12 2 2 4-4",key:"dzmm74"}]]);e.s(["ShieldCheck",()=>t],81418)},67423,(e,t,r)=>{"use strict";function i({widthInt:e,heightInt:t,blurWidth:r,blurHeight:i,blurDataURL:a,objectFit:n}){let s=r?40*r:e,l=i?40*i:t,o=s&&l?`viewBox='0 0 ${s} ${l}'`:"";return`%3Csvg xmlns='http://www.w3.org/2000/svg' ${o}%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3CfeColorMatrix values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1' result='s'/%3E%3CfeFlood x='0' y='0' width='100%25' height='100%25'/%3E%3CfeComposite operator='out' in='s'/%3E%3CfeComposite in2='SourceGraphic'/%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Cimage width='100%25' height='100%25' x='0' y='0' preserveAspectRatio='${o?"none":"contain"===n?"xMidYMid":"cover"===n?"xMidYMid slice":"none"}' style='filter: url(%23b);' href='${a}'/%3E%3C/svg%3E`}Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"getImageBlurSvg",{enumerable:!0,get:function(){return i}})},87690,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0});var i={VALID_LOADERS:function(){return n},imageConfigDefault:function(){return s}};for(var a in i)Object.defineProperty(r,a,{enumerable:!0,get:i[a]});let n=["default","imgix","cloudinary","akamai","custom"],s={deviceSizes:[640,750,828,1080,1200,1920,2048,3840],imageSizes:[32,48,64,96,128,256,384],path:"/_next/image",loader:"default",loaderFile:"",domains:[],disableStaticImages:!1,minimumCacheTTL:14400,formats:["image/webp"],maximumRedirects:3,maximumResponseBody:5e7,dangerouslyAllowLocalIP:!1,dangerouslyAllowSVG:!1,contentSecurityPolicy:"script-src 'none'; frame-src 'none'; sandbox;",contentDispositionType:"attachment",localPatterns:void 0,remotePatterns:[],qualities:[75],unoptimized:!1}},8927,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"getImgProps",{enumerable:!0,get:function(){return d}}),e.r(33525);let i=e.r(43369),a=e.r(67423),n=e.r(87690),s=["-moz-initial","fill","none","scale-down",void 0];function l(e){return void 0!==e.default}function o(e){return void 0===e?e:"number"==typeof e?Number.isFinite(e)?e:NaN:"string"==typeof e&&/^[0-9]+$/.test(e)?parseInt(e,10):NaN}function d({src:e,sizes:t,unoptimized:r=!1,priority:d=!1,preload:u=!1,loading:c,className:f,quality:p,width:m,height:g,fill:h=!1,style:b,overrideSrc:y,onLoad:x,onLoadingComplete:v,placeholder:_="empty",blurDataURL:j,fetchPriority:w,decoding:P="async",layout:C,objectFit:S,objectPosition:O,lazyBoundary:E,lazyRoot:R,...z},M){var N;let I,k,$,{imgConf:D,showAltText:A,blurComplete:T,defaultLoader:L}=M,F=D||n.imageConfigDefault;if("allSizes"in F)I=F;else{let e=[...F.deviceSizes,...F.imageSizes].sort((e,t)=>e-t),t=F.deviceSizes.sort((e,t)=>e-t),r=F.qualities?.sort((e,t)=>e-t);I={...F,allSizes:e,deviceSizes:t,qualities:r}}if(void 0===L)throw Object.defineProperty(Error("images.loaderFile detected but the file is missing default export.\nRead more: https://nextjs.org/docs/messages/invalid-images-config"),"__NEXT_ERROR_CODE",{value:"E163",enumerable:!1,configurable:!0});let U=z.loader||L;delete z.loader,delete z.srcSet;let q="__next_img_default"in U;if(q){if("custom"===I.loader)throw Object.defineProperty(Error(`Image with src "${e}" is missing "loader" prop.
-Read more: https://nextjs.org/docs/messages/next-image-missing-loader`),"__NEXT_ERROR_CODE",{value:"E252",enumerable:!1,configurable:!0})}else{let e=U;U=t=>{let{config:r,...i}=t;return e(i)}}if(C){"fill"===C&&(h=!0);let e={intrinsic:{maxWidth:"100%",height:"auto"},responsive:{width:"100%",height:"auto"}}[C];e&&(b={...b,...e});let r={responsive:"100vw",fill:"100vw"}[C];r&&!t&&(t=r)}let B="",W=o(m),G=o(g);if((N=e)&&"object"==typeof N&&(l(N)||void 0!==N.src)){let t=l(e)?e.default:e;if(!t.src)throw Object.defineProperty(Error(`An object should only be passed to the image component src parameter if it comes from a static image import. It must include src. Received ${JSON.stringify(t)}`),"__NEXT_ERROR_CODE",{value:"E460",enumerable:!1,configurable:!0});if(!t.height||!t.width)throw Object.defineProperty(Error(`An object should only be passed to the image component src parameter if it comes from a static image import. It must include height and width. Received ${JSON.stringify(t)}`),"__NEXT_ERROR_CODE",{value:"E48",enumerable:!1,configurable:!0});if(k=t.blurWidth,$=t.blurHeight,j=j||t.blurDataURL,B=t.src,!h)if(W||G){if(W&&!G){let e=W/t.width;G=Math.round(t.height*e)}else if(!W&&G){let e=G/t.height;W=Math.round(t.width*e)}}else W=t.width,G=t.height}let H=!d&&!u&&("lazy"===c||void 0===c);(!(e="string"==typeof e?e:B)||e.startsWith("data:")||e.startsWith("blob:"))&&(r=!0,H=!1),I.unoptimized&&(r=!0),q&&!I.dangerouslyAllowSVG&&e.split("?",1)[0].endsWith(".svg")&&(r=!0);let V=o(p),X=Object.assign(h?{position:"absolute",height:"100%",width:"100%",left:0,top:0,right:0,bottom:0,objectFit:S,objectPosition:O}:{},A?{}:{color:"transparent"},b),K=T||"empty"===_?null:"blur"===_?`url("data:image/svg+xml;charset=utf-8,${(0,a.getImageBlurSvg)({widthInt:W,heightInt:G,blurWidth:k,blurHeight:$,blurDataURL:j||"",objectFit:X.objectFit})}")`:`url("${_}")`,Q=s.includes(X.objectFit)?"fill"===X.objectFit?"100% 100%":"cover":X.objectFit,J=K?{backgroundSize:Q,backgroundPosition:X.objectPosition||"50% 50%",backgroundRepeat:"no-repeat",backgroundImage:K}:{},Y=function({config:e,src:t,unoptimized:r,width:a,quality:n,sizes:s,loader:l}){if(r){let e=(0,i.getDeploymentId)();if(t.startsWith("/")&&!t.startsWith("//")&&e){let r=t.includes("?")?"&":"?";t=`${t}${r}dpl=${e}`}return{src:t,srcSet:void 0,sizes:void 0}}let{widths:o,kind:d}=function({deviceSizes:e,allSizes:t},r,i){if(i){let r=/(^|\s)(1?\d?\d)vw/g,a=[];for(let e;e=r.exec(i);)a.push(parseInt(e[2]));if(a.length){let r=.01*Math.min(...a);return{widths:t.filter(t=>t>=e[0]*r),kind:"w"}}return{widths:t,kind:"w"}}return"number"!=typeof r?{widths:e,kind:"w"}:{widths:[...new Set([r,2*r].map(e=>t.find(t=>t>=e)||t[t.length-1]))],kind:"x"}}(e,a,s),u=o.length-1;return{sizes:s||"w"!==d?s:"100vw",srcSet:o.map((r,i)=>`${l({config:e,src:t,quality:n,width:r})} ${"w"===d?r:i+1}${d}`).join(", "),src:l({config:e,src:t,quality:n,width:o[u]})}}({config:I,src:e,unoptimized:r,width:W,quality:V,sizes:t,loader:U}),Z=H?"lazy":c;return{props:{...z,loading:Z,fetchPriority:w,width:W,height:G,decoding:P,className:f,style:{...X,...J},sizes:Y.sizes,srcSet:Y.srcSet,src:y||Y.src},meta:{unoptimized:r,preload:u||d,placeholder:_,fill:h}}}},98879,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"default",{enumerable:!0,get:function(){return l}});let i=e.r(71645),a="u"<typeof window,n=a?()=>{}:i.useLayoutEffect,s=a?()=>{}:i.useEffect;function l(e){let{headManager:t,reduceComponentsToState:r}=e;function l(){if(t&&t.mountedInstances){let e=i.Children.toArray(Array.from(t.mountedInstances).filter(Boolean));t.updateHead(r(e))}}return a&&(t?.mountedInstances?.add(e.children),l()),n(()=>(t?.mountedInstances?.add(e.children),()=>{t?.mountedInstances?.delete(e.children)})),n(()=>(t&&(t._pendingUpdate=l),()=>{t&&(t._pendingUpdate=l)})),s(()=>(t&&t._pendingUpdate&&(t._pendingUpdate(),t._pendingUpdate=null),()=>{t&&t._pendingUpdate&&(t._pendingUpdate(),t._pendingUpdate=null)})),null}},25633,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0});var i={default:function(){return g},defaultHead:function(){return c}};for(var a in i)Object.defineProperty(r,a,{enumerable:!0,get:i[a]});let n=e.r(55682),s=e.r(90809),l=e.r(43476),o=s._(e.r(71645)),d=n._(e.r(98879)),u=e.r(42732);function c(){return[(0,l.jsx)("meta",{charSet:"utf-8"},"charset"),(0,l.jsx)("meta",{name:"viewport",content:"width=device-width"},"viewport")]}function f(e,t){return"string"==typeof t||"number"==typeof t?e:t.type===o.default.Fragment?e.concat(o.default.Children.toArray(t.props.children).reduce((e,t)=>"string"==typeof t||"number"==typeof t?e:e.concat(t),[])):e.concat(t)}e.r(33525);let p=["name","httpEquiv","charSet","itemProp"];function m(e){let t,r,i,a;return e.reduce(f,[]).reverse().concat(c().reverse()).filter((t=new Set,r=new Set,i=new Set,a={},e=>{let n=!0,s=!1;if(e.key&&"number"!=typeof e.key&&e.key.indexOf("$")>0){s=!0;let r=e.key.slice(e.key.indexOf("$")+1);t.has(r)?n=!1:t.add(r)}switch(e.type){case"title":case"base":r.has(e.type)?n=!1:r.add(e.type);break;case"meta":for(let t=0,r=p.length;t<r;t++){let r=p[t];if(e.props.hasOwnProperty(r))if("charSet"===r)i.has(r)?n=!1:i.add(r);else{let t=e.props[r],i=a[r]||new Set;("name"!==r||!s)&&i.has(t)?n=!1:(i.add(t),a[r]=i)}}}return n})).reverse().map((e,t)=>{let r=e.key||t;return o.default.cloneElement(e,{key:r})})}let g=function({children:e}){let t=(0,o.useContext)(u.HeadManagerContext);return(0,l.jsx)(d.default,{reduceComponentsToState:m,headManager:t,children:e})};("function"==typeof r.default||"object"==typeof r.default&&null!==r.default)&&void 0===r.default.__esModule&&(Object.defineProperty(r.default,"__esModule",{value:!0}),Object.assign(r.default,r),t.exports=r.default)},18556,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"ImageConfigContext",{enumerable:!0,get:function(){return n}});let i=e.r(55682)._(e.r(71645)),a=e.r(87690),n=i.default.createContext(a.imageConfigDefault)},65856,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"RouterContext",{enumerable:!0,get:function(){return i}});let i=e.r(55682)._(e.r(71645)).default.createContext(null)},70965,(e,t,r)=>{"use strict";function i(e,t){let r=e||75;return t?.qualities?.length?t.qualities.reduce((e,t)=>Math.abs(t-r)<Math.abs(e-r)?t:e,0):r}Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"findClosestQuality",{enumerable:!0,get:function(){return i}})},1948,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"default",{enumerable:!0,get:function(){return s}});let i=e.r(70965),a=e.r(43369);function n({config:e,src:t,width:r,quality:n}){if(t.startsWith("/")&&t.includes("?")&&e.localPatterns?.length===1&&"**"===e.localPatterns[0].pathname&&""===e.localPatterns[0].search)throw Object.defineProperty(Error(`Image with src "${t}" is using a query string which is not configured in images.localPatterns.
-Read more: https://nextjs.org/docs/messages/next-image-unconfigured-localpatterns`),"__NEXT_ERROR_CODE",{value:"E871",enumerable:!1,configurable:!0});let s=(0,i.findClosestQuality)(n,e),l=(0,a.getDeploymentId)();return`${e.path}?url=${encodeURIComponent(t)}&w=${r}&q=${s}${t.startsWith("/")&&l?`&dpl=${l}`:""}`}n.__next_img_default=!0;let s=n},85437,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"Image",{enumerable:!0,get:function(){return v}});let i=e.r(55682),a=e.r(90809),n=e.r(43476),s=a._(e.r(71645)),l=i._(e.r(74080)),o=i._(e.r(25633)),d=e.r(8927),u=e.r(87690),c=e.r(18556);e.r(33525);let f=e.r(65856),p=i._(e.r(1948)),m=e.r(18581),g={deviceSizes:[640,750,828,1080,1200,1920,2048,3840],imageSizes:[32,48,64,96,128,256,384],qualities:[75],path:"/_next/image",loader:"default",dangerouslyAllowSVG:!1,unoptimized:!1};function h(e,t,r,i,a,n,s){let l=e?.src;e&&e["data-loaded-src"]!==l&&(e["data-loaded-src"]=l,("decode"in e?e.decode():Promise.resolve()).catch(()=>{}).then(()=>{if(e.parentElement&&e.isConnected){if("empty"!==t&&a(!0),r?.current){let t=new Event("load");Object.defineProperty(t,"target",{writable:!1,value:e});let i=!1,a=!1;r.current({...t,nativeEvent:t,currentTarget:e,target:e,isDefaultPrevented:()=>i,isPropagationStopped:()=>a,persist:()=>{},preventDefault:()=>{i=!0,t.preventDefault()},stopPropagation:()=>{a=!0,t.stopPropagation()}})}i?.current&&i.current(e)}}))}function b(e){return s.use?{fetchPriority:e}:{fetchpriority:e}}"u"<typeof window&&(globalThis.__NEXT_IMAGE_IMPORTED=!0);let y=(0,s.forwardRef)(({src:e,srcSet:t,sizes:r,height:i,width:a,decoding:l,className:o,style:d,fetchPriority:u,placeholder:c,loading:f,unoptimized:p,fill:g,onLoadRef:y,onLoadingCompleteRef:x,setBlurComplete:v,setShowAltText:_,sizesInput:j,onLoad:w,onError:P,...C},S)=>{let O=(0,s.useCallback)(e=>{e&&(P&&(e.src=e.src),e.complete&&h(e,c,y,x,v,p,j))},[e,c,y,x,v,P,p,j]),E=(0,m.useMergedRef)(S,O);return(0,n.jsx)("img",{...C,...b(u),loading:f,width:a,height:i,decoding:l,"data-nimg":g?"fill":"1",className:o,style:d,sizes:r,srcSet:t,src:e,ref:E,onLoad:e=>{h(e.currentTarget,c,y,x,v,p,j)},onError:e=>{_(!0),"empty"!==c&&v(!0),P&&P(e)}})});function x({isAppRouter:e,imgAttributes:t}){let r={as:"image",imageSrcSet:t.srcSet,imageSizes:t.sizes,crossOrigin:t.crossOrigin,referrerPolicy:t.referrerPolicy,...b(t.fetchPriority)};return e&&l.default.preload?(l.default.preload(t.src,r),null):(0,n.jsx)(o.default,{children:(0,n.jsx)("link",{rel:"preload",href:t.srcSet?void 0:t.src,...r},"__nimg-"+t.src+t.srcSet+t.sizes)})}let v=(0,s.forwardRef)((e,t)=>{let r=(0,s.useContext)(f.RouterContext),i=(0,s.useContext)(c.ImageConfigContext),a=(0,s.useMemo)(()=>{let e=g||i||u.imageConfigDefault,t=[...e.deviceSizes,...e.imageSizes].sort((e,t)=>e-t),r=e.deviceSizes.sort((e,t)=>e-t),a=e.qualities?.sort((e,t)=>e-t);return{...e,allSizes:t,deviceSizes:r,qualities:a,localPatterns:"u"<typeof window?i?.localPatterns:e.localPatterns}},[i]),{onLoad:l,onLoadingComplete:o}=e,m=(0,s.useRef)(l);(0,s.useEffect)(()=>{m.current=l},[l]);let h=(0,s.useRef)(o);(0,s.useEffect)(()=>{h.current=o},[o]);let[b,v]=(0,s.useState)(!1),[_,j]=(0,s.useState)(!1),{props:w,meta:P}=(0,d.getImgProps)(e,{defaultLoader:p.default,imgConf:a,blurComplete:b,showAltText:_});return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(y,{...w,unoptimized:P.unoptimized,placeholder:P.placeholder,fill:P.fill,onLoadRef:m,onLoadingCompleteRef:h,setBlurComplete:v,setShowAltText:j,sizesInput:e.sizes,ref:t}),P.preload?(0,n.jsx)(x,{isAppRouter:!r,imgAttributes:w}):null]})});("function"==typeof r.default||"object"==typeof r.default&&null!==r.default)&&void 0===r.default.__esModule&&(Object.defineProperty(r.default,"__esModule",{value:!0}),Object.assign(r.default,r),t.exports=r.default)},94909,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0});var i={default:function(){return u},getImageProps:function(){return d}};for(var a in i)Object.defineProperty(r,a,{enumerable:!0,get:i[a]});let n=e.r(55682),s=e.r(8927),l=e.r(85437),o=n._(e.r(1948));function d(e){let{props:t}=(0,s.getImgProps)(e,{defaultLoader:o.default,imgConf:{deviceSizes:[640,750,828,1080,1200,1920,2048,3840],imageSizes:[32,48,64,96,128,256,384],qualities:[75],path:"/_next/image",loader:"default",dangerouslyAllowSVG:!1,unoptimized:!1}});for(let[e,r]of Object.entries(t))void 0===r&&delete t[e];return{props:t}}let u=l.Image},57688,(e,t,r)=>{t.exports=e.r(94909)},95438,e=>{"use strict";var t=e.i(43476),r=e.i(71645),i=e.i(57688),a=e.i(11448),n=e.i(16552),s=e.i(31674),l=e.i(75254);let o=(0,l.default)("minus",[["path",{d:"M5 12h14",key:"1ays0h"}]]),d=(0,l.default)("plus",[["path",{d:"M5 12h14",key:"1ays0h"}],["path",{d:"M12 5v14",key:"s699le"}]]);var u=e.i(81418),c=e.i(59544);function f({product:e}){let[l,f]=(0,r.useState)(1),[p,m]=(0,r.useState)(!1),g=(0,n.useCart)(e=>e.addItem);return(0,t.jsx)("div",{className:"pt-32 pb-20 container mx-auto px-6 text-[#3d2b1f]",children:(0,t.jsxs)("div",{className:"grid grid-cols-1 lg:grid-cols-2 gap-16 items-center",children:[(0,t.jsxs)("div",{className:"relative group",children:[(0,t.jsx)("div",{className:"aspect-square relative overflow-hidden rounded-[4rem] bg-white border border-[#e5dfd3] shadow-sm transition-all duration-1000 group-hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] group-hover:border-[#a3573a]/20",children:(0,t.jsx)(i.default,{src:(0,a.urlFor)(e.mainImage).width(1e3).url(),alt:e.title,fill:!0,className:"object-cover transition-transform duration-[1.5s] group-hover:scale-105",priority:!0})}),(0,t.jsx)("div",{className:"absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#df9152]/10 blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-[2s]"})]}),(0,t.jsxs)("div",{className:"space-y-10 lg:pl-10",children:[(0,t.jsxs)("header",{children:[(0,t.jsxs)("div",{className:"flex items-center gap-3 mb-4",children:[(0,t.jsx)(s.Leaf,{size:14,className:"text-[#a3573a] opacity-70"}),(0,t.jsx)("p",{className:"text-[10px] font-bold uppercase tracking-[0.4em] text-[#a3573a]",children:e.category?.title||"Handcrafted Piece"})]}),(0,t.jsx)("h1",{className:"text-5xl md:text-7xl font-serif italic font-medium text-[#3d2b1f] leading-[1.1] mb-6",children:e.title}),(0,t.jsxs)("p",{className:"text-3xl font-sans font-bold text-[#a3573a] tracking-tight",children:["Rs. ",e.price]})]}),(0,t.jsxs)("section",{className:"text-[#a89f91] leading-relaxed font-light italic text-xl max-w-lg border-l-2 border-[#e5dfd3] pl-6 py-2",children:['"',e.description||"Designed for the soulful home, this piece is thoughtfully handcrafted with artisanal precision in Kathmandu.",'"']}),(0,t.jsxs)("div",{className:"space-y-8 pt-8 border-t border-[#e5dfd3] border-dotted",children:[(0,t.jsxs)("div",{className:"flex items-center gap-8",children:[(0,t.jsx)("span",{className:"text-[10px] font-bold uppercase tracking-widest text-[#a89f91]",children:"Quantity"}),(0,t.jsxs)("div",{className:"flex items-center border border-[#e5dfd3] rounded-full px-2 py-2 gap-4 bg-white shadow-sm",children:[(0,t.jsx)(c.default,{variant:"ghost",size:"sm",onClick:()=>f(Math.max(1,l-1)),className:"p-2 min-h-0 text-[#a89f91]",leftIcon:(0,t.jsx)(o,{size:16})}),(0,t.jsx)("span",{className:"font-sans font-bold text-lg w-6 text-center",children:l}),(0,t.jsx)(c.default,{variant:"ghost",size:"sm",onClick:()=>f(l+1),className:"p-2 min-h-0 text-[#a89f91]",leftIcon:(0,t.jsx)(d,{size:16})})]})]}),(0,t.jsx)(c.default,{onClick:()=>{g(e,l),m(!0),setTimeout(()=>m(!1),2e3)},fullWidth:!0,size:"xl",variant:p?"accent":"primary",className:p?"shadow-[0_20px_40px_rgba(163,87,58,0.3)]":"hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]",leftIcon:p?(0,t.jsx)(u.ShieldCheck,{size:18}):void 0,children:p?"Added to home":"Add to Cart"}),(0,t.jsx)("p",{className:"text-center text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-[#a89f91] opacity-60",children:"* Locally Sourced • Hand-Finished • Delivered in Kathmandu"})]})]})]})})}e.s(["default",()=>f],95438)}]);
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
+  "object" == typeof document ? document.currentScript : void 0,
+  81418,
+  (e) => {
+    "use strict";
+    let t = (0, e.i(75254).default)("shield-check", [
+      [
+        "path",
+        {
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y",
+        },
+      ],
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }],
+    ]);
+    e.s(["ShieldCheck", () => t], 81418);
+  },
+  67423,
+  (e, t, r) => {
+    "use strict";
+    function i({
+      widthInt: e,
+      heightInt: t,
+      blurWidth: r,
+      blurHeight: i,
+      blurDataURL: a,
+      objectFit: n,
+    }) {
+      let s = r ? 40 * r : e,
+        l = i ? 40 * i : t,
+        o = s && l ? `viewBox='0 0 ${s} ${l}'` : "";
+      return `%3Csvg xmlns='http://www.w3.org/2000/svg' ${o}%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3CfeColorMatrix values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1' result='s'/%3E%3CfeFlood x='0' y='0' width='100%25' height='100%25'/%3E%3CfeComposite operator='out' in='s'/%3E%3CfeComposite in2='SourceGraphic'/%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Cimage width='100%25' height='100%25' x='0' y='0' preserveAspectRatio='${o ? "none" : "contain" === n ? "xMidYMid" : "cover" === n ? "xMidYMid slice" : "none"}' style='filter: url(%23b);' href='${a}'/%3E%3C/svg%3E`;
+    }
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "getImageBlurSvg", {
+        enumerable: !0,
+        get: function () {
+          return i;
+        },
+      }));
+  },
+  87690,
+  (e, t, r) => {
+    "use strict";
+    Object.defineProperty(r, "__esModule", { value: !0 });
+    var i = {
+      VALID_LOADERS: function () {
+        return n;
+      },
+      imageConfigDefault: function () {
+        return s;
+      },
+    };
+    for (var a in i) Object.defineProperty(r, a, { enumerable: !0, get: i[a] });
+    let n = ["default", "imgix", "cloudinary", "akamai", "custom"],
+      s = {
+        deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+        imageSizes: [32, 48, 64, 96, 128, 256, 384],
+        path: "/_next/image",
+        loader: "default",
+        loaderFile: "",
+        domains: [],
+        disableStaticImages: !1,
+        minimumCacheTTL: 14400,
+        formats: ["image/webp"],
+        maximumRedirects: 3,
+        maximumResponseBody: 5e7,
+        dangerouslyAllowLocalIP: !1,
+        dangerouslyAllowSVG: !1,
+        contentSecurityPolicy: "script-src 'none'; frame-src 'none'; sandbox;",
+        contentDispositionType: "attachment",
+        localPatterns: void 0,
+        remotePatterns: [],
+        qualities: [75],
+        unoptimized: !1,
+      };
+  },
+  8927,
+  (e, t, r) => {
+    "use strict";
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "getImgProps", {
+        enumerable: !0,
+        get: function () {
+          return d;
+        },
+      }),
+      e.r(33525));
+    let i = e.r(43369),
+      a = e.r(67423),
+      n = e.r(87690),
+      s = ["-moz-initial", "fill", "none", "scale-down", void 0];
+    function l(e) {
+      return void 0 !== e.default;
+    }
+    function o(e) {
+      return void 0 === e
+        ? e
+        : "number" == typeof e
+          ? Number.isFinite(e)
+            ? e
+            : NaN
+          : "string" == typeof e && /^[0-9]+$/.test(e)
+            ? parseInt(e, 10)
+            : NaN;
+    }
+    function d(
+      {
+        src: e,
+        sizes: t,
+        unoptimized: r = !1,
+        priority: d = !1,
+        preload: u = !1,
+        loading: c,
+        className: f,
+        quality: p,
+        width: m,
+        height: g,
+        fill: h = !1,
+        style: b,
+        overrideSrc: y,
+        onLoad: x,
+        onLoadingComplete: v,
+        placeholder: _ = "empty",
+        blurDataURL: j,
+        fetchPriority: w,
+        decoding: P = "async",
+        layout: C,
+        objectFit: S,
+        objectPosition: O,
+        lazyBoundary: E,
+        lazyRoot: R,
+        ...z
+      },
+      M,
+    ) {
+      var N;
+      let I,
+        k,
+        $,
+        { imgConf: D, showAltText: A, blurComplete: T, defaultLoader: L } = M,
+        F = D || n.imageConfigDefault;
+      if ("allSizes" in F) I = F;
+      else {
+        let e = [...F.deviceSizes, ...F.imageSizes].sort((e, t) => e - t),
+          t = F.deviceSizes.sort((e, t) => e - t),
+          r = F.qualities?.sort((e, t) => e - t);
+        I = { ...F, allSizes: e, deviceSizes: t, qualities: r };
+      }
+      if (void 0 === L)
+        throw Object.defineProperty(
+          Error(
+            "images.loaderFile detected but the file is missing default export.\nRead more: https://nextjs.org/docs/messages/invalid-images-config",
+          ),
+          "__NEXT_ERROR_CODE",
+          { value: "E163", enumerable: !1, configurable: !0 },
+        );
+      let U = z.loader || L;
+      (delete z.loader, delete z.srcSet);
+      let q = "__next_img_default" in U;
+      if (q) {
+        if ("custom" === I.loader)
+          throw Object.defineProperty(
+            Error(`Image with src "${e}" is missing "loader" prop.
+Read more: https://nextjs.org/docs/messages/next-image-missing-loader`),
+            "__NEXT_ERROR_CODE",
+            { value: "E252", enumerable: !1, configurable: !0 },
+          );
+      } else {
+        let e = U;
+        U = (t) => {
+          let { config: r, ...i } = t;
+          return e(i);
+        };
+      }
+      if (C) {
+        "fill" === C && (h = !0);
+        let e = {
+          intrinsic: { maxWidth: "100%", height: "auto" },
+          responsive: { width: "100%", height: "auto" },
+        }[C];
+        e && (b = { ...b, ...e });
+        let r = { responsive: "100vw", fill: "100vw" }[C];
+        r && !t && (t = r);
+      }
+      let B = "",
+        W = o(m),
+        G = o(g);
+      if ((N = e) && "object" == typeof N && (l(N) || void 0 !== N.src)) {
+        let t = l(e) ? e.default : e;
+        if (!t.src)
+          throw Object.defineProperty(
+            Error(
+              `An object should only be passed to the image component src parameter if it comes from a static image import. It must include src. Received ${JSON.stringify(t)}`,
+            ),
+            "__NEXT_ERROR_CODE",
+            { value: "E460", enumerable: !1, configurable: !0 },
+          );
+        if (!t.height || !t.width)
+          throw Object.defineProperty(
+            Error(
+              `An object should only be passed to the image component src parameter if it comes from a static image import. It must include height and width. Received ${JSON.stringify(t)}`,
+            ),
+            "__NEXT_ERROR_CODE",
+            { value: "E48", enumerable: !1, configurable: !0 },
+          );
+        if (
+          ((k = t.blurWidth),
+          ($ = t.blurHeight),
+          (j = j || t.blurDataURL),
+          (B = t.src),
+          !h)
+        )
+          if (W || G) {
+            if (W && !G) {
+              let e = W / t.width;
+              G = Math.round(t.height * e);
+            } else if (!W && G) {
+              let e = G / t.height;
+              W = Math.round(t.width * e);
+            }
+          } else ((W = t.width), (G = t.height));
+      }
+      let H = !d && !u && ("lazy" === c || void 0 === c);
+      ((!(e = "string" == typeof e ? e : B) ||
+        e.startsWith("data:") ||
+        e.startsWith("blob:")) &&
+        ((r = !0), (H = !1)),
+        I.unoptimized && (r = !0),
+        q &&
+          !I.dangerouslyAllowSVG &&
+          e.split("?", 1)[0].endsWith(".svg") &&
+          (r = !0));
+      let V = o(p),
+        X = Object.assign(
+          h
+            ? {
+                position: "absolute",
+                height: "100%",
+                width: "100%",
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                objectFit: S,
+                objectPosition: O,
+              }
+            : {},
+          A ? {} : { color: "transparent" },
+          b,
+        ),
+        K =
+          T || "empty" === _
+            ? null
+            : "blur" === _
+              ? `url("data:image/svg+xml;charset=utf-8,${(0, a.getImageBlurSvg)({ widthInt: W, heightInt: G, blurWidth: k, blurHeight: $, blurDataURL: j || "", objectFit: X.objectFit })}")`
+              : `url("${_}")`,
+        Q = s.includes(X.objectFit)
+          ? "fill" === X.objectFit
+            ? "100% 100%"
+            : "cover"
+          : X.objectFit,
+        J = K
+          ? {
+              backgroundSize: Q,
+              backgroundPosition: X.objectPosition || "50% 50%",
+              backgroundRepeat: "no-repeat",
+              backgroundImage: K,
+            }
+          : {},
+        Y = (function ({
+          config: e,
+          src: t,
+          unoptimized: r,
+          width: a,
+          quality: n,
+          sizes: s,
+          loader: l,
+        }) {
+          if (r) {
+            let e = (0, i.getDeploymentId)();
+            if (t.startsWith("/") && !t.startsWith("//") && e) {
+              let r = t.includes("?") ? "&" : "?";
+              t = `${t}${r}dpl=${e}`;
+            }
+            return { src: t, srcSet: void 0, sizes: void 0 };
+          }
+          let { widths: o, kind: d } = (function (
+              { deviceSizes: e, allSizes: t },
+              r,
+              i,
+            ) {
+              if (i) {
+                let r = /(^|\s)(1?\d?\d)vw/g,
+                  a = [];
+                for (let e; (e = r.exec(i)); ) a.push(parseInt(e[2]));
+                if (a.length) {
+                  let r = 0.01 * Math.min(...a);
+                  return { widths: t.filter((t) => t >= e[0] * r), kind: "w" };
+                }
+                return { widths: t, kind: "w" };
+              }
+              return "number" != typeof r
+                ? { widths: e, kind: "w" }
+                : {
+                    widths: [
+                      ...new Set(
+                        [r, 2 * r].map(
+                          (e) => t.find((t) => t >= e) || t[t.length - 1],
+                        ),
+                      ),
+                    ],
+                    kind: "x",
+                  };
+            })(e, a, s),
+            u = o.length - 1;
+          return {
+            sizes: s || "w" !== d ? s : "100vw",
+            srcSet: o
+              .map(
+                (r, i) =>
+                  `${l({ config: e, src: t, quality: n, width: r })} ${"w" === d ? r : i + 1}${d}`,
+              )
+              .join(", "),
+            src: l({ config: e, src: t, quality: n, width: o[u] }),
+          };
+        })({
+          config: I,
+          src: e,
+          unoptimized: r,
+          width: W,
+          quality: V,
+          sizes: t,
+          loader: U,
+        }),
+        Z = H ? "lazy" : c;
+      return {
+        props: {
+          ...z,
+          loading: Z,
+          fetchPriority: w,
+          width: W,
+          height: G,
+          decoding: P,
+          className: f,
+          style: { ...X, ...J },
+          sizes: Y.sizes,
+          srcSet: Y.srcSet,
+          src: y || Y.src,
+        },
+        meta: { unoptimized: r, preload: u || d, placeholder: _, fill: h },
+      };
+    }
+  },
+  98879,
+  (e, t, r) => {
+    "use strict";
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "default", {
+        enumerable: !0,
+        get: function () {
+          return l;
+        },
+      }));
+    let i = e.r(71645),
+      a = "u" < typeof window,
+      n = a ? () => {} : i.useLayoutEffect,
+      s = a ? () => {} : i.useEffect;
+    function l(e) {
+      let { headManager: t, reduceComponentsToState: r } = e;
+      function l() {
+        if (t && t.mountedInstances) {
+          let e = i.Children.toArray(
+            Array.from(t.mountedInstances).filter(Boolean),
+          );
+          t.updateHead(r(e));
+        }
+      }
+      return (
+        a && (t?.mountedInstances?.add(e.children), l()),
+        n(
+          () => (
+            t?.mountedInstances?.add(e.children),
+            () => {
+              t?.mountedInstances?.delete(e.children);
+            }
+          ),
+        ),
+        n(
+          () => (
+            t && (t._pendingUpdate = l),
+            () => {
+              t && (t._pendingUpdate = l);
+            }
+          ),
+        ),
+        s(
+          () => (
+            t &&
+              t._pendingUpdate &&
+              (t._pendingUpdate(), (t._pendingUpdate = null)),
+            () => {
+              t &&
+                t._pendingUpdate &&
+                (t._pendingUpdate(), (t._pendingUpdate = null));
+            }
+          ),
+        ),
+        null
+      );
+    }
+  },
+  25633,
+  (e, t, r) => {
+    "use strict";
+    Object.defineProperty(r, "__esModule", { value: !0 });
+    var i = {
+      default: function () {
+        return g;
+      },
+      defaultHead: function () {
+        return c;
+      },
+    };
+    for (var a in i) Object.defineProperty(r, a, { enumerable: !0, get: i[a] });
+    let n = e.r(55682),
+      s = e.r(90809),
+      l = e.r(43476),
+      o = s._(e.r(71645)),
+      d = n._(e.r(98879)),
+      u = e.r(42732);
+    function c() {
+      return [
+        (0, l.jsx)("meta", { charSet: "utf-8" }, "charset"),
+        (0, l.jsx)(
+          "meta",
+          { name: "viewport", content: "width=device-width" },
+          "viewport",
+        ),
+      ];
+    }
+    function f(e, t) {
+      return "string" == typeof t || "number" == typeof t
+        ? e
+        : t.type === o.default.Fragment
+          ? e.concat(
+              o.default.Children.toArray(t.props.children).reduce(
+                (e, t) =>
+                  "string" == typeof t || "number" == typeof t
+                    ? e
+                    : e.concat(t),
+                [],
+              ),
+            )
+          : e.concat(t);
+    }
+    e.r(33525);
+    let p = ["name", "httpEquiv", "charSet", "itemProp"];
+    function m(e) {
+      let t, r, i, a;
+      return e
+        .reduce(f, [])
+        .reverse()
+        .concat(c().reverse())
+        .filter(
+          ((t = new Set()),
+          (r = new Set()),
+          (i = new Set()),
+          (a = {}),
+          (e) => {
+            let n = !0,
+              s = !1;
+            if (e.key && "number" != typeof e.key && e.key.indexOf("$") > 0) {
+              s = !0;
+              let r = e.key.slice(e.key.indexOf("$") + 1);
+              t.has(r) ? (n = !1) : t.add(r);
+            }
+            switch (e.type) {
+              case "title":
+              case "base":
+                r.has(e.type) ? (n = !1) : r.add(e.type);
+                break;
+              case "meta":
+                for (let t = 0, r = p.length; t < r; t++) {
+                  let r = p[t];
+                  if (e.props.hasOwnProperty(r))
+                    if ("charSet" === r) i.has(r) ? (n = !1) : i.add(r);
+                    else {
+                      let t = e.props[r],
+                        i = a[r] || new Set();
+                      ("name" !== r || !s) && i.has(t)
+                        ? (n = !1)
+                        : (i.add(t), (a[r] = i));
+                    }
+                }
+            }
+            return n;
+          }),
+        )
+        .reverse()
+        .map((e, t) => {
+          let r = e.key || t;
+          return o.default.cloneElement(e, { key: r });
+        });
+    }
+    let g = function ({ children: e }) {
+      let t = (0, o.useContext)(u.HeadManagerContext);
+      return (0, l.jsx)(d.default, {
+        reduceComponentsToState: m,
+        headManager: t,
+        children: e,
+      });
+    };
+    ("function" == typeof r.default ||
+      ("object" == typeof r.default && null !== r.default)) &&
+      void 0 === r.default.__esModule &&
+      (Object.defineProperty(r.default, "__esModule", { value: !0 }),
+      Object.assign(r.default, r),
+      (t.exports = r.default));
+  },
+  18556,
+  (e, t, r) => {
+    "use strict";
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "ImageConfigContext", {
+        enumerable: !0,
+        get: function () {
+          return n;
+        },
+      }));
+    let i = e.r(55682)._(e.r(71645)),
+      a = e.r(87690),
+      n = i.default.createContext(a.imageConfigDefault);
+  },
+  65856,
+  (e, t, r) => {
+    "use strict";
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "RouterContext", {
+        enumerable: !0,
+        get: function () {
+          return i;
+        },
+      }));
+    let i = e.r(55682)._(e.r(71645)).default.createContext(null);
+  },
+  70965,
+  (e, t, r) => {
+    "use strict";
+    function i(e, t) {
+      let r = e || 75;
+      return t?.qualities?.length
+        ? t.qualities.reduce(
+            (e, t) => (Math.abs(t - r) < Math.abs(e - r) ? t : e),
+            0,
+          )
+        : r;
+    }
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "findClosestQuality", {
+        enumerable: !0,
+        get: function () {
+          return i;
+        },
+      }));
+  },
+  1948,
+  (e, t, r) => {
+    "use strict";
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "default", {
+        enumerable: !0,
+        get: function () {
+          return s;
+        },
+      }));
+    let i = e.r(70965),
+      a = e.r(43369);
+    function n({ config: e, src: t, width: r, quality: n }) {
+      if (
+        t.startsWith("/") &&
+        t.includes("?") &&
+        e.localPatterns?.length === 1 &&
+        "**" === e.localPatterns[0].pathname &&
+        "" === e.localPatterns[0].search
+      )
+        throw Object.defineProperty(
+          Error(`Image with src "${t}" is using a query string which is not configured in images.localPatterns.
+Read more: https://nextjs.org/docs/messages/next-image-unconfigured-localpatterns`),
+          "__NEXT_ERROR_CODE",
+          { value: "E871", enumerable: !1, configurable: !0 },
+        );
+      let s = (0, i.findClosestQuality)(n, e),
+        l = (0, a.getDeploymentId)();
+      return `${e.path}?url=${encodeURIComponent(t)}&w=${r}&q=${s}${t.startsWith("/") && l ? `&dpl=${l}` : ""}`;
+    }
+    n.__next_img_default = !0;
+    let s = n;
+  },
+  85437,
+  (e, t, r) => {
+    "use strict";
+    (Object.defineProperty(r, "__esModule", { value: !0 }),
+      Object.defineProperty(r, "Image", {
+        enumerable: !0,
+        get: function () {
+          return v;
+        },
+      }));
+    let i = e.r(55682),
+      a = e.r(90809),
+      n = e.r(43476),
+      s = a._(e.r(71645)),
+      l = i._(e.r(74080)),
+      o = i._(e.r(25633)),
+      d = e.r(8927),
+      u = e.r(87690),
+      c = e.r(18556);
+    e.r(33525);
+    let f = e.r(65856),
+      p = i._(e.r(1948)),
+      m = e.r(18581),
+      g = {
+        deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+        imageSizes: [32, 48, 64, 96, 128, 256, 384],
+        qualities: [75],
+        path: "/_next/image",
+        loader: "default",
+        dangerouslyAllowSVG: !1,
+        unoptimized: !1,
+      };
+    function h(e, t, r, i, a, n, s) {
+      let l = e?.src;
+      e &&
+        e["data-loaded-src"] !== l &&
+        ((e["data-loaded-src"] = l),
+        ("decode" in e ? e.decode() : Promise.resolve())
+          .catch(() => {})
+          .then(() => {
+            if (e.parentElement && e.isConnected) {
+              if (("empty" !== t && a(!0), r?.current)) {
+                let t = new Event("load");
+                Object.defineProperty(t, "target", { writable: !1, value: e });
+                let i = !1,
+                  a = !1;
+                r.current({
+                  ...t,
+                  nativeEvent: t,
+                  currentTarget: e,
+                  target: e,
+                  isDefaultPrevented: () => i,
+                  isPropagationStopped: () => a,
+                  persist: () => {},
+                  preventDefault: () => {
+                    ((i = !0), t.preventDefault());
+                  },
+                  stopPropagation: () => {
+                    ((a = !0), t.stopPropagation());
+                  },
+                });
+              }
+              i?.current && i.current(e);
+            }
+          }));
+    }
+    function b(e) {
+      return s.use ? { fetchPriority: e } : { fetchpriority: e };
+    }
+    "u" < typeof window && (globalThis.__NEXT_IMAGE_IMPORTED = !0);
+    let y = (0, s.forwardRef)(
+      (
+        {
+          src: e,
+          srcSet: t,
+          sizes: r,
+          height: i,
+          width: a,
+          decoding: l,
+          className: o,
+          style: d,
+          fetchPriority: u,
+          placeholder: c,
+          loading: f,
+          unoptimized: p,
+          fill: g,
+          onLoadRef: y,
+          onLoadingCompleteRef: x,
+          setBlurComplete: v,
+          setShowAltText: _,
+          sizesInput: j,
+          onLoad: w,
+          onError: P,
+          ...C
+        },
+        S,
+      ) => {
+        let O = (0, s.useCallback)(
+            (e) => {
+              e && (P && (e.src = e.src), e.complete && h(e, c, y, x, v, p, j));
+            },
+            [e, c, y, x, v, P, p, j],
+          ),
+          E = (0, m.useMergedRef)(S, O);
+        return (0, n.jsx)("img", {
+          ...C,
+          ...b(u),
+          loading: f,
+          width: a,
+          height: i,
+          decoding: l,
+          "data-nimg": g ? "fill" : "1",
+          className: o,
+          style: d,
+          sizes: r,
+          srcSet: t,
+          src: e,
+          ref: E,
+          onLoad: (e) => {
+            h(e.currentTarget, c, y, x, v, p, j);
+          },
+          onError: (e) => {
+            (_(!0), "empty" !== c && v(!0), P && P(e));
+          },
+        });
+      },
+    );
+    function x({ isAppRouter: e, imgAttributes: t }) {
+      let r = {
+        as: "image",
+        imageSrcSet: t.srcSet,
+        imageSizes: t.sizes,
+        crossOrigin: t.crossOrigin,
+        referrerPolicy: t.referrerPolicy,
+        ...b(t.fetchPriority),
+      };
+      return e && l.default.preload
+        ? (l.default.preload(t.src, r), null)
+        : (0, n.jsx)(o.default, {
+            children: (0, n.jsx)(
+              "link",
+              { rel: "preload", href: t.srcSet ? void 0 : t.src, ...r },
+              "__nimg-" + t.src + t.srcSet + t.sizes,
+            ),
+          });
+    }
+    let v = (0, s.forwardRef)((e, t) => {
+      let r = (0, s.useContext)(f.RouterContext),
+        i = (0, s.useContext)(c.ImageConfigContext),
+        a = (0, s.useMemo)(() => {
+          let e = g || i || u.imageConfigDefault,
+            t = [...e.deviceSizes, ...e.imageSizes].sort((e, t) => e - t),
+            r = e.deviceSizes.sort((e, t) => e - t),
+            a = e.qualities?.sort((e, t) => e - t);
+          return {
+            ...e,
+            allSizes: t,
+            deviceSizes: r,
+            qualities: a,
+            localPatterns:
+              "u" < typeof window ? i?.localPatterns : e.localPatterns,
+          };
+        }, [i]),
+        { onLoad: l, onLoadingComplete: o } = e,
+        m = (0, s.useRef)(l);
+      (0, s.useEffect)(() => {
+        m.current = l;
+      }, [l]);
+      let h = (0, s.useRef)(o);
+      (0, s.useEffect)(() => {
+        h.current = o;
+      }, [o]);
+      let [b, v] = (0, s.useState)(!1),
+        [_, j] = (0, s.useState)(!1),
+        { props: w, meta: P } = (0, d.getImgProps)(e, {
+          defaultLoader: p.default,
+          imgConf: a,
+          blurComplete: b,
+          showAltText: _,
+        });
+      return (0, n.jsxs)(n.Fragment, {
+        children: [
+          (0, n.jsx)(y, {
+            ...w,
+            unoptimized: P.unoptimized,
+            placeholder: P.placeholder,
+            fill: P.fill,
+            onLoadRef: m,
+            onLoadingCompleteRef: h,
+            setBlurComplete: v,
+            setShowAltText: j,
+            sizesInput: e.sizes,
+            ref: t,
+          }),
+          P.preload
+            ? (0, n.jsx)(x, { isAppRouter: !r, imgAttributes: w })
+            : null,
+        ],
+      });
+    });
+    ("function" == typeof r.default ||
+      ("object" == typeof r.default && null !== r.default)) &&
+      void 0 === r.default.__esModule &&
+      (Object.defineProperty(r.default, "__esModule", { value: !0 }),
+      Object.assign(r.default, r),
+      (t.exports = r.default));
+  },
+  94909,
+  (e, t, r) => {
+    "use strict";
+    Object.defineProperty(r, "__esModule", { value: !0 });
+    var i = {
+      default: function () {
+        return u;
+      },
+      getImageProps: function () {
+        return d;
+      },
+    };
+    for (var a in i) Object.defineProperty(r, a, { enumerable: !0, get: i[a] });
+    let n = e.r(55682),
+      s = e.r(8927),
+      l = e.r(85437),
+      o = n._(e.r(1948));
+    function d(e) {
+      let { props: t } = (0, s.getImgProps)(e, {
+        defaultLoader: o.default,
+        imgConf: {
+          deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+          imageSizes: [32, 48, 64, 96, 128, 256, 384],
+          qualities: [75],
+          path: "/_next/image",
+          loader: "default",
+          dangerouslyAllowSVG: !1,
+          unoptimized: !1,
+        },
+      });
+      for (let [e, r] of Object.entries(t)) void 0 === r && delete t[e];
+      return { props: t };
+    }
+    let u = l.Image;
+  },
+  57688,
+  (e, t, r) => {
+    t.exports = e.r(94909);
+  },
+  95438,
+  (e) => {
+    "use strict";
+    var t = e.i(43476),
+      r = e.i(71645),
+      i = e.i(57688),
+      a = e.i(11448),
+      n = e.i(16552),
+      s = e.i(31674),
+      l = e.i(75254);
+    let o = (0, l.default)("minus", [
+        ["path", { d: "M5 12h14", key: "1ays0h" }],
+      ]),
+      d = (0, l.default)("plus", [
+        ["path", { d: "M5 12h14", key: "1ays0h" }],
+        ["path", { d: "M12 5v14", key: "s699le" }],
+      ]);
+    var u = e.i(81418),
+      c = e.i(59544);
+    function f({ product: e }) {
+      let [l, f] = (0, r.useState)(1),
+        [p, m] = (0, r.useState)(!1),
+        g = (0, n.useCart)((e) => e.addItem);
+      return (0, t.jsx)("div", {
+        className: "pt-32 pb-20 container mx-auto px-6 text-[#3d2b1f]",
+        children: (0, t.jsxs)("div", {
+          className: "grid grid-cols-1 lg:grid-cols-2 gap-16 items-center",
+          children: [
+            (0, t.jsxs)("div", {
+              className: "relative group",
+              children: [
+                (0, t.jsx)("div", {
+                  className:
+                    "aspect-square relative overflow-hidden rounded-[4rem] bg-white border border-[#e5dfd3] shadow-sm transition-all duration-1000 group-hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] group-hover:border-[#a3573a]/20",
+                  children: (0, t.jsx)(i.default, {
+                    src: (0, a.urlFor)(e.mainImage).width(1e3).url(),
+                    alt: e.title,
+                    fill: !0,
+                    className:
+                      "object-cover transition-transform duration-[1.5s] group-hover:scale-105",
+                    priority: !0,
+                  }),
+                }),
+                (0, t.jsx)("div", {
+                  className:
+                    "absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#df9152]/10 blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-[2s]",
+                }),
+              ],
+            }),
+            (0, t.jsxs)("div", {
+              className: "space-y-10 lg:pl-10",
+              children: [
+                (0, t.jsxs)("header", {
+                  children: [
+                    (0, t.jsxs)("div", {
+                      className: "flex items-center gap-3 mb-4",
+                      children: [
+                        (0, t.jsx)(s.Leaf, {
+                          size: 14,
+                          className: "text-[#a3573a] opacity-70",
+                        }),
+                        (0, t.jsx)("p", {
+                          className:
+                            "text-[10px] font-bold uppercase tracking-[0.4em] text-[#a3573a]",
+                          children: e.category?.title || "Handcrafted Piece",
+                        }),
+                      ],
+                    }),
+                    (0, t.jsx)("h1", {
+                      className:
+                        "text-5xl md:text-7xl font-serif italic font-medium text-[#3d2b1f] leading-[1.1] mb-6",
+                      children: e.title,
+                    }),
+                    (0, t.jsxs)("p", {
+                      className:
+                        "text-3xl font-sans font-bold text-[#a3573a] tracking-tight",
+                      children: ["Rs. ", e.price],
+                    }),
+                  ],
+                }),
+                (0, t.jsxs)("section", {
+                  className:
+                    "text-[#a89f91] leading-relaxed font-light italic text-xl max-w-lg border-l-2 border-[#e5dfd3] pl-6 py-2",
+                  children: [
+                    '"',
+                    e.description ||
+                      "Designed for the soulful home, this piece is thoughtfully handcrafted with  precision in Kathmandu.",
+                    '"',
+                  ],
+                }),
+                (0, t.jsxs)("div", {
+                  className:
+                    "space-y-8 pt-8 border-t border-[#e5dfd3] border-dotted",
+                  children: [
+                    (0, t.jsxs)("div", {
+                      className: "flex items-center gap-8",
+                      children: [
+                        (0, t.jsx)("span", {
+                          className:
+                            "text-[10px] font-bold uppercase tracking-widest text-[#a89f91]",
+                          children: "Quantity",
+                        }),
+                        (0, t.jsxs)("div", {
+                          className:
+                            "flex items-center border border-[#e5dfd3] rounded-full px-2 py-2 gap-4 bg-white shadow-sm",
+                          children: [
+                            (0, t.jsx)(c.default, {
+                              variant: "ghost",
+                              size: "sm",
+                              onClick: () => f(Math.max(1, l - 1)),
+                              className: "p-2 min-h-0 text-[#a89f91]",
+                              leftIcon: (0, t.jsx)(o, { size: 16 }),
+                            }),
+                            (0, t.jsx)("span", {
+                              className:
+                                "font-sans font-bold text-lg w-6 text-center",
+                              children: l,
+                            }),
+                            (0, t.jsx)(c.default, {
+                              variant: "ghost",
+                              size: "sm",
+                              onClick: () => f(l + 1),
+                              className: "p-2 min-h-0 text-[#a89f91]",
+                              leftIcon: (0, t.jsx)(d, { size: 16 }),
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    (0, t.jsx)(c.default, {
+                      onClick: () => {
+                        (g(e, l), m(!0), setTimeout(() => m(!1), 2e3));
+                      },
+                      fullWidth: !0,
+                      size: "xl",
+                      variant: p ? "accent" : "primary",
+                      className: p
+                        ? "shadow-[0_20px_40px_rgba(163,87,58,0.3)]"
+                        : "hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]",
+                      leftIcon: p
+                        ? (0, t.jsx)(u.ShieldCheck, { size: 18 })
+                        : void 0,
+                      children: p ? "Added to home" : "Add to Cart",
+                    }),
+                    (0, t.jsx)("p", {
+                      className:
+                        "text-center text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-[#a89f91] opacity-60",
+                      children:
+                        "* Locally Sourced • Hand-Finished • Delivered in Kathmandu",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      });
+    }
+    e.s(["default", () => f], 95438);
+  },
+]);
