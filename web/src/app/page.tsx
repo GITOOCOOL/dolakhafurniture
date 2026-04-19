@@ -2,7 +2,7 @@ import { client } from "@/lib/sanity";
 import CategoryRow from "@/components/CategoryRow"; 
 import { Product, Category } from '@/types';
 import Hero from "@/components/Hero";
-import { categoriesQuery, allProductsQuery } from "@/lib/queries";
+import { categoriesQuery, allProductsQuery, featuredProductsQuery, activeCampaignHomeQuery } from "@/lib/queries";
 import Carousel from "@/components/Carousel";
 import ProductCard from "@/components/ProductCard";
 
@@ -11,26 +11,14 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   
   // Fetch only featured products for the top carousel
-  const featuredProducts = await client.fetch<Product[]>(`*[_type == "product" && isFeatured == true] | order(_createdAt desc){
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
-  }`);
+  const featuredProducts = await client.fetch<Product[]>(featuredProductsQuery);
 
   // Fetch all products to group them by category for the bottom section
-  const allProducts = await client.fetch<Product[]>(`*[_type == "product"]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
-  }`);
+  const allProducts = await client.fetch<Product[]>(allProductsQuery);
   
   const categoriesInOrder = await client.fetch<Category[]>(categoriesQuery);
 
-  const activeCampaign = await client.fetch<any>(`*[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
-    title,
-    "slug": slug.current,
-    endDate,
-    "vouchers": vouchers[]->code,
-    "products": promotedProducts[]-> {
-      _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
-    }
-  }`);
+  const activeCampaign = await client.fetch<any>(activeCampaignHomeQuery);
 
   const productsByCategory = allProducts.reduce((acc, product) => {
     const key = product.category?.slug || 'other';

@@ -90,3 +90,17 @@ export const facebookMelaProductsQuery = `*[_type == "campaign" && slug.current 
         isActive
     }
 }.products`
+
+export const featuredProductsQuery = `*[_type == "product" && isFeatured == true && isActive == true] | order(_createdAt desc){
+    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
+}`
+
+export const activeCampaignHomeQuery = `*[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
+    title,
+    "slug": slug.current,
+    endDate,
+    "vouchers": vouchers[]->code,
+    "products": promotedProducts[]->[isActive == true] {
+      _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
+    }
+}`
