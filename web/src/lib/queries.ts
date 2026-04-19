@@ -46,6 +46,35 @@ export const paymentAccountsQuery = `*[_type == "paymentAccount" && isActive == 
     _id, accountName, accountNumber, bankNameOrWalletName, accountType, qrCodeImage, isActive
 }`
 
+export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"] | order(startDate desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    themeColor,
+    tagline,
+    description,
+    banner,
+    startDate,
+    endDate,
+    "vouchers": vouchers[]->{code, details}
+}`
+
+export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    themeColor,
+    tagline,
+    description,
+    banner,
+    startDate,
+    endDate,
+    "vouchers": vouchers[]->{code, details},
+    "products": promotedProducts[]-> {
+        _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
+    }
+} `
+
 export const facebookMelaProductsQuery = `*[_type == "campaign" && slug.current == "new-year-maha-mela-2083"][0] {
     "products": promotedProducts[]->[isActive == true && syncToFacebook == true] {
         _id,
