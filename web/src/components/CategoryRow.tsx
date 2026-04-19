@@ -13,7 +13,9 @@ type CategoryRowProps = {
 };
 
 const CategoryRow = ({ title, slug, products, autoScroll = false, subtitle, vouchers }: CategoryRowProps) => {
-  if (!products.length) return null;
+  const validProducts = products?.filter(Boolean) || [];
+  
+  if (!validProducts.length) return null;
   return (
     <section className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start w-full overflow-visible">
       {/* Ribbon: Spans full width on mobile, side-aligned on desktop */}
@@ -24,7 +26,7 @@ const CategoryRow = ({ title, slug, products, autoScroll = false, subtitle, vouc
       {/* Carousel Wrapper: min-w-0 is vital for flexbox carousels */}
       <div className="w-full min-w-0">
         <Carousel>
-          {products.map((product) => (
+          {validProducts.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </Carousel>
@@ -32,5 +34,6 @@ const CategoryRow = ({ title, slug, products, autoScroll = false, subtitle, vouc
     </section>
   );
 };
+
 
 export default CategoryRow;
