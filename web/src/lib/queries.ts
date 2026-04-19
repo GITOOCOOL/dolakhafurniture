@@ -12,16 +12,18 @@ export const productBySlugQuery = `*[_type == "product" && slug.current == $slug
 
 export const categoriesQuery = `*[_type == "category"]{
     _id, title, "slug": slug.current
-}`
+} `
+
 export const bulletinQuery = `[
   ...*[_type == "bulletin" && bulletinType == "news"] | order(_createdAt desc)[0...3],
   ...*[_type == "bulletin" && (bulletinType == "promotion" || bulletinType == "event")] | order(_createdAt desc)
 ]{
     _id, title, content, bulletinType, "slug": slug.current, mainImage, createdAt
-}`
+} `
+
 export const heroImageQuery = `*[_type == "heroImage"]{
     _id, title, "slug": slug.current, mainImage, createdAt
-}`
+} `
 
 export const allProductsQuery = `*[_type == "product" && isActive == true] | order(category->title asc, title asc) {
     _id,
@@ -43,35 +45,6 @@ export const allProductsQuery = `*[_type == "product" && isActive == true] | ord
 export const paymentAccountsQuery = `*[_type == "paymentAccount" && isActive == true]{
     _id, accountName, accountNumber, bankNameOrWalletName, accountType, qrCodeImage, isActive
 }`
-
-export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"] | order(startDate desc) {
-    _id,
-    title,
-    "slug": slug.current,
-    themeColor,
-    tagline,
-    description,
-    banner,
-    startDate,
-    endDate,
-    "vouchers": vouchers[]->{code, details}
-}`
-
-export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $slug][0] {
-    _id,
-    title,
-    "slug": slug.current,
-    themeColor,
-    tagline,
-    description,
-    banner,
-    startDate,
-    endDate,
-    "vouchers": vouchers[]->{code, details},
-    "products": promotedProducts[]-> {
-        _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
-    }
-} `
 
 export const facebookMelaProductsQuery = `*[_type == "campaign" && slug.current == "new-year-maha-mela-2083"][0] {
     "products": promotedProducts[]->[isActive == true && syncToFacebook == true] {
