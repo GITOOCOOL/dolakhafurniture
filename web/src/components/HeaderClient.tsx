@@ -6,18 +6,25 @@ import NavbarActions from "@/components/NavbarActions";
 import CategoryNav from "@/components/CategoryNav";
 import { Menu, X, Leaf, Search, Facebook, Instagram } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUIStore } from "@/store/useUIStore";
+import { trackEvent } from "./MetaPixel";
 
 export default function HeaderClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { lockScroll, unlockScroll } = useUIStore();
+  
+  useEffect(() => {
+    if (isMenuOpen) lockScroll('mobile-menu');
+    else unlockScroll('mobile-menu');
+    return () => unlockScroll('mobile-menu');
+  }, [isMenuOpen, lockScroll, unlockScroll]);
 
   useEffect(() => {
-    if (isMenuOpen || isSearchOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [isMenuOpen, isSearchOpen]);
+    if (isSearchOpen) lockScroll('main-search');
+    else unlockScroll('main-search');
+    return () => unlockScroll('main-search');
+  }, [isSearchOpen, lockScroll, unlockScroll]);
 
   return (
     <>
@@ -107,6 +114,14 @@ export default function HeaderClient() {
                   placeholder="Search by collection, material, or style..."
                   className="w-full bg-transparent border-b-2 border-[#e5dfd3] text-[#3d2b1f] placeholder:text-[#a89f91] text-2xl md:text-4xl py-6 focus:outline-none focus:border-[#a3573a] transition-all font-light"
                   suppressHydrationWarning
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const value = (e.target as HTMLInputElement).value;
+                      if (value.trim()) {
+                        trackEvent("Search", { search_string: value });
+                      }
+                    }
+                  }}
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
                   <Search size={40} strokeWidth={1} className="text-[#a3573a] opacity-30 group-focus-within:opacity-100 transition-opacity" />
@@ -164,7 +179,7 @@ export default function HeaderClient() {
                   </svg>
                 </a>
               </div>
-              <p className="text-[10px] uppercase tracking-widest text-[#a89f91]">Crafted in the Himalayas</p>
+              <p className="text-[10px] uppercase tracking-widest text-[#a89f91]">Honest Craft, Nepal</p>
             </div>
           </motion.div>
         )}

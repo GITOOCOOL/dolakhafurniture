@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { useUIStore } from "@/store/useUIStore";
 
 interface ModalProps {
   isOpen: boolean;
@@ -21,17 +22,17 @@ export default function Modal({
   className = "", 
   position = "center" 
 }: ModalProps) {
+  const { lockScroll, unlockScroll } = useUIStore();
+
   // Prevent scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      lockScroll('ui-modal');
     } else {
-      document.body.style.overflow = "unset";
+      unlockScroll('ui-modal');
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
+    return () => unlockScroll('ui-modal');
+  }, [isOpen, lockScroll, unlockScroll]);
 
   const positions = {
     center: "items-center justify-center px-4",

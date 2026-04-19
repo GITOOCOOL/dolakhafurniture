@@ -10,6 +10,7 @@ import { createClient } from "@/utils/supabase/client";
 import { client as sanityClient } from "@/lib/sanity";
 import { Order } from "@/types";
 import { ChevronDown, Package, Info, HelpCircle, Sparkles } from "lucide-react";
+import { trackEvent } from "./MetaPixel";
 
 interface FAQ {
   _id: string;
@@ -132,6 +133,10 @@ export default function InquiryModal({
     try {
       const result = await submitInquiry(inquiryData);
       if (result.success) {
+        trackEvent("Contact", {
+          inquiry_type: inquiryData.inquiryType,
+          topic: inquiryData.topic
+        });
         setInquiryStatus("success");
         setTimeout(() => {
           onClose();

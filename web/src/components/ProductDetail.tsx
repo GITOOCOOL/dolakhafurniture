@@ -27,14 +27,13 @@ export default function ProductDetail({ product }: { product: Product }) {
     });
   }, [product]);
 
-  // Gallery Logic: Filter visible images
-  const galleryImages = product.images?.filter((img) => img.isVisible) || [];
+  // Combined Gallery: mainImage + visible gallery images
+  const allImages = [
+    product.mainImage,
+    ...(product.images?.filter((img) => img.isVisible) || [])
+  ];
 
-  // Use first gallery image if available, else fallback to mainImage
-  const initialImage =
-    galleryImages.length > 0 ? galleryImages[0] : product.mainImage;
-  const [selectedImage, setSelectedImage] = useState<any>(initialImage);
-
+  const [selectedImage, setSelectedImage] = useState<any>(product.mainImage);
   const addItem = useCart((state) => state.addItem);
 
   const handleAddToCart = () => {
@@ -70,9 +69,9 @@ export default function ProductDetail({ product }: { product: Product }) {
           </div>
 
           {/* THUMBNAILS */}
-          {galleryImages.length > 1 && (
+          {allImages.length > 1 && (
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {galleryImages.map((img, idx) => (
+              {allImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(img)}

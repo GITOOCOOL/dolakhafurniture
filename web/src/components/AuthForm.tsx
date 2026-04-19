@@ -26,7 +26,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleGoogleLogin = () => {
-    trackEvent("Contact", { method: "social_login_google" });
+    trackEvent("Contact", { method: "social_login_google", goal: "signup_intent" });
     const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
     supabase.auth.signInWithOAuth({
       provider: "google",
@@ -37,7 +37,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
   };
 
   const handleFacebookLogin = () => {
-    trackEvent("Contact", { method: "social_login_facebook" });
+    trackEvent("Contact", { method: "social_login_facebook", goal: "signup_intent" });
     const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
     supabase.auth.signInWithOAuth({
       provider: "facebook",

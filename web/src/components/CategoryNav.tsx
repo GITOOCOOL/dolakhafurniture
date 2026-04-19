@@ -81,7 +81,7 @@ export default function CategoryNav({
             key={link.name}
             href={link.href}
             onClick={onItemClick}
-            className="text-5xl font-serif italic text-[#3d2b1f] hover:text-[#a3573a] flex-shrink-0"
+            className="text-2xl md:text-3xl font-serif italic tracking-tight text-[#3d2b1f] hover:text-[#a3573a] flex-shrink-0"
           >
             {link.name}
           </Link>

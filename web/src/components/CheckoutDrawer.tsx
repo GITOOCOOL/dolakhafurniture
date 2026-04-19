@@ -39,6 +39,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { trackEvent } from "@/components/MetaPixel";
 import Link from "next/link";
+import { useUIStore } from "@/store/useUIStore";
 
 interface CheckoutDrawerProps {
   isOpen: boolean;
@@ -57,6 +58,17 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const { lockScroll, unlockScroll } = useUIStore();
+
+  // Handle centralized scroll lock
+  useEffect(() => {
+    if (isOpen) {
+      lockScroll('checkout-drawer');
+    } else {
+      unlockScroll('checkout-drawer');
+    }
+    return () => unlockScroll('checkout-drawer');
+  }, [isOpen, lockScroll, unlockScroll]);
   
   // Voucher State
   const [voucherInput, setVoucherInput] = useState("");
@@ -511,7 +523,7 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                       </div>
                     </div>
 
-                    {/* Subtle Himalayan Sentry Shape */}
+                    {/* Subtle Dolakha Sentry Shape */}
                     <div className="absolute top-0 right-0 w-48 h-48 bg-[#a3573a]/20 rounded-full -mr-24 -mt-24 blur-3xl pointer-events-none" />
                   </div>
                 </motion.div>

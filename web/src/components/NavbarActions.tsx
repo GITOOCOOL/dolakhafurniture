@@ -10,6 +10,7 @@ import { ShoppingBag, Leaf, User, Search, ArrowRight } from "lucide-react";
 import AuthForm from "./AuthForm";
 import CheckoutDrawer from "./CheckoutDrawer";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useUIStore } from "@/store/useUIStore";
 
 interface NavbarActionsProps {
   onSearchClick: () => void;
@@ -59,6 +60,15 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     useCart.getState().clearCart();
     window.location.href = "/";
   };
+
+  const { lockScroll, unlockScroll } = useUIStore();
+
+  // Prevent background scroll when account modal is open
+  useEffect(() => {
+    if (isAccountModalOpen) lockScroll('account-drawer');
+    else unlockScroll('account-drawer');
+    return () => unlockScroll('account-drawer');
+  }, [isAccountModalOpen, lockScroll, unlockScroll]);
 
 
   const getInitials = (name: string) => {
