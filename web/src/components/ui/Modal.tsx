@@ -12,6 +12,7 @@ interface ModalProps {
   children: React.ReactNode;
   className?: string;
   position?: "center" | "right" | "left";
+  hideCloseButton?: boolean;
 }
 
 export default function Modal({ 
@@ -20,7 +21,8 @@ export default function Modal({
   title, 
   children, 
   className = "", 
-  position = "center" 
+  position = "center",
+  hideCloseButton = false
 }: ModalProps) {
   const { lockScroll, unlockScroll } = useUIStore();
 
@@ -35,7 +37,7 @@ export default function Modal({
   }, [isOpen, lockScroll, unlockScroll]);
 
   const positions = {
-    center: "items-center justify-center px-4",
+    center: "sm:items-center sm:justify-center sm:px-4",
     right: "items-stretch justify-end",
     left: "items-stretch justify-start",
   };
@@ -80,18 +82,23 @@ export default function Modal({
             exit={variants[position].exit}
             transition={isDrawer ? { type: "spring", damping: 25, stiffness: 200 } : { type: "spring", duration: 0.5, bounce: 0.3 }}
             className={`
-              relative bg-[#fdfaf5] border-[#e5dfd3] shadow-2xl overflow-hidden flex flex-col
-              ${isDrawer ? "h-full w-full sm:w-[400px] border-l rounded-none" : "w-full max-w-lg border rounded-[2.5rem] p-8 md:p-10"}
+              relative bg-[#fdfaf5] border-[#e5dfd3] shadow-2xl flex flex-col transition-all duration-300
+              ${isDrawer 
+                ? "h-full w-full sm:w-[500px] border-l rounded-none" 
+                : "w-full h-full sm:h-auto sm:max-w-xl sm:border sm:rounded-[2.5rem] p-0 sm:p-10 sm:max-h-[85dvh] overflow-hidden"
+              }
               ${className}
             `}
           >
             {/* Close Button */}
-            <button
-              onClick={onClose}
-              className={`absolute top-6 right-6 p-2 text-[#a89f91] hover:text-[#3d2b1f] hover:bg-[#3d2b1f]/5 transition-all z-20 ${isDrawer ? "rounded-none" : "rounded-full"}`}
-            >
-              <X size={24} />
-            </button>
+            {!hideCloseButton && (
+              <button
+                onClick={onClose}
+                className={`absolute top-6 right-6 p-2 text-[#a89f91] hover:text-[#3d2b1f] hover:bg-[#3d2b1f]/5 transition-all z-20 ${isDrawer ? "rounded-none" : "rounded-full"}`}
+              >
+                <X size={24} />
+              </button>
+            )}
 
             {title && (
               <div className={`mb-8 ${isDrawer ? "p-6 border-b" : "text-center"}`}>
@@ -100,7 +107,10 @@ export default function Modal({
               </div>
             )}
 
-            <div className={`relative z-10 font-sans flex-1 overflow-y-auto ${isDrawer ? "p-6 md:p-8" : ""}`}>
+            <div 
+              className={`relative z-10 font-sans flex-1 overflow-y-auto custom-scrollbar ${isDrawer ? "p-6 md:p-8" : ""}`}
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
               {children}
             </div>
           </motion.div>

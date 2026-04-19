@@ -61,7 +61,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     window.location.href = "/";
   };
 
-  const { lockScroll, unlockScroll } = useUIStore();
+  const { lockScroll, unlockScroll, setCampaignModalOpen } = useUIStore();
 
   // Prevent background scroll when account modal is open
   useEffect(() => {

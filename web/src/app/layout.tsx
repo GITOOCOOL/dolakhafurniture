@@ -3,12 +3,13 @@ import "./globals.css";
 import HeaderClient from "@/components/HeaderClient";
 import VerticalBulletinTicker from "@/components/VerticalBulletinTicker";
 import { client } from "@/lib/sanity";
-import { bulletinQuery } from "@/lib/queries";
-import { Bulletin } from "@/types";
+import { bulletinQuery, activeCampaignsQuery } from "@/lib/queries";
+import { Bulletin, Campaign } from "@/types";
 import { ToastProvider } from "@/components/Toast";
 import MetaPixel from "@/components/MetaPixel";
 import FloatingContact from "@/components/FloatingContact";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import CampaignModal from "@/components/CampaignModal";
 import NextTopLoader from 'nextjs-toploader';
 import { Suspense } from "react";
 
@@ -32,7 +33,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const bulletins = await client.fetch<Bulletin[]>(bulletinQuery);
+  const [bulletins, activeCampaigns] = await Promise.all([
+    client.fetch<Bulletin[]>(bulletinQuery),
+    client.fetch<Campaign[]>(activeCampaignsQuery)
+  ]);
+
+  const latestCampaign = activeCampaigns?.[0] || null;
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning={true} data-scroll-behavior="smooth">
@@ -77,7 +83,7 @@ export default async function RootLayout({
           <AnnouncementBar bulletins={bulletins} />
           
           {/* 2. STICKY HEADER (Persistent) */}
-          <HeaderClient />
+          <HeaderClient latestCampaign={latestCampaign} />
           
           {/* 3. MAIN CONTENT */}
           <main className="w-full relative flex-1">{children}</main>

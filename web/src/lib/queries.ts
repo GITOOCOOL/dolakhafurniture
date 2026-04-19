@@ -74,7 +74,7 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
 } `
 
 export const facebookMelaProductsQuery = `*[_type == "campaign" && slug.current == "new-year-maha-mela-2083"][0] {
-    "products": promotedProducts[->isActive == true]-> {
+    "products": promotedProducts[]->[isActive == true && syncToFacebook == true] {
         _id,
         title,
         price,

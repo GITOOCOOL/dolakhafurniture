@@ -5,13 +5,18 @@ import { create } from 'zustand';
 interface UIStore {
   activeLocks: Set<string>;
   scrollPos: number;
+  isCampaignModalOpen: boolean;
   lockScroll: (id: string) => void;
   unlockScroll: (id: string) => void;
+  setCampaignModalOpen: (isOpen: boolean) => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
   activeLocks: new Set<string>(),
   scrollPos: 0,
+  isCampaignModalOpen: false,
+  
+  setCampaignModalOpen: (isOpen: boolean) => set({ isCampaignModalOpen: isOpen }),
   
   lockScroll: (id: string) => set((state) => {
     const next = new Set(state.activeLocks);

@@ -35,8 +35,15 @@ export default defineType({
             name: 'syncToFacebook',
             title: 'Sync to Facebook/Instagram',
             type: 'boolean',
-            initialValue: false,
-            description: 'If turned ON, this product will appear in the automated social media catalog feed.',
+            initialValue: true,
+            description: 'If turned on, this product will be included in the automated Facebook catalog feed.'
+        }),
+        defineField({
+            name: 'isActive',
+            title: 'Active on Website',
+            type: 'boolean',
+            initialValue: true,
+            description: 'If turned off, this product will be hidden from the website (Home, Categories, and Search).'
         }),
         defineField({
             name: 'mainImage',

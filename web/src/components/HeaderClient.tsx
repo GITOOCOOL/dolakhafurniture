@@ -8,29 +8,34 @@ import { Menu, X, Leaf, Search, Facebook, Instagram } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/store/useUIStore";
 import { trackEvent } from "./MetaPixel";
+import CampaignModal from "./CampaignModal";
+import { Campaign } from "@/types";
 
-export default function HeaderClient() {
+interface HeaderClientProps {
+  latestCampaign?: Campaign | null;
+}
+
+export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { lockScroll, unlockScroll } = useUIStore();
-  
+  const { lockScroll, unlockScroll, setCampaignModalOpen } = useUIStore();
+
   useEffect(() => {
-    if (isMenuOpen) lockScroll('mobile-menu');
-    else unlockScroll('mobile-menu');
-    return () => unlockScroll('mobile-menu');
+    if (isMenuOpen) lockScroll("mobile-menu");
+    else unlockScroll("mobile-menu");
+    return () => unlockScroll("mobile-menu");
   }, [isMenuOpen, lockScroll, unlockScroll]);
 
   useEffect(() => {
-    if (isSearchOpen) lockScroll('main-search');
-    else unlockScroll('main-search');
-    return () => unlockScroll('main-search');
+    if (isSearchOpen) lockScroll("main-search");
+    else unlockScroll("main-search");
+    return () => unlockScroll("main-search");
   }, [isSearchOpen, lockScroll, unlockScroll]);
 
   return (
     <>
       <header className="sticky top-0 z-[100] w-full bg-[#fdfaf5] border-b border-[#e5dfd3] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
         <div className="container mx-auto px-2 md:px-6 w-full flex items-center justify-between py-3 md:py-4 gap-2">
-          
           <div className="flex-none flex items-center gap-2 md:gap-4">
             <button
               onClick={() => setIsMenuOpen(true)}
@@ -39,18 +44,24 @@ export default function HeaderClient() {
             >
               <Menu size={26} className="md:w-7 md:h-7" strokeWidth={1.5} />
             </button>
-            <div className="bg-[#3d2b1f] rounded-full">
-              <Link
-                href="/shop"
-                className="h-8 md:h-[48px] flex items-center px-4 md:px-6 text-[10px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-white bg-[#3d2b1f] hover:bg-[#4d3b2f] rounded-full transition-all whitespace-nowrap flex-shrink-0"
-              >
-                Shop
-              </Link>
+            <div className="flex items-center gap-2">
+              {latestCampaign && (
+                <button
+                  onClick={() => setCampaignModalOpen(true)}
+                  className="h-8 md:h-[48px] flex items-center px-4 md:px-6 text-[10px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-white bg-[#a3573a] hover:bg-[#3d2b1f] rounded-full transition-all whitespace-nowrap flex-shrink-0 shadow-lg shadow-[#a3573a]/20 animate-in fade-in slide-in-from-left-4 duration-500"
+                >
+                  <span className="mr-2">🏮</span>
+                  Offers
+                </button>
+              )}
             </div>
           </div>
 
           <div className="flex-1 flex items-center justify-center min-w-0">
-            <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
+            <Link
+              href="/"
+              className="flex items-center gap-3 group flex-shrink-0"
+            >
               <div className="relative flex-shrink-0 w-14 h-14 md:w-20 md:h-20 flex items-center justify-center">
                 <svg
                   viewBox="0 0 24 24"
@@ -66,7 +77,7 @@ export default function HeaderClient() {
                 <img
                   src="/logo.png"
                   alt="Home"
-                  style={{ width: '22px', height: '22px' }}
+                  style={{ width: "22px", height: "22px" }}
                   className="md:w-11 md:h-11 aspect-square object-contain transition-transform duration-700 group-hover:rotate-6 relative z-10 mt-1"
                 />
               </div>
@@ -84,6 +95,9 @@ export default function HeaderClient() {
         <div className="hidden md:flex container mx-auto px-6 pb-3 justify-center w-full">
           <CategoryNav />
         </div>
+
+        {/* --- CAMPAIGN TAKEOVER (Inside header context for prioritized layering) --- */}
+        <CampaignModal campaign={latestCampaign || null} />
       </header>
 
       {/* 
@@ -157,7 +171,9 @@ export default function HeaderClient() {
             <div className="flex-shrink-0 flex justify-between items-center w-full h-16 mb-8">
               <div className="flex items-center gap-2">
                 <Leaf className="text-[#a3573a]" size={18} />
-                <p className="text-xs font-serif italic tracking-widest text-[#3d2b1f]">Menu</p>
+                <p className="text-xs font-serif italic tracking-widest text-[#3d2b1f]">
+                  Menu
+                </p>
               </div>
               <button
                 onClick={() => setIsMenuOpen(false)}
@@ -167,19 +183,67 @@ export default function HeaderClient() {
               </button>
             </div>
             <div className="w-full">
-              <CategoryNav isMobile={true} onItemClick={() => setIsMenuOpen(false)} />
+              {/* FESTIVE CAMPAIGN TRIGGER (For Testing & Retention) */}
+              {latestCampaign && (
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setCampaignModalOpen(true);
+                  }}
+                  className="w-full mb-8 p-6 rounded-2xl bg-[#a3573a]/10 border border-[#a3573a]/20 flex items-center justify-between group group-hover:bg-[#a3573a]/20 transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl animate-pulse">🏮</span>
+                    <div className="text-left">
+                      <p className="text-[10px] uppercase tracking-widest text-[#a3573a] font-bold">
+                        New Year 2083
+                      </p>
+                      <p className="text-sm font-serif italic text-[#3d2b1f]">
+                        See Exclusive Festive Offers
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-[#a3573a] opacity-40 group-hover:opacity-100 transition-opacity">
+                    →
+                  </div>
+                </button>
+              )}
+
+              <CategoryNav
+                isMobile={true}
+                onItemClick={() => setIsMenuOpen(false)}
+              />
             </div>
             <div className="flex-shrink-0 w-full border-t border-[#e5dfd3] pt-10 pb-6">
               <div className="flex gap-8 mb-4">
-                <a href="https://facebook.com/dolakhafurniture" className="text-[#1877F2] hover:opacity-70 transition-opacity"><Facebook size={24} strokeWidth={1.5} /></a>
-                <a href="https://instagram.com/dolakhafurnituredesign" className="text-[#e1306c] hover:opacity-70 transition-opacity"><Instagram size={24} strokeWidth={1.5} /></a>
-                <a href="https://tiktok.com/@dolakhafurniture" className="text-[#010101] hover:opacity-70 transition-opacity">
-                  <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg">
+                <a
+                  href="https://facebook.com/dolakhafurniture"
+                  className="text-[#1877F2] hover:opacity-70 transition-opacity"
+                >
+                  <Facebook size={24} strokeWidth={1.5} />
+                </a>
+                <a
+                  href="https://instagram.com/dolakhafurnituredesign"
+                  className="text-[#e1306c] hover:opacity-70 transition-opacity"
+                >
+                  <Instagram size={24} strokeWidth={1.5} />
+                </a>
+                <a
+                  href="https://tiktok.com/@dolakhafurniture"
+                  className="text-[#010101] hover:opacity-70 transition-opacity"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="w-6 h-6 fill-current"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
                   </svg>
                 </a>
               </div>
-              <p className="text-[10px] uppercase tracking-widest text-[#a89f91]">Honest Craft, Nepal</p>
+              <p className="text-[10px] uppercase tracking-widest text-[#a89f91]">
+                Honest Craft, Nepal
+              </p>
             </div>
           </motion.div>
         )}
