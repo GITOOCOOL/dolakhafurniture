@@ -3,7 +3,7 @@ import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/render
 import { Campaign } from '@/types';
 import { urlFor } from '@/lib/sanity';
 
-const styles = StyleSheet.create({
+const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   page: {
     padding: 0,
     backgroundColor: '#FAF9F6', // Bone / Cream
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
   heroBanner: {
     width: '100%',
-    height: '40%',
+    height: '45%',
     objectFit: 'cover',
   },
   coverContent: {
@@ -26,21 +26,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   coverTitle: {
-    fontSize: 36,
+    fontSize: 32,
     fontFamily: 'Times-Roman',
     color: '#2C1E1A',
     marginBottom: 5,
     textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  coverTagline: {
+    fontSize: 16,
+    fontFamily: 'Times-Italic',
+    color: themeColor,
+    marginBottom: 8,
   },
   coverSubtitle: {
-    fontSize: 14,
-    fontFamily: 'Times-Italic',
-    color: '#D2691E',
+    fontSize: 12,
+    fontFamily: 'Helvetica',
+    color: '#666',
     marginBottom: 20,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
   dateInfo: {
-    fontSize: 10,
-    color: '#666',
+    fontSize: 9,
+    color: '#999',
     marginBottom: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#EEE',
@@ -52,39 +61,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: '#D2691E',
+    borderColor: themeColor,
+    borderRadius: 4,
   },
   voucherHeading: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'Helvetica-Bold',
     color: '#2C1E1A',
     marginBottom: 10,
     textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   voucherItem: {
     fontSize: 10,
-    marginBottom: 5,
+    marginBottom: 6,
+    color: '#444',
   },
   voucherCode: {
     fontFamily: 'Helvetica-Bold',
-    color: '#D2691E',
+    color: themeColor,
   },
   promoBox: {
-    marginTop: 20,
+    marginTop: 25,
   },
   promoText: {
-    fontSize: 10,
-    lineHeight: 1.5,
+    fontSize: 9,
+    lineHeight: 1.6,
     color: '#3d2b1f',
   },
   promoCode: {
     fontFamily: 'Helvetica-Bold',
-    fontSize: 11,
+    fontSize: 10,
+    color: '#000',
   },
 
-  // PRODUCT PAGE
+  // PRODUCT PAGE (3x2 Grid)
   section: {
-    padding: 40,
+    padding: '20 40 40 40', // Minimal top padding to max out space
     backgroundColor: '#FAF9F6',
     height: '100%',
   },
@@ -92,54 +105,77 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'baseline',
-    marginBottom: 20,
+    marginBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#D2691E',
-    paddingBottom: 10,
+    borderBottomColor: themeColor,
+    paddingBottom: 5,
   },
   title: {
-    fontSize: 18,
+    fontSize: 12,
     fontFamily: 'Times-Roman',
     color: '#2C1E1A',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 15,
     justifyContent: 'space-between',
+    rowGap: 10,
   },
   productCard: {
     width: '48%',
-    height: '28%', // Fits 3 rows comfortably
-    marginBottom: 15,
+    height: 225, // Absolute points to guarantee 3 rows fit (A4 is 842pt)
     backgroundColor: '#FFFFFF',
     padding: 10,
     borderRadius: 2,
     display: 'flex',
     flexDirection: 'column',
+    borderWidth: 0.5,
+    borderColor: '#EFEFEF',
+  },
+  productImageContainer: {
+    width: '100%',
+    height: 160, // Fixed height for image stability
+    marginBottom: 5,
+    backgroundColor: '#F7F7F7',
+    overflow: 'hidden',
   },
   productImage: {
     width: '100%',
-    height: '65%',
+    height: '100%',
     objectFit: 'cover',
-    marginBottom: 8,
   },
   productName: {
-    fontSize: 9,
+    fontSize: 11, // Increased
     fontFamily: 'Helvetica-Bold',
     color: '#2C1E1A',
-    marginBottom: 2,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    maxHeight: 28,
+    overflow: 'hidden',
   },
   productPrice: {
-    fontSize: 11,
-    color: '#D2691E',
+    fontSize: 13, // Increased
+    color: themeColor,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 2,
+    marginBottom: 4,
   },
-  productDims: {
-    fontSize: 7,
+  productDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginTop: 'auto',
+  },
+  productMeta: {
+    fontSize: 8.5, // Increased
     color: '#666',
     fontFamily: 'Helvetica',
+  },
+  productMaterial: {
+    fontSize: 8.5, // Increased
+    color: '#888',
+    fontFamily: 'Helvetica-Oblique',
   },
 
   // BACK COVER
@@ -151,37 +187,66 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    padding: 60,
   },
   contactHeading: {
-    fontSize: 14,
+    fontSize: 20, // Bolder
     fontFamily: 'Times-Roman',
     textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: 30,
+    letterSpacing: 4,
+    marginBottom: 50,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.2)',
-    paddingBottom: 10,
+    borderBottomColor: 'rgba(255,255,255,0.3)',
+    paddingBottom: 15,
     width: '100%',
     textAlign: 'center',
   },
+  qrSection: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 40,
+  },
+  qrCode: {
+    width: 180, // Much larger
+    height: 180,
+  },
+  qrText: {
+    fontSize: 10,
+    color: '#FAF9F6',
+    marginTop: 15,
+    opacity: 0.8,
+    fontFamily: 'Helvetica',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
   socialItem: {
-    fontSize: 12,
+    fontSize: 12, // Increased
     marginBottom: 10,
     fontFamily: 'Helvetica',
+    opacity: 0.9,
+    letterSpacing: 1,
   },
   phoneItem: {
-    fontSize: 16,
+    fontSize: 22, // High impact
     fontFamily: 'Helvetica-Bold',
-    marginTop: 20,
-    color: '#D2691E',
+    marginTop: 30,
+    color: themeColor,
+    letterSpacing: 1,
+  },
+  whatsappText: {
+    fontSize: 10,
+    color: '#FAF9F6',
+    marginTop: 8,
+    fontFamily: 'Helvetica-Oblique',
+    opacity: 0.8,
   },
   brandName: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 60,
     fontSize: 10,
-    letterSpacing: 4,
-    opacity: 0.5,
+    letterSpacing: 6,
+    opacity: 0.4,
     textTransform: 'uppercase',
   },
 
@@ -196,7 +261,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     fontSize: 8,
-    color: '#999',
+    color: '#AAA',
     fontFamily: 'Helvetica',
   }
 });
@@ -205,7 +270,7 @@ interface Props {
   campaign: Campaign;
 }
 
-// Helper to chunk products into pages of 6
+// Helper to chunk products into pages of 6 (3x2 grid)
 const chunkArray = (arr: any[], size: number) => {
   const chunks = [];
   for (let i = 0; i < arr.length; i += size) {
@@ -215,103 +280,123 @@ const chunkArray = (arr: any[], size: number) => {
 };
 
 export const CampaignPDF = ({ campaign }: Props) => {
+  const currentStyles = styles(campaign.themeColor);
   const productChunks = chunkArray(campaign.products || [], 6);
+  const campaignUrl = `https://dolakhafurniture.com/campaign/${campaign.slug}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(campaignUrl)}`;
 
   return (
     <Document title={`${campaign.title} - Dolakha Catalog`}>
       {/* Page 1: COVER & INSTRUCTIONS */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.coverPage}>
+      <Page size="A4" style={currentStyles.page}>
+        <View style={currentStyles.coverPage}>
           {campaign.banner && (
             <Image 
               src={urlFor(campaign.banner).width(1200).url()} 
-              style={styles.heroBanner} 
+              style={currentStyles.heroBanner} 
             />
           )}
-          <View style={styles.coverContent}>
-            <Text style={styles.coverTitle}>{campaign.title}</Text>
-            <Text style={styles.coverSubtitle}>Active Campaign Collection</Text>
+          <View style={currentStyles.coverContent}>
+            <Text style={currentStyles.coverSubtitle}>Seasonal Collection</Text>
+            <Text style={currentStyles.coverTitle}>{campaign.title}</Text>
+            {campaign.tagline && <Text style={currentStyles.coverTagline}>{campaign.tagline}</Text>}
             
-            <View style={styles.dateInfo}>
-              <Text>Campaign Duration: {campaign.startDate ? new Date(campaign.startDate).toLocaleDateString() : 'N/A'} - {campaign.endDate ? new Date(campaign.endDate).toLocaleDateString() : 'Active'}</Text>
+            <View style={currentStyles.dateInfo}>
+              <Text>Catalog Validity: {campaign.startDate ? new Date(campaign.startDate).toLocaleDateString() : 'N/A'} - {campaign.endDate ? new Date(campaign.endDate).toLocaleDateString() : 'Active'}</Text>
             </View>
 
             {campaign.vouchers && campaign.vouchers.length > 0 && (
-              <View style={styles.vouchersSection}>
-                <Text style={styles.voucherHeading}>Campaign Vouchers</Text>
+              <View style={currentStyles.vouchersSection}>
+                <Text style={currentStyles.voucherHeading}>Campaign Special Offers</Text>
                 {campaign.vouchers.map(v => (
-                  <Text key={v.code} style={styles.voucherItem}>
-                    • Code: <Text style={styles.voucherCode}>{v.code}</Text> {v.details ? ` - ${v.details}` : ''}
+                  <Text key={v.code} style={currentStyles.voucherItem}>
+                    • <Text style={currentStyles.voucherCode}>{v.code}</Text> {v.details ? ` - ${v.details}` : ''}
                   </Text>
                 ))}
-                <Text style={{ fontSize: 8, color: '#666', marginTop: 8 }}>* Apply voucher code at checkout to claim your offer.</Text>
+                <Text style={{ fontSize: 7, color: '#888', marginTop: 8 }}>* Mention these codes during your store visit or apply at checkout.</Text>
               </View>
             )}
 
-            <View style={styles.promoBox}>
-              <Text style={styles.voucherHeading}>Extra Rewards</Text>
-              <Text style={styles.promoText}>
-                Visit our website <Text style={styles.promoCode}>dolakhafurniture.com</Text> and sign up for an account to receive an additional <Text style={styles.promoCode}>5% DISCOUNT</Text> on your first purchase!
+            <View style={[currentStyles.vouchersSection, { marginTop: 15 }]}>
+              <Text style={currentStyles.voucherHeading}>JOIN US</Text>
+              <Text style={currentStyles.promoText}>
+                Visit <Text style={currentStyles.promoCode}>dolakhafurniture.com</Text> and sign up for an account to receive an additional <Text style={currentStyles.promoCode}>5% DISCOUNT</Text> on your first purchase!
               </Text>
-              <Text style={[styles.promoText, { marginTop: 10 }]}>
-                Use Voucher: <Text style={styles.voucherCode}>WELCOME5</Text>
+              <Text style={[currentStyles.promoText, { marginTop: 6 }]}>
+                Use Voucher: <Text style={currentStyles.voucherCode}>WELCOME5</Text>
               </Text>
             </View>
           </View>
         </View>
       </Page>
 
-      {/* PRODUCT PAGES (6 per page) */}
+      {/* PRODUCT PAGES (6 per page - 3x2 Grid) */}
       {productChunks.map((chunk, pageIdx) => (
-        <Page key={pageIdx} size="A4" style={styles.section}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{campaign.title} - Collection</Text>
-            <Text style={{ fontSize: 8, color: '#D2691E' }}>Page {pageIdx + 1}</Text>
+        <Page key={pageIdx} size="A4" style={currentStyles.section}>
+          <View style={currentStyles.header}>
+            <Text style={currentStyles.title}>{campaign.title} • Catalogue</Text>
+            <Text style={{ fontSize: 8, color: campaign.themeColor || '#D2691E' }}>{pageIdx + 1}</Text>
           </View>
           
-          <View style={styles.grid}>
+          <View style={currentStyles.grid}>
             {chunk.map((product) => (
-              <View key={product._id} style={styles.productCard} wrap={false}>
-                {product.mainImage && (
-                  <Image 
-                    src={urlFor(product.mainImage).width(400).url()} 
-                    style={styles.productImage} 
-                  />
-                )}
-                <View>
-                  <Text style={styles.productName}>{product.title}</Text>
-                  <Text style={styles.productPrice}>Rs. {product.price.toLocaleString()}</Text>
-                  <Text style={styles.productDims}>
-                    {product.length && product.breadth && product.height 
-                      ? `${product.length}" × ${product.breadth}" × ${product.height}"`
-                      : "Custom Dimensions"}
-                  </Text>
+              <View key={product._id} style={currentStyles.productCard} wrap={false}>
+                <View style={currentStyles.productImageContainer}>
+                  {product.mainImage && (
+                    <Image 
+                      src={urlFor(product.mainImage).width(600).url()} 
+                      style={currentStyles.productImage} 
+                    />
+                  )}
+                </View>
+                <View style={currentStyles.productInfo}>
+                  <Text style={currentStyles.productName}>{product.title}</Text>
+                  <Text style={currentStyles.productPrice}>NPR {product.price.toLocaleString()}</Text>
+                  
+                  <View style={currentStyles.productDetailRow}>
+                    <Text style={currentStyles.productMeta}>
+                      {product.length && product.breadth && product.height 
+                        ? `${product.length}" × ${product.breadth}" × ${product.height}"`
+                        : "Custom Dimensions"}
+                    </Text>
+                    {product.material && (
+                      <Text style={currentStyles.productMaterial}>{product.material}</Text>
+                    )}
+                  </View>
                 </View>
               </View>
             ))}
           </View>
 
-          <View style={styles.footer} fixed>
-            <Text>Dolakha Furniture • Crafted in Nepal</Text>
-            <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+          <View style={currentStyles.footer} fixed>
+            <Text>Dolakha Furniture • High Fidelity Interior Systems</Text>
+            <Text render={({ pageNumber, totalPages }) => `PAGE ${pageNumber} / ${totalPages}`} />
           </View>
         </Page>
       ))}
 
       {/* FINAL PAGE: CONTACT & SOCIALS */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.backCover}>
-          <Text style={styles.contactHeading}>Connect With Us</Text>
+      <Page size="A4" style={currentStyles.page}>
+        <View style={currentStyles.backCover}>
+          <Text style={currentStyles.contactHeading}>CONTACT US</Text>
           
-          <Text style={styles.socialItem}>Facebook: @dolakhafurniture</Text>
-          <Text style={styles.socialItem}>Instagram: @dolakhafurnituredesign</Text>
-          <Text style={styles.socialItem}>TikTok: @dolakhafurniture</Text>
+          <View style={currentStyles.qrSection}>
+            <Image src={qrUrl} style={currentStyles.qrCode} />
+          </View>
+          <Text style={currentStyles.qrText}>Scan to browse full collection online</Text>
           
-          <Text style={styles.phoneItem}>9861326486 | 9808005210</Text>
+          <View style={{ marginTop: 40, alignItems: 'center' }}>
+            <Text style={currentStyles.socialItem}>FB: @dolakhafurniture</Text>
+            <Text style={currentStyles.socialItem}>IG: @dolakhafurnituredesign</Text>
+            <Text style={currentStyles.socialItem}>TikTok: @dolakhafurniture</Text>
+          </View>
           
-          <Text style={[styles.socialItem, { marginTop: 40, fontSize: 10 }]}>Visit us at: dolakhafurniture.com</Text>
+          <Text style={currentStyles.phoneItem}>9861326486 | 9808005210</Text>
+          <Text style={currentStyles.whatsappText}>Text us on WhatsApp for instant quote</Text>
           
-          <Text style={styles.brandName}>Dolakha Furniture Archive</Text>
+          <Text style={[currentStyles.socialItem, { marginTop: 40, fontSize: 10, opacity: 0.6 }]}>dolakhafurniture.com</Text>
+          
+          <Text style={currentStyles.brandName}>Est. 2018 • Crafted with pride in Nepal</Text>
         </View>
       </Page>
     </Document>

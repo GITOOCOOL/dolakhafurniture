@@ -9,6 +9,7 @@ import { ToastProvider } from "@/components/Toast";
 import MetaPixel from "@/components/MetaPixel";
 import FloatingContact from "@/components/FloatingContact";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import BrowserBanner from "@/components/BrowserBanner";
 import CampaignModal from "@/components/CampaignModal";
 import NextTopLoader from 'nextjs-toploader';
 import { Suspense } from "react";
@@ -78,6 +79,9 @@ export default async function RootLayout({
           <Suspense fallback={null}>
             <MetaPixel />
           </Suspense>
+          
+          {/* 0. BROWSER ESCAPE BAR (For In-App Browsers) */}
+          <BrowserBanner />
           
           {/* 1. TOP ANNOUNCEMENT (Scrolls away) */}
           <AnnouncementBar bulletins={bulletins} />

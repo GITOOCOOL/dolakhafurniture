@@ -10,7 +10,7 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 
 - **Frontend (`/web`)**: Next.js 16 (App Router), React 19, Tailwind CSS v4, Lucide Icons, Framer Motion.
 - **CMS (`/sanity-studio`)**: Sanity v3 (Headless), GROQ Queries, Hotspot Image Support.
-- **Database & Auth**: Supabase (PostgreSQL + Google OAuth).
+- **Database & Auth**: Supabase (PostgreSQL + Google OAuth + Facebook Login).
 - **Deployment**: Cloudflare Pages (Monorepo setup with OpenNext).
 
 ---
@@ -20,13 +20,13 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 ### **Production Environments**
 
 - **Main Storefront**: [https://dolakhafurniture.com](https://dolakhafurniture.com)
-- **Sanity CMS Dashboard**: [https://dolakhafurniture.pages.dev](https://dolakhafurniture.pages.dev)
+- **Sanity CMS Dashboard**: [https://dolakhafurniture-sanity.pages.dev](https://dolakhafurniture-cms.pages.dev)
 - **Facebook Data Feed**: [https://dolakhafurniture.com/api/feed/facebook](https://dolakhafurniture.com/api/feed/facebook)
 - **Supabase Dashboard**: [https://app.supabase.com](https://app.supabase.com)
 
 ### **Local Development (Docker)**
 
-- **Command**: `docker-compose up` (Starts both Web and Studio)
+- **Command**: gave up docker for local development to save RAM, and using npm run dev now
 - **Local Web**: [http://localhost:3000](http://localhost:3000)
 - **Local Studio**: [http://localhost:3333](http://localhost:3333)
 
@@ -36,8 +36,8 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 
 - **Hybrid Data Flow**:
   - **Dynamic Pages**: Critical pages (Campaigns, Price Lists) use `force-dynamic` and `no-store` to ensure real-time inventory and pricing accuracy.
-  - **Static Content**: Marketing landing pages and category lists are served via Cloudflare's edge for maximum performance.
-- **Design System: Glassmorphism / Boho-Premium**:
+  - **Static Content**: Marketing landing pages and category lists are served via Cloudflare's edge for maximum performance.(Dont know about this, if its still the case, gotta check and verify and understand)
+- **Design System: Glassmorphism / Boho-Premium**:(Dont know we are still using the glassmorphism or not but I kinda like whatever the system we have now)
   - Custom tailored HSL color palettes (Espresso, Bone, Terracotta).
   - Heavy use of backdrop-blur and organic rounded corners.
 - **Shared Schemas**: Content blueprints are designed to be shared between the current Web platform and the upcoming Mobile application.
@@ -82,6 +82,16 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 
 ---
 
+## 🛠 Main Upgrade Workflows
+
+### **1. 🎯 Meta Integration & Ads Optimization**
+
+- 📅 **Agenda 1: Advanced Conversion Tracking**: Implement event tracking for high-intent actions (WhatsApp inquiries, PDF downloads) to improve ad attribution.
+
+### **2. 💎 Website Optimizations & UI/UX Refinements**
+
+---
+
 ## 🚀 Important Future Features
 
 - **Offline Conversions Sync (Meta CAPI)**:
@@ -97,6 +107,13 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 1. **Sanity Deploy**: Content changes trigger a Cloudflare rebuild webhook to refresh the global cache.
 2. **Git Workflow**: Code changes mapped to `origin/master` auto-deploy to Cloudflare Pages.
 3. **Build Command**: `npx @opennextjs/cloudflare build` (Frontend).
+
+### **Project Logging & History**
+
+1. **DevLogs.md**: Solely maintained by the **Human Developer**. Contains personal notes, high-level decisions, and manual technical logs.
+2. **AgentLogs.md**: Solely maintained by the **AI Agent**.
+   - Every prompt/response cycle must be logged under the **`[prompt/response]`** tag.
+   - Significant code changes or features must be logged under the **`[Codebase/Feature Updates]`** tag.
 
 ### **Critical Rules**
 

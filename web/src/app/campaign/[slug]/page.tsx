@@ -9,7 +9,6 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
 import PDFDownloadButton from "@/components/PDFDownloadButton";
-import PriceListTable from "@/components/PriceListTable";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -181,7 +180,15 @@ export default async function CampaignLandingPage({ params }: Props) {
         </div>
 
         {campaign.products && campaign.products.length > 0 ? (
-          <PriceListTable products={campaign.products} />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-16">
+            {campaign.products.map((product) => (
+              <ProductCard 
+                key={product._id} 
+                product={product as any} 
+                accentColor={themeColor}
+              />
+            ))}
+          </div>
         ) : (
           <div className="text-center py-24 border-t border-[#e5dfd3] border-dotted">
             <p className="text-[#a89f91] italic font-serif text-2xl">

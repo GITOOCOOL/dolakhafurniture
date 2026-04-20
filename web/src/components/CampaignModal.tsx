@@ -22,7 +22,30 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
     unlockScroll,
   } = useUIStore();
   const [copied, setCopied] = useState(false);
+  const [isInApp, setIsInApp] = useState(false);
   const { showToast } = useToast();
+
+  useEffect(() => {
+    // Detect In-App Browsers (Facebook, Messenger, Instagram, etc.)
+    const ua = (navigator.userAgent || navigator.vendor || (window as any).opera).toLowerCase();
+    
+    const isInAppDetected = 
+      ua.includes("fban") || 
+      ua.includes("fbav") || 
+      ua.includes("messenger") || 
+      ua.includes("instagram") ||
+      ua.includes("fb_iab") ||
+      ua.includes("fbios") || 
+      ua.includes("fb4a") ||
+      ua.includes("messengerforios") ||
+      ua.includes("fba4") ||
+      ua.includes("fb_iab") ||
+      ua.includes("fbsn") || 
+      ua.includes("fbsv") ||
+      ua.includes("fbid");
+
+    setIsInApp(isInAppDetected);
+  }, []);
 
   useEffect(() => {
     if (!campaign) return;
@@ -77,7 +100,7 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
             transform: "translateZ(100px)",
             backfaceVisibility: "hidden",
           }}
-          className="fixed inset-0 bg-[#fdfaf5] z-[200] flex flex-col p-8 pt-14 sm:pt-20 overflow-y-auto justify-start items-start"
+          className="fixed inset-0 bg-[#fdfaf5]/85 backdrop-blur-xl z-[200] flex flex-col p-8 pt-14 sm:pt-20 overflow-y-auto justify-start items-start border-r border-[#e5dfd3]/30"
         >
           {/* IDENTICAL HEADER TO NAV MENU */}
           <div className="flex-shrink-0 flex justify-between items-center w-full h-16 mb-8 mt-2 sm:mt-0">
@@ -151,6 +174,36 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
                   See Campaign Products 🏮
                 </Link>
               </div>
+
+              <AnimatePresence>
+                {isInApp && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-10 p-5 rounded-2xl bg-[#a3573a]/10 border-2 border-[#a3573a]/30 flex flex-col items-center gap-4"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="text-2xl pt-1">💡</div>
+                      <div className="flex-1 text-left">
+                        <p className="text-[11px] uppercase font-black tracking-[0.2em] text-[#a3573a] mb-2">Better Experience Tip</p>
+                        <p className="text-[13px] text-[#3d2b1f] font-medium leading-relaxed">
+                          Browsing from Messenger? Tap the <span className="font-bold underline">3 dots (⋮ or ...)</span> above and select <span className="font-bold">"Open in Browser"</span>.
+                        </p>
+                      </div>
+                    </div>
+                    {/* Visual Guide: Animated Arrow */}
+                    <motion.div
+                      animate={{ y: [0, 8, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                      className="mt-2 text-[#a3573a]"
+                    >
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M7 13l5 5 5-5M12 18V6" />
+                      </svg>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
