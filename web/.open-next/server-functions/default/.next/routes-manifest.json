@@ -30,6 +30,22 @@
       "namedRegex": "^/bulletin/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/campaign/[slug]",
+      "regex": "^/campaign/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/campaign/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/campaign/[slug]/price-list",
+      "regex": "^/campaign/([^/]+?)/price\\-list(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/campaign/(?<nxtPslug>[^/]+?)/price\\-list(?:/)?$"
+    },
+    {
       "page": "/category/[slug]",
       "regex": "^/category/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -72,6 +88,12 @@
       "namedRegex": "^/account(?:/)?$"
     },
     {
+      "page": "/api/feed/facebook",
+      "regex": "^/api/feed/facebook(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/feed/facebook(?:/)?$"
+    },
+    {
       "page": "/auth",
       "regex": "^/auth(?:/)?$",
       "routeKeys": {},
@@ -82,6 +104,12 @@
       "regex": "^/auth/callback(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/auth/callback(?:/)?$"
+    },
+    {
+      "page": "/campaigns",
+      "regex": "^/campaigns(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/campaigns(?:/)?$"
     },
     {
       "page": "/checkout",
@@ -102,10 +130,22 @@
       "namedRegex": "^/new\\-arrivals(?:/)?$"
     },
     {
+      "page": "/orders",
+      "regex": "^/orders(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/orders(?:/)?$"
+    },
+    {
       "page": "/our-story",
       "regex": "^/our\\-story(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/our\\-story(?:/)?$"
+    },
+    {
+      "page": "/price-list",
+      "regex": "^/price\\-list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/price\\-list(?:/)?$"
     },
     {
       "page": "/shop",

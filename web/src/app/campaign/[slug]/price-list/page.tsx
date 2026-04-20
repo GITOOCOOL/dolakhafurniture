@@ -4,7 +4,7 @@ import { Campaign } from "@/types";
 import DownloadButton from "@/components/DownloadButton";
 import { Leaf, ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
-import PriceListTable from "@/components/PriceListTable";
+import CategorizedProductGrid from "@/components/CategorizedProductGrid";
 import { notFound } from "next/navigation";
 
 interface Props {
@@ -59,7 +59,7 @@ export default async function CampaignPriceListPage({ params }: Props) {
       {/* PRICE LIST TABLES */}
       <div className="container mx-auto px-6 md:px-12">
         {campaign.products && campaign.products.length > 0 ? (
-          <PriceListTable products={campaign.products} />
+          <CategorizedProductGrid products={campaign.products} />
         ) : (
           <div className="text-center py-24 border-t border-[#e5dfd3] border-dotted">
             <p className="text-[#a89f91] italic font-serif text-2xl">

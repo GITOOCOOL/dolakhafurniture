@@ -83,7 +83,7 @@ export default async function CategoryPage({ params }: Props) {
 
                   {product.stock !== undefined && product.stock <= 0 && (
                     <div className="absolute top-6 right-6 bg-white/80 backdrop-blur-lg border border-[#e5dfd3] text-[#3d2b1f] px-6 py-2.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-xl z-20 flex flex-col items-center gap-1 text-center leading-tight">
-                      <span className="text-[#a3573a]">Stock Out</span>
+                      <span className="text-[#a3573a]">OUT OF STOCK</span>
                       <span className="opacity-70 text-[8px] normal-case font-medium italic">
                         will be made after order
                       </span>

@@ -4,7 +4,7 @@ import { Product } from "@/types";
 import DownloadButton from "@/components/DownloadButton";
 import { Leaf, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import PriceListTable from "@/components/PriceListTable";
+import CategorizedProductGrid from "@/components/CategorizedProductGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +47,7 @@ export default async function PriceListPage() {
 
       {/* PRICE LIST TABLES */}
       <div className="container mx-auto px-6 md:px-12">
-        <PriceListTable products={allProducts} />
+        <CategorizedProductGrid products={allProducts} />
       </div>
 
       {/* FOOTER ACCENT */}

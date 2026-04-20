@@ -10,7 +10,7 @@ export const productBySlugQuery = `*[_type == "product" && slug.current == $slug
     _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured, material, length, breadth, height
 }`
 
-export const categoriesQuery = `*[_type == "category"]{
+export const categoriesQuery = `*[_type == "category" && count(*[_type == "product" && references(^._id) && isActive == true]) > 0] | order(title asc) {
     _id, title, "slug": slug.current
 } `
 

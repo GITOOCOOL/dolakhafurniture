@@ -146,6 +146,12 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
     height: '100%',
     objectFit: 'cover',
   },
+  productInfo: {
+    paddingTop: 5,
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
   productName: {
     fontSize: 11, // Increased
     fontFamily: 'Helvetica-Bold',
