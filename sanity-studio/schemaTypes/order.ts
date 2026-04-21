@@ -9,6 +9,30 @@ export default {
       type: "string",
       description: "System generated unique identifier, or manually enter one for phone orders (e.g., #DF-A4F2)",
     },
+    {
+      name: "isPhoneOrder",
+      title: "Phone / Manual Order",
+      type: "boolean",
+      description: "Toggle this ON if you are manually creating this order for a customer.",
+      initialValue: false,
+    },
+    {
+      name: "orderSource",
+      title: "Order Source",
+      type: "string",
+      description: "Where did this order originate?",
+      initialValue: "website",
+      options: {
+        list: [
+          { title: "🌐 Website", value: "website" },
+          { title: "📞 Phone", value: "phone" },
+          { title: "💬 WhatsApp", value: "whatsapp" },
+          { title: "🚶 Walk-in", value: "walk-in" },
+          { title: "🔵 Facebook", value: "facebook" },
+        ],
+        layout: "dropdown",
+      },
+    },
     { name: "supabaseUserId", title: "Supabase User ID", type: "string" },
     { name: "customerName", title: "Customer Name", type: "string" },
     { name: "customerEmail", title: "Customer Email", type: "string" },
@@ -45,6 +69,7 @@ export default {
     { name: "shippingMethod", title: "Shipping Method", type: "string" },
     { name: "paymentMethod", title: "Payment Method", type: "string" },
     { name: "totalPrice", title: "Total Price (NPR)", type: "number" },
+    { name: "discountValue", title: "Discount Amount (NPR)", type: "number", initialValue: 0 },
     {
       name: "status",
       title: "Status",
@@ -94,6 +119,12 @@ export default {
           ],
         },
       ],
+    },
+    {
+      name: "internalNotes",
+      title: "Internal Staff Notes",
+      type: "text",
+      description: "Hidden from customers. Use for tracking fulfillments, issues, or special requests.",
     },
   ],
   preview: {

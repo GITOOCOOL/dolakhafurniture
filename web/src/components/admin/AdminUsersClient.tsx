@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Mail, Shield, ShieldAlert, ShieldCheck, ChevronDown, UserCircle2 } from "lucide-react";
+import { Users, Mail, Shield, ShieldAlert, ShieldCheck, ChevronDown, UserCircle2, UserPlus, X, Key, Copy, Check, ShieldPlus } from "lucide-react";
+import { addStaffMember } from "@/app/actions/adminUsers";
+import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
 
 interface Profile {
   id: string;
@@ -14,6 +17,18 @@ interface Profile {
 export default function AdminUsersClient({ initialProfiles }: { initialProfiles: Profile[] }) {
   const [profiles, setProfiles] = useState(initialProfiles);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  
+  // Recruitment State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successData, setSuccessData] = useState<{email: string; pass: string} | null>(null);
+  const [copied, setCopied] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    email: "",
+    fullName: "",
+    role: "staff"
+  });
 
   const updateRole = async (targetUserId: string, newRole: string) => {
     setUpdatingId(targetUserId);
@@ -36,6 +51,33 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
     }
   };
 
+  const handleAddStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const result = await addStaffMember(formData);
+      if (result.success) {
+        setSuccessData({ email: result.email!, pass: result.tempPassword! });
+        // We don't refresh immediately because they need to see the password
+        setFormData({ email: "", fullName: "", role: "staff" });
+      } else {
+        alert(result.message);
+      }
+    } catch (err) {
+      alert("An error occurred while adding staff.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const copyPassword = () => {
+    if (successData) {
+      navigator.clipboard.writeText(successData.pass);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const roleConfigs: Record<string, { color: string; icon: any }> = {
     admin: { color: "bg-red-500/10 text-red-600", icon: ShieldAlert },
     staff: { color: "bg-action/10 text-action", icon: ShieldCheck },
@@ -44,6 +86,34 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
+      
+      {/* HEADER ACTIONS */}
+      <div className="flex justify-between items-end gap-6">
+        {/* ONBOARDING HELP */}
+        <div className="bg-action/5 border border-action/20 rounded-[2.5rem] p-8 flex items-start gap-6 flex-1">
+           <div className="w-12 h-12 bg-action text-white rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
+              <Users size={20} />
+           </div>
+           <div>
+              <h3 className="text-sm font-bold text-heading mb-1 uppercase tracking-widest">Team Management</h3>
+              <p className="text-xs text-label leading-relaxed font-serif italic max-w-2xl">
+                To onboard new staff, you can either wait for their signup or directly recruit them using the 
+                <span className="text-action font-bold mx-1">Artisan Direct</span> tool.
+              </p>
+           </div>
+        </div>
+
+        <button 
+          onClick={() => {
+            setSuccessData(null);
+            setIsAddModalOpen(true);
+          }}
+          className="flex items-center gap-3 px-10 py-5 bg-heading text-app rounded-full text-[10px] font-sans font-bold uppercase tracking-[0.2em] hover:bg-action transition-all shadow-2xl shadow-heading/20 group"
+        >
+           <UserPlus size={16} className="group-hover:rotate-12 transition-transform" />
+           Add New Artisan
+        </button>
+      </div>
 
       <div className="bg-app border border-soft rounded-[3rem] overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -115,6 +185,117 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
           Waiting for users to explore the atelier...
         </div>
       )}
+
+      {/* RECRUITMENT MODAL */}
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => !isSubmitting && setIsAddModalOpen(false)}
+        title="Artisan Direct Recruitment"
+        noPadding
+      >
+        {!successData ? (
+          <form onSubmit={handleAddStaff} className="p-10 space-y-8">
+             <div className="space-y-6">
+                <div className="space-y-3">
+                   <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Full Legal Name</label>
+                   <input 
+                     required
+                     type="text" 
+                     placeholder="e.g., Sangita Kafle" 
+                     className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action transition-all"
+                     value={formData.fullName}
+                     onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                   />
+                </div>
+
+                <div className="space-y-3">
+                   <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Auth Email Address</label>
+                   <input 
+                     required
+                     type="email" 
+                     placeholder="staff@dolakhafurniture.com" 
+                     className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action transition-all"
+                     value={formData.email}
+                     onChange={(e) => setFormData({...formData, email: e.target.value})}
+                   />
+                </div>
+
+                <div className="space-y-3">
+                   <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Access Level</label>
+                   <div className="grid grid-cols-2 gap-4">
+                      <button 
+                        type="button"
+                        onClick={() => setFormData({...formData, role: 'staff'})}
+                        className={`flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all ${formData.role === 'staff' ? 'bg-action/5 border-action text-action' : 'bg-surface border-soft text-label'}`}
+                      >
+                         <ShieldCheck size={20} />
+                         <span className="text-[9px] font-bold uppercase tracking-widest">Staff Member</span>
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => setFormData({...formData, role: 'admin'})}
+                        className={`flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all ${formData.role === 'admin' ? 'bg-red-500/5 border-red-500/30 text-red-600' : 'bg-surface border-soft text-label'}`}
+                      >
+                         <ShieldAlert size={20} />
+                         <span className="text-[9px] font-bold uppercase tracking-widest">Full Admin</span>
+                      </button>
+                   </div>
+                </div>
+             </div>
+
+             <div className="pt-6">
+                <Button fullWidth type="submit" isLoading={isSubmitting}>
+                   Confirm Recruitment
+                </Button>
+                <p className="text-[9px] text-center mt-6 text-label font-serif italic opacity-60">
+                   A temporary password will be generated for the new artisan.
+                </p>
+             </div>
+          </form>
+        ) : (
+          <div className="p-10 space-y-10 animate-in zoom-in duration-500">
+             <div className="flex flex-col items-center text-center space-y-6">
+                <div className="w-20 h-20 bg-emerald-500/10 text-emerald-600 rounded-full flex items-center justify-center border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
+                   <ShieldPlus size={40} />
+                </div>
+                <div>
+                   <h3 className="type-section text-xl">Recruitment Successful</h3>
+                   <p className="type-label text-label normal-case italic font-serif mt-2">
+                     Account created for {successData.email}
+                   </p>
+                </div>
+             </div>
+
+             <div className="bg-surface border border-soft rounded-[2.5rem] p-8 space-y-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-label text-center">Temporary Access Key</p>
+                <div className="relative group">
+                   <input 
+                     readOnly
+                     type="text" 
+                     value={successData.pass}
+                     className="w-full bg-app border border-soft rounded-2xl px-6 py-6 text-xl font-mono font-bold text-heading text-center tracking-widest cursor-default focus:outline-none"
+                   />
+                   <button 
+                     onClick={copyPassword}
+                     className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-heading text-app rounded-xl hover:bg-action transition-all shadow-lg active:scale-90"
+                   >
+                     {copied ? <Check size={18} /> : <Copy size={18} />}
+                   </button>
+                </div>
+                <p className="text-[9px] text-center text-action font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                   <Key size={12} /> Share this key with the new staff member
+                </p>
+             </div>
+
+             <Button fullWidth variant="ghost" onClick={() => {
+               setIsAddModalOpen(false);
+               window.location.reload(); // Refresh to show new user
+             }}>
+                Return to Directory
+             </Button>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

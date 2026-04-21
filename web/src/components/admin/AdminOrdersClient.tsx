@@ -1,19 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { Package, MapPin, Phone, Mail, Calendar, ChevronDown } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Package, MapPin, Phone, Mail, Calendar, ChevronDown, Plus, Tag, Info, User, CheckCircle2, Search, Filter, X, Trash2, AlertOctagon, RotateCcw } from "lucide-react";
 import Image from "next/image";
+import ManualOrderModal from "./ManualOrderModal";
+import { deleteOrder } from "@/app/actions/adminOrders";
+import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
+import { useRouter } from "next/navigation";
 
 interface Order {
   _id: string;
   orderNumber?: string;
   status?: string;
   orderSource?: string;
+  isPhoneOrder?: boolean;
   internalNotes?: string;
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
   totalPrice: number;
+  discountValue?: number;
+  voucherCodes?: string[];
   _createdAt: string;
   shippingAddress?: any;
   items: any[];
@@ -22,6 +30,44 @@ interface Order {
 export default function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] }) {
   const [orders, setOrders] = useState(initialOrders);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [shouldRestoreStock, setShouldRestoreStock] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  // Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+
+  // Filter Logic
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => {
+      const matchesSearch = 
+        !searchQuery || 
+        order.orderNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.customerPhone?.includes(searchQuery);
+      
+      const matchesStatus = statusFilter === "all" || order.status?.toLowerCase() === statusFilter;
+      const matchesSource = sourceFilter === "all" || order.orderSource?.toLowerCase() === sourceFilter;
+      
+      let matchesType = true;
+      if (typeFilter === "manual") matchesType = !!order.isPhoneOrder;
+      if (typeFilter === "website") matchesType = !order.isPhoneOrder;
+
+      return matchesSearch && matchesStatus && matchesSource && matchesType;
+    });
+  }, [orders, searchQuery, statusFilter, sourceFilter, typeFilter]);
+
+  // Keep internal state in sync with server data when it changes
+  useEffect(() => {
+    setOrders(initialOrders);
+  }, [initialOrders]);
 
   const updateStatus = async (orderId: string, newStatus: string) => {
     setUpdatingId(orderId);
@@ -41,6 +87,26 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
     }
   };
 
+  const handleDeleteOrder = async () => {
+    if (!orderToDelete) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteOrder(orderToDelete._id, shouldRestoreStock);
+      if (result.success) {
+        setOrderToDelete(null);
+        setDeleteConfirmText("");
+        setOrders(orders.filter(o => o._id !== orderToDelete._id));
+        router.refresh();
+      } else {
+        alert(result.message);
+      }
+    } catch (err) {
+      alert("Failed to delete order.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const statusColors: Record<string, string> = {
     pending: "bg-amber-500/10 text-amber-600",
     processing: "bg-blue-500/10 text-blue-600",
@@ -52,13 +118,121 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       <div className="flex justify-end items-end mb-4">
-        <button className="flex items-center gap-2 px-8 py-3 bg-action text-white rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-heading transition-all shadow-xl shadow-action/20">
+        <button 
+          onClick={() => setIsManualModalOpen(true)}
+          className="flex items-center gap-2 px-8 py-3 bg-action text-white rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-heading transition-all shadow-xl shadow-action/20"
+        >
+           <Plus size={14} strokeWidth={3} />
            Create Manual Order
         </button>
       </div>
 
+      {/* FILTER BAR */}
+      <div className="bg-surface border border-soft rounded-[2.5rem] p-6 lg:p-10 mb-8 space-y-6 shadow-sm">
+         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8">
+            {/* Search */}
+            <div className="md:col-span-6 relative">
+               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={18} />
+               <input 
+                 type="text" 
+                 placeholder="Search by Order #, Name, or Phone..." 
+                 className="w-full bg-app border border-soft rounded-2xl pl-16 pr-6 py-4 text-sm font-medium text-heading focus:outline-none focus:ring-1 focus:ring-action transition-all"
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+               />
+               {searchQuery && (
+                 <button 
+                   onClick={() => setSearchQuery("")}
+                   className="absolute right-6 top-1/2 -translate-y-1/2 text-label hover:text-heading"
+                 >
+                   <X size={14} />
+                 </button>
+               )}
+            </div>
+
+            {/* Type Filter */}
+            <div className="md:col-span-4 relative">
+               <Filter className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={14} />
+               <select 
+                 className="w-full bg-app border border-soft rounded-2xl pl-14 pr-6 py-4 text-xs font-bold uppercase tracking-widest text-heading appearance-none focus:outline-none focus:ring-1 focus:ring-action outline-none cursor-pointer"
+                 value={typeFilter}
+                 onChange={(e) => setTypeFilter(e.target.value)}
+               >
+                 <option value="all">Channel: All</option>
+                 <option value="website">🛒 Website Orders</option>
+                 <option value="manual">🚶 Manual/Phone</option>
+               </select>
+               <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-label opacity-40 pointer-events-none" size={12} />
+            </div>
+
+            {/* Status Filter */}
+            <div className="md:col-span-4 relative">
+               <Filter className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={14} />
+               <select 
+                 className="w-full bg-app border border-soft rounded-2xl pl-14 pr-6 py-4 text-xs font-bold uppercase tracking-widest text-heading appearance-none focus:outline-none focus:ring-1 focus:ring-action outline-none cursor-pointer"
+                 value={statusFilter}
+                 onChange={(e) => setStatusFilter(e.target.value)}
+               >
+                 <option value="all">Status: All</option>
+                 <option value="pending">Pending</option>
+                 <option value="processing">Processing</option>
+                 <option value="shipped">Shipped</option>
+                 <option value="delivered">Delivered</option>
+                 <option value="cancelled">Cancelled</option>
+               </select>
+               <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-label opacity-40 pointer-events-none" size={12} />
+            </div>
+
+            {/* Source Filter */}
+            <div className="md:col-span-4 relative">
+               <Package className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={14} />
+               <select 
+                 className="w-full bg-app border border-soft rounded-2xl pl-14 pr-6 py-4 text-xs font-bold uppercase tracking-widest text-heading appearance-none focus:outline-none focus:ring-1 focus:ring-action outline-none cursor-pointer"
+                 value={sourceFilter}
+                 onChange={(e) => setSourceFilter(e.target.value)}
+               >
+                 <option value="all">Source: All</option>
+                 <option value="website">Website</option>
+                 <option value="walk-in">Walk-in</option>
+                 <option value="whatsapp">WhatsApp</option>
+                 <option value="phone">Phone Call</option>
+                 <option value="facebook">Facebook</option>
+               </select>
+               <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-label opacity-40 pointer-events-none" size={12} />
+            </div>
+         </div>
+
+         {/* ACTIVE FILTERS SUMMARY */}
+         {(searchQuery || statusFilter !== "all" || sourceFilter !== "all" || typeFilter !== "all") && (
+           <div className="flex items-center justify-between pt-4 border-t border-soft/50">
+              <p className="text-[10px] font-bold text-label uppercase tracking-widest">
+                 Found <span className="text-heading">{filteredOrders.length}</span> matching orders
+              </p>
+              <button 
+                onClick={() => {
+                  setSearchQuery("");
+                  setStatusFilter("all");
+                  setSourceFilter("all");
+                  setTypeFilter("all");
+                }}
+                className="text-[9px] font-bold text-action hover:text-heading uppercase tracking-widest transition-colors flex items-center gap-2"
+              >
+                 <X size={12} /> Clear all filters
+              </button>
+           </div>
+         )}
+      </div>
+
+      <ManualOrderModal 
+        isOpen={isManualModalOpen} 
+        onClose={() => setIsManualModalOpen(false)}
+        onSuccess={() => {
+          router.refresh();
+        }}
+      />
+
       <div className="space-y-6">
-        {orders.map((order) => (
+        {filteredOrders.length > 0 ? filteredOrders.map((order) => (
           <div key={order._id} className="bg-app border border-soft rounded-[3rem] p-10 shadow-sm hover:border-action/20 transition-all duration-500 overflow-hidden relative group">
             {/* STATUS BADGE */}
             <div className="absolute top-10 right-10 flex items-center gap-4">
@@ -87,17 +261,31 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               {/* ORDER HEADER */}
               <div className="lg:col-span-4 space-y-6 border-r border-soft border-dotted pr-12">
-                <div>
+                 <div>
                    <div className="flex items-center gap-3 mb-2">
                      <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label">Order Reference</p>
-                     {order.orderSource && order.orderSource !== "website" && (
-                       <span className="text-[8px] px-2 py-0.5 bg-blue-500/10 text-blue-600 rounded-full font-bold uppercase tracking-widest">
-                         {order.orderSource}
-                       </span>
-                     )}
+                     <span className={`text-[8px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest flex items-center gap-1.5 ${order.isPhoneOrder ? "bg-amber-500/10 text-amber-600" : "bg-blue-500/10 text-blue-600"}`}>
+                        {order.isPhoneOrder ? (
+                          <><User size={10} strokeWidth={3} /> Manual Sale</>
+                        ) : (
+                          <><Package size={10} strokeWidth={3} /> Website Sale</>
+                        )}
+                     </span>
                    </div>
                    <h3 className="text-xl font-sans font-bold text-heading">#{order.orderNumber || order._id.slice(-6).toUpperCase()}</h3>
                 </div>
+                
+                {/* VOUCHERS & DISCOUNTS */}
+                {(order.voucherCodes?.length ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {order.voucherCodes?.map((code, i) => (
+                      <div key={i} className="flex items-center gap-1.5 px-3 py-1 bg-action/10 text-action rounded-full text-[8px] font-bold uppercase tracking-widest border border-action/10">
+                        <Tag size={10} />
+                        {code}
+                      </div>
+                    ))}
+                  </div>
+                )}
                 
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-label">
@@ -170,15 +358,205 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                       <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-1">Grand Total</p>
                       <h4 className="text-3xl font-sans font-bold text-heading">Rs. {order.totalPrice}</h4>
                     </div>
-                    <button className="flex items-center gap-2 px-8 py-3 bg-invert text-app rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-action transition-all">
-                       <Package size={14} /> Full Details
-                    </button>
+                    <div className="flex gap-3">
+                       <button 
+                         onClick={() => setSelectedOrder(order)}
+                         className="flex items-center gap-2 px-8 py-3 bg-invert text-app rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-action transition-all shadow-lg"
+                       >
+                          <Plus size={14} /> Full Breakdown
+                       </button>
+                       <button 
+                         onClick={() => {
+                           setOrderToDelete(order);
+                           setDeleteConfirmText("");
+                           setShouldRestoreStock(true);
+                         }}
+                         className="w-12 h-12 flex items-center justify-center bg-red-500/10 text-red-600 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                         title="Delete Order"
+                       >
+                          <Trash2 size={16} />
+                       </button>
+                    </div>
                  </div>
               </div>
             </div>
           </div>
-        ))}
+        )) : (
+          <div className="py-24 text-center border border-soft border-dashed rounded-[3rem] bg-soft/5">
+             <Package size={40} className="mx-auto text-label opacity-20 mb-4" />
+             <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-label">No orders match your selection</p>
+          </div>
+        )}
       </div>
+
+      {/* ORDER DETAILS MODAL */}
+      <Modal
+        isOpen={!!selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+        title={selectedOrder ? `Order Details: #${selectedOrder.orderNumber}` : "Order Details"}
+        position="right"
+        noPadding
+      >
+        {selectedOrder && (
+          <div className="flex flex-col h-full bg-app">
+            <div className="flex-1 overflow-y-auto p-10 space-y-12 no-scrollbar">
+              {/* SECTION: CUSTOMER */}
+              <div className="space-y-6">
+                <h4 className="text-[10px] uppercase font-bold tracking-[0.2em] text-label flex items-center gap-3">
+                  <User size={12} className="text-action" /> Customer Identity
+                </h4>
+                <div className="bg-surface border border-soft rounded-[2rem] p-8 space-y-4">
+                  <div className="flex justify-between items-center border-b border-soft border-dotted pb-4">
+                    <span className="text-[10px] uppercase font-bold text-label">Name</span>
+                    <span className="text-sm font-bold text-heading">{selectedOrder.customerName}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-soft border-dotted pb-4">
+                    <span className="text-[10px] uppercase font-bold text-label">Phone</span>
+                    <span className="text-sm font-bold text-heading">{selectedOrder.customerPhone}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] uppercase font-bold text-label">Email</span>
+                    <span className="text-sm font-bold text-heading lowercase">{selectedOrder.customerEmail || "N/A"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION: LOGISTICS */}
+              <div className="space-y-6">
+                <h4 className="text-[10px] uppercase font-bold tracking-[0.2em] text-label flex items-center gap-3">
+                  <MapPin size={12} className="text-action" /> Delivery Logistics
+                </h4>
+                <div className="bg-surface border border-soft rounded-[2.5rem] p-8 space-y-6">
+                  <div className="space-y-2">
+                     <p className="text-[9px] uppercase font-bold text-label opacity-40">Recipient</p>
+                     <p className="type-body text-heading font-bold">{selectedOrder.shippingAddress?.firstName} {selectedOrder.shippingAddress?.lastName}</p>
+                  </div>
+                  <div className="space-y-2">
+                     <p className="text-[9px] uppercase font-bold text-label opacity-40">Full Address</p>
+                     <p className="type-body text-heading leading-relaxed italic">
+                        {selectedOrder.shippingAddress?.address}<br />
+                        {selectedOrder.shippingAddress?.apartment && <>{selectedOrder.shippingAddress.apartment}, </>}
+                        {selectedOrder.shippingAddress?.city && <>{selectedOrder.shippingAddress.city}, </>}
+                        {selectedOrder.shippingAddress?.state}<br />
+                        Nepal
+                     </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION: FINANCIALS */}
+              <div className="space-y-6">
+                <h4 className="text-[10px] uppercase font-bold tracking-[0.2em] text-label flex items-center gap-3">
+                  <Info size={12} className="text-action" /> Financial Breakdown
+                </h4>
+                <div className="bg-heading rounded-[2.5rem] p-10 text-app space-y-8 shadow-2xl relative overflow-hidden">
+                   <Package className="absolute -right-6 -bottom-6 w-32 h-32 text-app/5 rotate-12" />
+                   <div className="space-y-4">
+                      {selectedOrder.items.map((item, i) => (
+                        <div key={i} className="flex justify-between items-center text-xs opacity-70">
+                           <span>{item.quantity}x {item.title}</span>
+                           <span className="font-bold">Rs. {item.price * item.quantity}</span>
+                        </div>
+                      ))}
+                   </div>
+                   
+                   <div className="pt-6 border-t border-app/10 space-y-4">
+                      <div className="flex justify-between items-center text-xs opacity-50">
+                         <span>Subtotal</span>
+                         <span>Rs. {selectedOrder.items.reduce((acc, item) => acc + item.price * item.quantity, 0)}</span>
+                      </div>
+                      {(selectedOrder.discountValue ?? 0) > 0 && (
+                        <div className="flex justify-between items-center text-xs text-red-300 font-bold">
+                           <span className="flex items-center gap-2"><Tag size={12} /> Total Savings</span>
+                           <span>-Rs. {selectedOrder.discountValue}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center pt-4">
+                         <span className="text-[10px] uppercase font-bold tracking-widest text-app/40">Amount Payable</span>
+                         <span className="text-3xl font-bold">Rs. {selectedOrder.totalPrice}</span>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 border-t border-soft/20 bg-app">
+               <Button fullWidth onClick={() => setSelectedOrder(null)}>Close Review</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <Modal
+        isOpen={!!orderToDelete}
+        onClose={() => !isDeleting && setOrderToDelete(null)}
+        title="Security Confirmation"
+      >
+        {orderToDelete && (
+          <div className="space-y-8 py-4">
+             <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-red-500/10 text-red-600 rounded-full flex items-center justify-center border border-red-500/20">
+                   <AlertOctagon size={32} />
+                </div>
+                <div>
+                   <h3 className="type-section text-lg">Permanent Order Deletion</h3>
+                   <p className="type-label text-label normal-case max-w-[250px] mx-auto mt-2 italic font-serif">
+                     This action cannot be undone. All data for 
+                     <span className="text-heading font-bold not-italic"> #{orderToDelete.orderNumber}</span> will be purged.
+                   </p>
+                </div>
+             </div>
+
+             <div className="space-y-6">
+                {/* Restore Stock Option */}
+                <button 
+                  onClick={() => setShouldRestoreStock(!shouldRestoreStock)}
+                  className={`w-full flex items-center gap-4 p-5 rounded-[2rem] border transition-all ${shouldRestoreStock ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-700" : "bg-surface border-soft text-label"}`}
+                >
+                   <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${shouldRestoreStock ? "bg-emerald-500 text-white" : "border-2 border-soft"}`}>
+                      {shouldRestoreStock && <CheckCircle2 size={14} />}
+                   </div>
+                   <div className="text-left">
+                      <p className="text-[10px] font-bold uppercase tracking-widest">Restore Stock Level</p>
+                      <p className="text-[9px] opacity-60">
+                        Add items back to inventory. 
+                        <span className="block mt-1 text-action font-serif italic">Note: Skip this if the order used external partner stock.</span>
+                      </p>
+                   </div>
+                   <RotateCcw className={`ml-auto opacity-40 ${shouldRestoreStock ? "animate-spin-slow" : ""}`} size={16} />
+                </button>
+
+                {/* ID Confirmation */}
+                <div className="space-y-3">
+                   <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">
+                      Type <span className="text-heading">#{orderToDelete.orderNumber}</span> to confirm
+                   </label>
+                   <input 
+                     type="text" 
+                     placeholder={`#${orderToDelete.orderNumber}`}
+                     className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-red-500 transition-all text-center tracking-widest"
+                     value={deleteConfirmText}
+                     onChange={(e) => setDeleteConfirmText(e.target.value)}
+                   />
+                </div>
+             </div>
+
+             <div className="flex gap-4">
+                <Button variant="ghost" fullWidth onClick={() => setOrderToDelete(null)} disabled={isDeleting}>Cancel</Button>
+                <Button 
+                   variant="danger" 
+                   fullWidth 
+                   onClick={handleDeleteOrder}
+                   isLoading={isDeleting}
+                   disabled={deleteConfirmText !== `#${orderToDelete.orderNumber}`}
+                >
+                   Delete Order
+                </Button>
+             </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

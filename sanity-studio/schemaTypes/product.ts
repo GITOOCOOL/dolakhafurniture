@@ -92,6 +92,23 @@ export default defineType({
             initialValue: 0,
         }),
         defineField({
+            name: 'lastRestocked',
+            title: 'Last Restocked Date',
+            type: 'datetime',
+            description: 'Can be set manually when new inventory arrives.',
+            options: {
+                dateFormat: 'YYYY-MM-DD',
+                timeFormat: 'HH:mm',
+            }
+        }),
+        defineField({
+            name: 'costPrice',
+            title: 'Cost Price (NPR)',
+            type: 'number',
+            description: 'Internal use only. Used to calculate margin and profits.',
+            initialValue: 0,
+        }),
+        defineField({
             name: 'isFeatured',
             title: 'Featured Product',
             type: 'boolean',

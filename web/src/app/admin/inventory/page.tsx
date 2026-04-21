@@ -1,6 +1,7 @@
 import React from "react";
 import { client } from "@/lib/sanity";
 import AdminInventoryClient from "@/components/admin/AdminInventoryClient";
+// Pre-flight check for AdminInventoryClient module resolution
 
 export const dynamic = "force-dynamic";
 

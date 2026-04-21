@@ -117,6 +117,10 @@ export const welcomeVoucherQuery = `*[_type == "discountVoucher" && isWelcomeVou
     details
 }`
 
+export const activeVouchersQuery = `*[_type == "discountVoucher" && isActive == true] | order(code asc) {
+    _id, code, discountValue, discountType, details
+}`
+
 export const searchProductsQuery = `*[_type == "product" && isActive == true && (title match $searchTerm || description match $searchTerm || material match $searchTerm || category->title match $searchTerm)] | order(_createdAt desc)[0...12]{
     _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
@@ -127,11 +131,14 @@ export const adminOrdersQuery = `*[_type == "order"] | order(_createdAt desc) {
   orderNumber,
   status,
   orderSource,
+  isPhoneOrder,
   internalNotes,
   customerName,
   customerEmail,
   customerPhone,
   totalPrice,
+  discountValue,
+  voucherCodes,
   items[] {
     "title": coalesce(title, product->title),
     "price": coalesce(price, product->price),

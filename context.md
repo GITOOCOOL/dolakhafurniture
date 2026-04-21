@@ -66,8 +66,11 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
   - "Stock Out / Made after order" badges using glassmorphism styling.
   - Dynamic CTA buttons ("Order Custom Piece" vs "Inquiry Now").
 
-### **🚧 In Development**
-
+- **Admin Management Console**:
+  - **Orders HUB**: Real-time fulfillment tracking and manual order entry.
+  - **Inventory Center**: Direct price/stock management and visibility toggles.
+  - **Content Central**: High-density dashboard for managing Bulletins and Campaigns.
+  - [Detailed Design & Logs](file:///Users/suraj/Developer/dolakha-mac/dolakhafurniture/AdminDashboardFeature.md)
 - **Marketing & Catalog Hub**:
   - **Facebook Data Feed**: Automated RSS 2.0 XML feed for Meta Commerce Manager (NPR Currency).
   - **Content Centralization**: Expanding Sanity to hold square/vertical social media graphics and marketing briefs.
@@ -116,9 +119,10 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 ### **Project Logging & History**
 
 1. **DevLogs.md**: Solely maintained by the **Human Developer**. Contains personal notes, high-level decisions, and manual technical logs.
-2. **AgentLogs.md**: Solely maintained by the **AI Agent**.
+- **AgentLogs.md**: Solely maintained by the **AI Agent**.
    - Every prompt/response cycle must be logged under the **`[prompt/response]`** tag.
    - Significant code changes or features must be logged under the **`[Codebase/Feature Updates]`** tag.
+3. **Feature Documentation**: Complex features (like **Admin Dashboard**) have dedicated `.md` files for deep-dive logs and designs.
 
 ### **Critical Rules**
 
