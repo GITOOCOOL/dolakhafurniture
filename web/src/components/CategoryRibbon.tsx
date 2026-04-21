@@ -26,8 +26,7 @@ const CategoryRibbon = ({
       ? `/${slug}`
       : `/category/${slug}`;
 
-  const defaultFeaturedDesc =
-    "Our top-rated pieces for every room. We focus on well-built construction and reliable materials to give you comfortable furniture that lasts.";
+  const defaultFeaturedDesc = "Our top-rated pieces for every room.";
   const displayDescription =
     description || (isFeatured ? defaultFeaturedDesc : null);
 

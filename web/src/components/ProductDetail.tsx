@@ -37,7 +37,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   const allImages = [
     product.mainImage,
     ...(product.images?.filter((img) => img.isVisible && img.asset) || [])
-  ].filter(img => img && (img as any).asset || (img as any)._ref || typeof img === 'string');
+  ].filter(img => img && ((img as any).asset || (img as any)._ref));
 
   const [selectedImage, setSelectedImage] = useState<any>(allImages[0] || product.mainImage);
   const addItem = useCart((state) => state.addItem);
