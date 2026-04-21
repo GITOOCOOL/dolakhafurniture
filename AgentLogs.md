@@ -18,4 +18,4 @@ This file tracks the operational history of the AI assistant for Projekt-Dolakha
 ## 📅 2026-04-21
 
 - **[prompt/response]**: Received greeting from user. Initialized context by reading `context.md` and `AgentLogs.md`. Ready for new tasks.
-- **[Codebase/Feature Updates]**: Patched a runtime crash in `ProductDetail.tsx` by adding asset validation to the image gallery logic. The component now safely filters out malformed Sanity image objects that lack a valid asset reference.
+- **[Codebase/Feature Updates]**: Finalized the `FloatingContact` widget alignment and theme tokens. Addressed a secondary runtime crash in `ProductDetail.tsx` by strictly filtering for valid image assets, and resolved a persistent `.next/dev/lock` issue. Created an automated Sanity cleanup script (`delete-old-orders.ts`) to safely manage historical data.

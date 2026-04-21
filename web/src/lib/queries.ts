@@ -120,3 +120,35 @@ export const welcomeVoucherQuery = `*[_type == "discountVoucher" && isWelcomeVou
 export const searchProductsQuery = `*[_type == "product" && isActive == true && (title match $searchTerm || description match $searchTerm || material match $searchTerm || category->title match $searchTerm)] | order(_createdAt desc)[0...12]{
     _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
+
+export const adminOrdersQuery = `*[_type == "order"] | order(_createdAt desc) {
+  _id,
+  _createdAt,
+  orderNumber,
+  status,
+  customerEmail,
+  customerPhone,
+  totalPrice,
+  items[] {
+    title,
+    price,
+    quantity,
+    image
+  },
+  shippingAddress
+}`
+
+export const adminInquiriesQuery = `*[_type == "inquiry"] | order(_createdAt desc) {
+  _id,
+  _createdAt,
+  customerName,
+  customerEmail,
+  customerPhone,
+  message,
+  subject,
+  status,
+  productReference-> {
+    title,
+    "slug": slug.current
+  }
+}`
