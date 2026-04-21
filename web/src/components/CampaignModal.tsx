@@ -96,6 +96,7 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
       onClose={handleClose}
       position="left"
       title="Special Offers"
+      id="campaign-modal"
     >
       <div className="w-full flex-1 flex flex-col">
         {/* Banner Section */}

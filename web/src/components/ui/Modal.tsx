@@ -15,6 +15,7 @@ interface ModalProps {
   position?: "center" | "right" | "left" | "bottom";
   hideCloseButton?: boolean;
   noPadding?: boolean;
+  id?: string;
 }
 
 export default function Modal({
@@ -26,6 +27,7 @@ export default function Modal({
   position = "center",
   hideCloseButton = false,
   noPadding = false,
+  id = "ui-modal",
 }: ModalProps) {
   const { lockScroll, unlockScroll } = useUIStore();
   const [mounted, setMounted] = useState(false);
@@ -38,12 +40,12 @@ export default function Modal({
   // Prevent scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      lockScroll("ui-modal");
+      lockScroll(id);
     } else {
-      unlockScroll("ui-modal");
+      unlockScroll(id);
     }
-    return () => unlockScroll("ui-modal");
-  }, [isOpen, lockScroll, unlockScroll]);
+    return () => unlockScroll(id);
+  }, [isOpen, id, lockScroll, unlockScroll]);
 
   const positions = {
     center: "sm:items-center sm:justify-center sm:px-4",

@@ -155,7 +155,7 @@ export default function InquiryModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} position="bottom">
+    <Modal isOpen={isOpen} onClose={onClose} title={title} position="bottom" id="inquiry-modal">
       <p className="type-label text-description mb-6 -mt-2">
         {subtitle}
       </p>

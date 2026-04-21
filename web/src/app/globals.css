@@ -59,6 +59,10 @@ html {
   --color-warning: #f59e0b;
   --color-invert: var(--app-invert);
 
+  /* Literal Raw Brand Colors (Hex Backed for HMR Stability) */
+  --color-espresso: #3d2b1f;
+  --color-bone: #f1f3e8;
+
   /* Design Tokens */
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
