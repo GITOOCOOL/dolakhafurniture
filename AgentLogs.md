@@ -18,4 +18,4 @@ This file tracks the operational history of the AI assistant for Projekt-Dolakha
 ## 📅 2026-04-21
 
 - **[prompt/response]**: Received greeting from user. Initialized context by reading `context.md` and `AgentLogs.md`. Ready for new tasks.
-- **[Codebase/Feature Updates]**: Standardized the "Total" display font in `CheckoutDrawer.tsx` to `font-sans font-bold`. Removed the decorative serif italic styling to ensure maximum readability for numerical values, aligning with the architectural role of Montserrat in the design system.
+- **[Codebase/Feature Updates]**: Patched a runtime crash in `ProductDetail.tsx` by adding asset validation to the image gallery logic. The component now safely filters out malformed Sanity image objects that lack a valid asset reference.

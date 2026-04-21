@@ -33,13 +33,13 @@ export default function ProductDetail({ product }: { product: Product }) {
     }
   }, [product]);
 
-  // Combined Gallery: mainImage + visible gallery images
+  // Combined Gallery: mainImage + visible gallery images with valid assets
   const allImages = [
     product.mainImage,
-    ...(product.images?.filter((img) => img.isVisible) || [])
-  ];
+    ...(product.images?.filter((img) => img.isVisible && img.asset) || [])
+  ].filter(img => img && (img as any).asset || (img as any)._ref || typeof img === 'string');
 
-  const [selectedImage, setSelectedImage] = useState<any>(product.mainImage);
+  const [selectedImage, setSelectedImage] = useState<any>(allImages[0] || product.mainImage);
   const addItem = useCart((state) => state.addItem);
 
   const handleAddToCart = () => {
