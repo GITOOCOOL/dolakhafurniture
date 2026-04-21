@@ -41,6 +41,7 @@ export default async function Home() {
               subtitle={activeCampaign.endDate}
               vouchers={activeCampaign.vouchers}
               autoScroll={true}
+              description={activeCampaign.description}
             />
           </div>
         </section>
@@ -82,6 +83,7 @@ export default async function Home() {
                   slug={cat.slug}
                   products={catProducts}
                   autoScroll={true}
+                  description={cat.description}
                 />
               </div>
             </section>

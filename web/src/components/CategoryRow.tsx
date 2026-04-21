@@ -10,17 +10,24 @@ type CategoryRowProps = {
   autoScroll?: boolean;
   subtitle?: string;
   vouchers?: string[];
+  description?: string;
 };
 
-const CategoryRow = ({ title, slug, products, autoScroll = false, subtitle, vouchers }: CategoryRowProps) => {
+const CategoryRow = ({ title, slug, products, autoScroll = false, subtitle, vouchers, description }: CategoryRowProps) => {
   const validProducts = products?.filter(Boolean) || [];
   
   if (!validProducts.length) return null;
   return (
-    <section className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start w-full overflow-visible">
+    <section className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start lg:items-stretch w-full overflow-visible">
       {/* Ribbon: Spans full width on mobile, side-aligned on desktop */}
-      <div className="flex-shrink-0 w-full lg:w-auto px-1 md:px-0">
-        <CategoryRibbon title={title} slug={slug} subtitle={subtitle} vouchers={vouchers} />
+      <div className="flex-shrink-0 w-fit md:w-44 px-1 md:px-0">
+        <CategoryRibbon 
+          title={title} 
+          slug={slug} 
+          subtitle={subtitle} 
+          vouchers={vouchers} 
+          description={description} 
+        />
       </div>
 
       {/* Carousel Wrapper: min-w-0 is vital for flexbox carousels */}

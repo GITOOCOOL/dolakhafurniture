@@ -5,7 +5,13 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({ name: 'title', type: 'string' }),
-     defineField({
+    defineField({
+      name: 'description',
+      title: 'Description',
+      description: 'The story or craft details for this category (displayed on desktop).',
+      type: 'text',
+    }),
+    defineField({
             name: 'slug',
             title: 'URL Slug',
             type: 'slug',

@@ -57,10 +57,7 @@ const FloatingContact = () => {
   ];
 
   return (
-    <div 
-      className="fixed right-6 z-[9999999] flex flex-col items-end gap-3"
-      style={{ top: "18vh" }}
-    >
+    <div className="fixed bottom-8 right-6 z-[9999999] flex flex-col items-end gap-3">
       {/* MAIN TOGGLE BUTTON - Morphs on scroll */}
       <motion.button
         layout

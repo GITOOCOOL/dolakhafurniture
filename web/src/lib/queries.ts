@@ -11,7 +11,7 @@ export const productBySlugQuery = `*[_type == "product" && slug.current == $slug
 }`
 
 export const categoriesQuery = `*[_type == "category" && count(*[_type == "product" && references(^._id) && isActive == true]) > 0] | order(title asc) {
-    _id, title, "slug": slug.current
+    _id, title, "slug": slug.current, description
 } `
 
 export const bulletinQuery = `[
@@ -115,4 +115,8 @@ export const welcomeVoucherQuery = `*[_type == "discountVoucher" && isWelcomeVou
     discountValue,
     discountType,
     details
+}`
+
+export const searchProductsQuery = `*[_type == "product" && isActive == true && (title match $searchTerm || description match $searchTerm || material match $searchTerm || category->title match $searchTerm)] | order(_createdAt desc)[0...12]{
+    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
