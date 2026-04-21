@@ -24,4 +24,6 @@ export type Campaign = {
         assetType: "square" | "story" | "fb_banner" | "other";
     }[];
     campaignBrief?: string;
+    buttonText?: string;
+    buttonLink?: string;
 }
