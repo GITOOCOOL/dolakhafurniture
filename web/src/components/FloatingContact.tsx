@@ -2,6 +2,7 @@
 
 import { MessageCircle, Facebook, MessageSquare, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import InquiryModal from "./InquiryModal";
 import { useUIStore } from "@/store/useUIStore";
@@ -10,6 +11,7 @@ const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   // Scroll listener to shrink the button
   useEffect(() => {
@@ -59,6 +61,8 @@ const FloatingContact = () => {
 
   const { activeLocks } = useUIStore();
   const isAnyModalOpen = activeLocks.size > 0;
+
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <AnimatePresence>

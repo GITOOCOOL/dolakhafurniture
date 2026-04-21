@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { Package, MapPin, Phone, Mail, Calendar, ChevronDown } from "lucide-react";
+import Image from "next/image";
 
 interface Order {
   _id: string;
   orderNumber?: string;
   status?: string;
+  orderSource?: string;
+  internalNotes?: string;
+  customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
   totalPrice: number;
@@ -47,11 +51,10 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="type-hero font-medium text-heading mb-2">Orders<span className="text-action">.</span></h1>
-          <p className="type-label text-label uppercase tracking-widest text-[9px]">Managing {orders.length} Total Selections</p>
-        </div>
+      <div className="flex justify-end items-end mb-4">
+        <button className="flex items-center gap-2 px-8 py-3 bg-action text-white rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-heading transition-all shadow-xl shadow-action/20">
+           Create Manual Order
+        </button>
       </div>
 
       <div className="space-y-6">
@@ -85,7 +88,14 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
               {/* ORDER HEADER */}
               <div className="lg:col-span-4 space-y-6 border-r border-soft border-dotted pr-12">
                 <div>
-                   <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-2">Order Reference</p>
+                   <div className="flex items-center gap-3 mb-2">
+                     <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label">Order Reference</p>
+                     {order.orderSource && order.orderSource !== "website" && (
+                       <span className="text-[8px] px-2 py-0.5 bg-blue-500/10 text-blue-600 rounded-full font-bold uppercase tracking-widest">
+                         {order.orderSource}
+                       </span>
+                     )}
+                   </div>
                    <h3 className="text-xl font-sans font-bold text-heading">#{order.orderNumber || order._id.slice(-6).toUpperCase()}</h3>
                 </div>
                 
@@ -98,13 +108,22 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                   </div>
                   <div className="flex items-center gap-3 text-label">
                     <Mail size={14} className="opacity-40" />
-                    <span className="text-[10px] font-bold lowercase tracking-widest">{order.customerEmail}</span>
+                    <span className="text-[10px] font-bold lowercase tracking-widest">{order.customerEmail || "No Email"}</span>
                   </div>
                   <div className="flex items-center gap-3 text-label">
                     <Phone size={14} className="opacity-40" />
-                    <span className="text-[10px] font-bold tracking-widest">{order.customerPhone}</span>
+                    <span className="text-[10px] font-bold tracking-widest">{order.customerPhone || "No Phone"}</span>
                   </div>
                 </div>
+
+                {order.internalNotes && (
+                  <div className="pt-6 border-t border-soft border-dotted">
+                     <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-2 text-action">Internal Notes</p>
+                     <p className="text-xs font-medium text-heading bg-action/5 p-4 rounded-xl border border-action/10 italic">
+                        {order.internalNotes}
+                     </p>
+                  </div>
+                )}
 
                 <div className="pt-6 border-t border-soft border-dotted">
                   <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-4 flex items-center gap-2">
@@ -127,7 +146,15 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center bg-soft/30 p-6 rounded-2xl border border-soft/50">
                         <div className="flex items-center gap-6">
-                           <div className="w-12 h-16 bg-white rounded-lg border border-soft flex-shrink-0" />
+                           <div className="w-12 h-16 bg-white rounded-lg border border-soft flex-shrink-0 relative overflow-hidden">
+                             {item.imageUrl ? (
+                               <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
+                             ) : (
+                               <div className="w-full h-full bg-soft/50 flex items-center justify-center">
+                                  <Package size={14} className="text-label opacity-40" />
+                               </div>
+                             )}
+                           </div>
                            <div>
                               <p className="text-sm font-bold text-heading mb-1">{item.title}</p>
                               <p className="text-xs text-label font-serif italic">Quantity: {item.quantity}</p>

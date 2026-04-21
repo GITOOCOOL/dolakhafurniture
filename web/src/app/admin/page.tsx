@@ -3,77 +3,147 @@ import {
   TrendingUp, 
   Package, 
   Clock, 
-  Users 
+  Users,
+  Box,
+  AlertTriangle
 } from "lucide-react";
+import Link from "next/link";
+import { client } from "@/lib/sanity";
+import { createClient } from "@/utils/supabase/server";
 
-export default function AdminDashboard() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminDashboard() {
+  // Fetch real-time metrics
+  const [
+    ordersCount,
+    inquiriesCount,
+    pendingInquiriesCount,
+    recentOrders,
+    recentInquiries,
+    activeProductsCount,
+    lowStockCount,
+  ] = await Promise.all([
+    client.fetch(`count(*[_type == "order"])`, {}, { useCdn: false }),
+    client.fetch(`count(*[_type == "inquiry"])`, {}, { useCdn: false }),
+    client.fetch(`count(*[_type == "inquiry" && status == "new"])`, {}, { useCdn: false }),
+    client.fetch(`*[_type == "order"] | order(_createdAt desc)[0...5] {
+      _id, orderNumber, customerName, totalPrice, status
+    }`, {}, { useCdn: false }),
+    client.fetch(`*[_type == "inquiry"] | order(_createdAt desc)[0...5] {
+      _id, customerName, subject, status, _createdAt
+    }`, {}, { useCdn: false }),
+    client.fetch(`count(*[_type == "product" && isActive == true])`, {}, { useCdn: false }),
+    client.fetch(`count(*[_type == "product" && isActive == true && stock < 3])`, {}, { useCdn: false }),
+  ]);
+
+  const supabase = await createClient();
+  const { count: usersCount } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true });
+
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      {/* WELCOME SECTION */}
-      <section>
-        <h1 className="type-hero font-medium text-heading mb-4">
-          Overview<span className="text-action">.</span>
-        </h1>
-        <p className="font-serif italic text-xl text-label">
-          "The strength of the brand lies in the precision of its management."
-        </p>
-      </section>
 
       {/* STATS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <StatCard 
           title="Total Orders" 
-          value="128" 
-          change="+12% this month" 
+          value={ordersCount?.toString() || "0"} 
+          change="Lifetime" 
           icon={Package} 
         />
         <StatCard 
+          title="Active Products" 
+          value={activeProductsCount?.toString() || "0"} 
+          change={lowStockCount > 0 ? `${lowStockCount} Low Stock` : "All Healthy"} 
+          icon={Box} 
+          alert={lowStockCount > 0}
+        />
+        <StatCard 
           title="Inquiries" 
-          value="42" 
-          change="Pending: 12" 
+          value={inquiriesCount?.toString() || "0"} 
+          change={`${pendingInquiriesCount} Pending`} 
           icon={Clock} 
         />
         <StatCard 
           title="Active Users" 
-          value="1.2k" 
-          change="+24% vs last year" 
+          value={usersCount?.toString() || "0"} 
+          change="Registered" 
           icon={Users} 
-        />
-        <StatCard 
-          title="Conversion Rate" 
-          value="3.4%" 
-          change="+0.2% vs last week" 
-          icon={TrendingUp} 
         />
       </div>
 
-      {/* RECENT ACTIVITY TABS (Placeholders for now) */}
+      {/* RECENT ACTIVITY TABS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <section className="bg-app p-10 rounded-[3rem] border border-soft shadow-sm">
           <div className="flex justify-between items-center mb-8 border-b border-soft border-dotted pb-6">
             <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-heading">
               Recent Orders
             </h3>
-            <button className="text-[9px] font-bold uppercase tracking-widest text-action hover:underline">
+            <Link href="/admin/orders" className="text-[9px] font-bold uppercase tracking-widest text-action hover:underline">
               View All
-            </button>
+            </Link>
           </div>
-          <div className="space-y-6 text-center py-12">
-            <p className="text-label italic font-serif">Integration with Sanity Orders coming next...</p>
+          <div className="space-y-4">
+            {recentOrders && recentOrders.length > 0 ? recentOrders.map((order: any) => (
+              <Link key={order._id} href="/admin/orders" className="flex items-center justify-between p-4 bg-soft/30 rounded-2xl hover:bg-soft transition-colors group">
+                <div>
+                  <p className="text-sm font-bold text-heading">#{order.orderNumber || order._id.slice(-6).toUpperCase()}</p>
+                  <p className="text-xs text-label">{order.customerName || "Guest User"}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-heading">Rs. {order.totalPrice || 0}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-action font-bold mt-1">{order.status || "pending"}</p>
+                </div>
+              </Link>
+            )) : (
+              <p className="text-center text-label italic font-serif py-8">No recent orders found.</p>
+            )}
           </div>
         </section>
 
-        <section className="bg-app p-10 rounded-[3rem] border border-soft shadow-sm">
+        <section className="bg-app p-10 rounded-[3rem] border border-soft shadow-sm flex flex-col">
           <div className="flex justify-between items-center mb-8 border-b border-soft border-dotted pb-6">
             <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-heading">
               Recent Inquiries
             </h3>
-            <button className="text-[9px] font-bold uppercase tracking-widest text-action hover:underline">
+            <Link href="/admin/inquiries" className="text-[9px] font-bold uppercase tracking-widest text-action hover:underline">
               View All
-            </button>
+            </Link>
           </div>
-           <div className="space-y-6 text-center py-12">
-            <p className="text-label italic font-serif">Integration with Sanity Inquiries coming next...</p>
+          <div className="space-y-4 flex-1">
+            {recentInquiries && recentInquiries.length > 0 ? recentInquiries.map((inquiry: any) => (
+              <Link key={inquiry._id} href="/admin/inquiries" className="flex items-center justify-between p-4 bg-soft/30 rounded-2xl hover:bg-soft transition-colors group">
+                <div>
+                  <p className="text-sm font-bold text-heading">{inquiry.customerName || "Anonymous"}</p>
+                  <p className="text-xs text-label truncate max-w-[200px]">{inquiry.subject || "General Inquiry"}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] uppercase tracking-widest text-action font-bold mt-1">{inquiry.status || "new"}</p>
+                </div>
+              </Link>
+            )) : (
+              <p className="text-center text-label italic font-serif py-8">No pending inquiries.</p>
+            )}
+          </div>
+          
+          {/* META INTEGRATION PREVIEW */}
+          <div className="mt-8 pt-6 border-t border-soft border-dotted">
+             <div className="flex justify-between items-center bg-blue-500/5 p-6 rounded-2xl border border-blue-500/10">
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+                      <TrendingUp size={16} />
+                   </div>
+                   <div>
+                     <p className="text-xs font-bold text-heading">Meta Conversions</p>
+                     <p className="text-[9px] uppercase tracking-widest text-label font-bold mt-1">Status: Pending API Keys</p>
+                   </div>
+                </div>
+                <Link href="#" className="px-4 py-2 bg-white rounded-full text-[9px] font-bold uppercase tracking-widest text-blue-600 border border-blue-100 hover:border-blue-300 transition-colors shadow-sm">
+                  Setup
+                </Link>
+             </div>
           </div>
         </section>
       </div>
@@ -85,20 +155,22 @@ function StatCard({
   title, 
   value, 
   change, 
-  icon: Icon 
+  icon: Icon,
+  alert = false
 }: { 
   title: string; 
   value: string; 
   change: string; 
-  icon: any 
+  icon: any;
+  alert?: boolean;
 }) {
   return (
-    <div className="bg-app p-10 rounded-[3rem] border border-soft shadow-sm hover:border-action/20 transition-all duration-700 group">
+    <div className={`bg-app p-10 rounded-[3rem] border shadow-sm transition-all duration-700 group ${alert ? 'border-red-500/30' : 'border-soft hover:border-action/20'}`}>
       <div className="flex justify-between items-start mb-6">
-        <div className="p-4 bg-soft rounded-2xl group-hover:bg-action group-hover:text-white transition-all duration-500">
+        <div className={`p-4 rounded-2xl transition-all duration-500 ${alert ? 'bg-red-500/10 text-red-500' : 'bg-soft group-hover:bg-action group-hover:text-white'}`}>
           <Icon size={20} strokeWidth={1.5} />
         </div>
-        <span className="text-[9px] font-sans font-bold text-action bg-action/5 px-4 py-1.5 rounded-full uppercase tracking-widest">
+        <span className={`text-[9px] font-sans font-bold px-4 py-1.5 rounded-full uppercase tracking-widest ${alert ? 'bg-red-500/10 text-red-600' : 'text-action bg-action/5'}`}>
           {change}
         </span>
       </div>

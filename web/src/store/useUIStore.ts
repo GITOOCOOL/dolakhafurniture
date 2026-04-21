@@ -9,12 +9,14 @@ interface UIStore {
   isCheckoutDrawerOpen: boolean;
   isAccountModalOpen: boolean;
   isSearchOpen: boolean;
+  isAdminSidebarOpen: boolean;
   lockScroll: (id: string) => void;
   unlockScroll: (id: string) => void;
   setCampaignModalOpen: (isOpen: boolean) => void;
   setIsCheckoutDrawerOpen: (isOpen: boolean) => void;
   setIsAccountModalOpen: (isOpen: boolean) => void;
   setIsSearchOpen: (isOpen: boolean) => void;
+  setIsAdminSidebarOpen: (isOpen: boolean) => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -24,6 +26,7 @@ export const useUIStore = create<UIStore>((set) => ({
   isCheckoutDrawerOpen: false,
   isAccountModalOpen: false,
   isSearchOpen: false,
+  isAdminSidebarOpen: false,
 
   setCampaignModalOpen: (isOpen: boolean) =>
     set({ isCampaignModalOpen: isOpen }),
@@ -33,6 +36,8 @@ export const useUIStore = create<UIStore>((set) => ({
     set({ isAccountModalOpen: isOpen }),
   setIsSearchOpen: (isOpen: boolean) =>
     set({ isSearchOpen: isOpen }),
+  setIsAdminSidebarOpen: (isOpen: boolean) =>
+    set({ isAdminSidebarOpen: isOpen }),
 
   lockScroll: (id: string) =>
     set((state) => {

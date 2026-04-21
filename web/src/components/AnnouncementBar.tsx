@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bulletin } from "@/types";
 
@@ -11,6 +12,8 @@ interface AnnouncementBarProps {
 export default function AnnouncementBar({ bulletins }: AnnouncementBarProps) {
   const [index, setIndex] = useState(0);
 
+  const pathname = usePathname();
+
   useEffect(() => {
     if (bulletins.length <= 1) return;
     const interval = setInterval(() => {
@@ -19,7 +22,7 @@ export default function AnnouncementBar({ bulletins }: AnnouncementBarProps) {
     return () => clearInterval(interval);
   }, [bulletins.length]);
 
-  if (bulletins.length === 0) return null;
+  if (bulletins.length === 0 || pathname?.startsWith("/admin")) return null;
 
   return (
     <div className="bg-action text-bone h-12 md:h-14 flex items-center justify-center overflow-hidden relative z-[60]">

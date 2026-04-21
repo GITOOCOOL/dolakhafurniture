@@ -126,14 +126,17 @@ export const adminOrdersQuery = `*[_type == "order"] | order(_createdAt desc) {
   _createdAt,
   orderNumber,
   status,
+  orderSource,
+  internalNotes,
+  customerName,
   customerEmail,
   customerPhone,
   totalPrice,
   items[] {
-    title,
-    price,
+    "title": coalesce(title, product->title),
+    "price": coalesce(price, product->price),
     quantity,
-    image
+    "imageUrl": coalesce(image.asset->url, product->mainImage.asset->url)
   },
   shippingAddress
 }`

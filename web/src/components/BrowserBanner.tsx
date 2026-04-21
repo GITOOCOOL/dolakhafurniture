@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink } from "lucide-react";
 
 export default function BrowserBanner() {
   const [show, setShow] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     // Detect In-App Browsers (Facebook, Messenger, Instagram, etc.)
@@ -36,6 +38,8 @@ export default function BrowserBanner() {
     setShow(false);
     sessionStorage.setItem("dismiss-browser-tip", "true");
   };
+
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <AnimatePresence>

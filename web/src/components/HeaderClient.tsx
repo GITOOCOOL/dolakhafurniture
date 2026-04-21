@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import NavbarActions from "@/components/NavbarActions";
 import CategoryNav from "@/components/CategoryNav";
 import { Menu, X, Facebook, Instagram, Search, Leaf } from "lucide-react";
@@ -20,6 +21,8 @@ interface HeaderClientProps {
 }
 
 export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {
     lockScroll,
@@ -71,6 +74,8 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
     else unlockScroll("header-overlay");
     return () => unlockScroll("header-overlay");
   }, [isMenuOpen, isSearchOpen, lockScroll, unlockScroll]);
+
+  if (isAdmin) return null;
 
   return (
     <>

@@ -49,12 +49,6 @@ export default function AdminInquiriesClient({ initialInquiries }: { initialInqu
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="type-hero font-medium text-heading mb-2">Inquiries<span className="text-action">.</span></h1>
-          <p className="type-label text-label uppercase tracking-widest text-[9px]">Managing {inquiries.length} Conversations</p>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 gap-6">
         {inquiries.map((inquiry) => (

@@ -1,5 +1,11 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useUIStore } from "@/store/useUIStore";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 import { 
   LayoutDashboard, 
   Package, 
@@ -8,19 +14,46 @@ import {
   Settings, 
   ChevronRight,
   LogOut,
-  Store
+  Store,
+  Box
 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Inventory", href: "/admin/inventory", icon: Box },
   { label: "Orders", href: "/admin/orders", icon: Package },
   { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { label: "User Roles", href: "/admin/users", icon: Users },
 ];
 
 export default function AdminSidebar() {
+  const { isAdminSidebarOpen, setIsAdminSidebarOpen } = useUIStore();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  useEffect(() => {
+    setIsAdminSidebarOpen(false);
+  }, [pathname, setIsAdminSidebarOpen]);
+
   return (
-    <aside className="w-72 bg-app border-r border-soft min-h-screen flex flex-col sticky top-0">
+    <>
+      <div 
+        className={`fixed inset-0 bg-heading/20 backdrop-blur-sm z-[60] transition-opacity duration-300 md:hidden ${isAdminSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        onClick={() => setIsAdminSidebarOpen(false)}
+      />
+
+      <aside className={`w-72 bg-app border-r border-soft h-[100dvh] flex flex-col fixed md:sticky top-0 z-[70] overflow-y-auto transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isAdminSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0 md:shadow-none"}`}>
       {/* BRANDING */}
       <div className="p-8 border-b border-soft border-dotted">
         <Link href="/admin" className="block text-2xl font-serif italic font-bold text-heading">
@@ -62,6 +95,7 @@ export default function AdminSidebar() {
           </span>
         </Link>
         <button
+          onClick={handleSignOut}
           className="w-full flex items-center gap-4 px-6 py-4 rounded-full text-red-500/70 hover:text-red-500 transition-all font-sans font-bold uppercase tracking-widest text-[10px]"
         >
           <LogOut size={18} />
@@ -69,5 +103,6 @@ export default function AdminSidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

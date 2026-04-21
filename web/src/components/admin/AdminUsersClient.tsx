@@ -44,10 +44,6 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
-      <div>
-        <h1 className="type-hero font-medium text-heading mb-2">User Access<span className="text-action">.</span></h1>
-        <p className="type-label text-label uppercase tracking-widest text-[9px]">Managing Permissions for {profiles.length} Accounts</p>
-      </div>
 
       <div className="bg-app border border-soft rounded-[3rem] overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
