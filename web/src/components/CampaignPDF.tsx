@@ -1,6 +1,6 @@
 import React from 'react';
-import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
-import { Campaign } from '@/types';
+import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
+import { Campaign, Voucher } from '@/types';
 import { urlFor } from '@/lib/sanity';
 
 const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
@@ -274,6 +274,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
 
 interface Props {
   campaign: Campaign;
+  welcomeVoucher?: Voucher | null;
 }
 
 // Helper to chunk products into pages of 6 (3x2 grid)
@@ -285,7 +286,7 @@ const chunkArray = (arr: any[], size: number) => {
   return chunks;
 };
 
-export const CampaignPDF = ({ campaign }: Props) => {
+export const CampaignPDF = ({ campaign, welcomeVoucher }: Props) => {
   const currentStyles = styles(campaign.themeColor);
   const productChunks = chunkArray(campaign.products || [], 6);
   const campaignUrl = `https://dolakhafurniture.com/campaign/${campaign.slug}`;
@@ -326,10 +327,10 @@ export const CampaignPDF = ({ campaign }: Props) => {
             <View style={[currentStyles.vouchersSection, { marginTop: 15 }]}>
               <Text style={currentStyles.voucherHeading}>JOIN US</Text>
               <Text style={currentStyles.promoText}>
-                Visit <Text style={currentStyles.promoCode}>dolakhafurniture.com</Text> and sign up for an account to receive an additional <Text style={currentStyles.promoCode}>5% DISCOUNT</Text> on your first purchase!
+                Visit <Text style={currentStyles.promoCode}>dolakhafurniture.com</Text> and sign up for an account to receive an additional <Text style={currentStyles.promoCode}>{welcomeVoucher?.discountValue || 5}% DISCOUNT</Text> on your first purchase!
               </Text>
               <Text style={[currentStyles.promoText, { marginTop: 6 }]}>
-                Use Voucher: <Text style={currentStyles.voucherCode}>WELCOME5</Text>
+                Use Voucher: <Text style={currentStyles.voucherCode}>{welcomeVoucher?.code || 'WELCOME5'}</Text>
               </Text>
             </View>
           </View>

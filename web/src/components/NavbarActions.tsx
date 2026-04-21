@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Leaf, User, Search, ArrowRight } from "lucide-react";
+import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp } from "lucide-react";
 import AuthForm from "./AuthForm";
 import CheckoutDrawer from "./CheckoutDrawer";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,13 +22,34 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
-  const [isCheckoutDrawerOpen, setIsCheckoutDrawerOpen] = useState(false);
+  const { isCheckoutDrawerOpen, setIsCheckoutDrawerOpen } = useUIStore();
   
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const items = useCart((state) => state.items);
   const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
+  const popupTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (totalQuantity > 0) {
+      setShowCheckoutPopup(true);
+      
+      if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
+      
+      popupTimerRef.current = setTimeout(() => {
+        setShowCheckoutPopup(false);
+      }, 5000);
+    } else {
+      setShowCheckoutPopup(false);
+    }
+
+    return () => {
+      if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
+    }
+  }, [totalQuantity]);
+
 
   useEffect(() => {
     const checkUser = async () => {
@@ -112,10 +133,10 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
               ease: "easeInOut"
             }
           }}
-          className={`relative flex items-center justify-center w-[38px] h-[38px] bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
+          className={`relative flex items-center justify-center w-[38px] h-[38px] shadow-sm transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
             ${totalQuantity > 0
-              ? 'text-[#a3573a]'
-              : 'text-[#3d2b1f]'}`}
+              ? 'bg-[#2d3020] text-[#4ade80] shadow-[0_0_15px_rgba(74,222,128,0.3)]'
+              : 'bg-[#f8f5ee] text-[#3d2b1f] hover:bg-[#eee9df]'}`}
         >
           <div className="flex items-center gap-1">
             <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
@@ -125,13 +146,31 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 bg-[#fdfaf5] text-[#3d2b1f] text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-[#a3573a]"
+              className="absolute -top-1 -right-1 bg-[#4ade80] text-[#2d3020] text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-[#2d3020]"
             >
               {totalQuantity}
             </motion.span>
           )}
         </motion.button>
 
+        {/* 5-Second Checkout Prompt */}
+        <AnimatePresence>
+          {showCheckoutPopup && totalQuantity > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              className="absolute top-full right-0 mt-4 z-[100] whitespace-nowrap"
+            >
+              <div className="bg-[#2d3020] text-[#4ade80] px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 border border-[#4ade80]/20">
+                <span>Checkout here</span>
+                <ArrowUp size={12} className="animate-bounce" />
+              </div>
+              {/* Tooltip Arrow */}
+              <div className="absolute -top-1 right-4 w-2 h-2 bg-[#2d3020] rotate-45 border-t border-l border-[#4ade80]/20" />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* --- ACCOUNT / AUTH SECTION --- */}

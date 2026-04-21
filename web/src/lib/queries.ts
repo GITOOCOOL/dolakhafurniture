@@ -104,3 +104,10 @@ export const activeCampaignHomeQuery = `*[_type == "campaign" && status == "acti
       _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
     }
 }`
+
+export const welcomeVoucherQuery = `*[_type == "discountVoucher" && isWelcomeVoucher == true && isActive == true][0] {
+    code,
+    discountValue,
+    discountType,
+    details
+}`

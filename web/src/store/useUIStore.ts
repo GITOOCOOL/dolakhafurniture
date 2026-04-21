@@ -6,17 +6,21 @@ interface UIStore {
   activeLocks: Set<string>;
   scrollPos: number;
   isCampaignModalOpen: boolean;
+  isCheckoutDrawerOpen: boolean;
   lockScroll: (id: string) => void;
   unlockScroll: (id: string) => void;
   setCampaignModalOpen: (isOpen: boolean) => void;
+  setIsCheckoutDrawerOpen: (isOpen: boolean) => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
   activeLocks: new Set<string>(),
   scrollPos: 0,
   isCampaignModalOpen: false,
+  isCheckoutDrawerOpen: false,
   
   setCampaignModalOpen: (isOpen: boolean) => set({ isCampaignModalOpen: isOpen }),
+  setIsCheckoutDrawerOpen: (isOpen: boolean) => set({ isCheckoutDrawerOpen: isOpen }),
   
   lockScroll: (id: string) => set((state) => {
     const next = new Set(state.activeLocks);

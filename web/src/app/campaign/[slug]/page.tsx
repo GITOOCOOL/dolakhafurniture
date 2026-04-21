@@ -1,6 +1,6 @@
 import { client, urlFor } from "@/lib/sanity";
-import { campaignBySlugQuery } from "@/lib/queries";
-import { Campaign } from "@/types";
+import { campaignBySlugQuery, welcomeVoucherQuery } from "@/lib/queries";
+import { Campaign, Voucher } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { Leaf, Sparkles, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -35,7 +35,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CampaignLandingPage({ params }: Props) {
   const { slug } = await params;
-  const campaign: Campaign = await client.fetch(campaignBySlugQuery, { slug });
+  
+  // Fetch both campaign and welcome voucher in parallel
+  const [campaign, welcomeVoucher] = await Promise.all([
+    client.fetch(campaignBySlugQuery, { slug }),
+    client.fetch(welcomeVoucherQuery)
+  ]);
 
   if (!campaign) notFound();
 
@@ -59,6 +64,7 @@ export default async function CampaignLandingPage({ params }: Props) {
 
           <PDFDownloadButton
             campaign={campaign}
+            welcomeVoucher={welcomeVoucher}
             label="DOWNLOAD CATALOG / PRICE LIST"
             variant="outline"
             className="!px-8 !py-2.5 !text-[11px] !border-[#e5dfd3] !text-[#3d2b1f] hover:!bg-[#fdfaf5] hover:!border-[#a3573a]"
@@ -126,7 +132,7 @@ export default async function CampaignLandingPage({ params }: Props) {
 
             {campaign.vouchers && campaign.vouchers.length > 0 && (
               <div className="flex flex-wrap items-center gap-6">
-                {campaign.vouchers.map((v) => (
+                {campaign.vouchers.map((v: Voucher) => (
                   <div
                     key={v.code}
                     className="flex flex-col gap-1 items-start md:items-end"
@@ -181,7 +187,7 @@ export default async function CampaignLandingPage({ params }: Props) {
 
         {campaign.products && campaign.products.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-16">
-            {campaign.products.map((product) => (
+            {campaign.products.map((product: any) => (
               <ProductCard 
                 key={product._id} 
                 product={product as any} 

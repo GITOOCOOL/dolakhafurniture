@@ -156,7 +156,7 @@ export default function InquiryModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <p className="text-[10px] text-[#a89f91] uppercase tracking-[0.2em] text-center mb-8">
+      <p className="text-[10px] text-[#5c4a3c] uppercase tracking-[0.2em] text-center mb-8 font-bold">
         {subtitle}
       </p>
 
@@ -164,7 +164,7 @@ export default function InquiryModal({
         <div className="space-y-4">
           {/* PRIMARY INQUIRY TYPE */}
           <div className="space-y-2">
-            <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#a89f91] ml-4">
+            <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c] ml-4">
               How can we help?
             </label>
             <div className="relative">
@@ -172,7 +172,7 @@ export default function InquiryModal({
                 name="inquiryType"
                 value={inquiryData.inquiryType}
                 onChange={handleInputChange}
-                className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all appearance-none font-sans"
+                className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all appearance-none font-sans text-[#3d2b1f] font-medium"
               >
                 <option value="general">❓ Questions & FAQ</option>
                 <option value="order">📦 Order Inquiry</option>
@@ -180,7 +180,7 @@ export default function InquiryModal({
                 <option value="bulk">🏢 Bulk / Corporate Inquiry</option>
               </select>
               <ChevronDown
-                className="absolute right-6 top-1/2 -translate-y-1/2 text-[#a89f91] pointer-events-none"
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-[#3d2b1f] pointer-events-none opacity-60"
                 size={16}
               />
             </div>
@@ -190,7 +190,7 @@ export default function InquiryModal({
           {inquiryData.inquiryType === "order" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="space-y-2">
-                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#a89f91] ml-4">
+                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c] ml-4">
                   Associated Order
                 </label>
                 <div className="relative">
@@ -250,7 +250,7 @@ export default function InquiryModal({
 
                       <div className="space-y-3 mb-4">
                         {selectedOrder.items.map((item, idx) => (
-                          <div key={idx} className="flex justify-between items-center text-[11px] text-[#3d2b1f]/70 italic">
+                          <div key={idx} className="flex justify-between items-center text-[11px] text-[#3d2b1f] font-medium italic">
                             <span>{item.quantity}x {item.title}</span>
                             <span className="font-sans font-medium text-[#3d2b1f]"> रू {item.price.toLocaleString()}</span>
                           </div>
@@ -258,7 +258,7 @@ export default function InquiryModal({
                       </div>
 
                       <div className="pt-4 border-t border-dashed border-[#e5dfd3] flex justify-between items-center">
-                        <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#a89f91]">Total Value</span>
+                        <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c]">Total Value</span>
                         <span className="text-lg font-serif italic text-[#a3573a]">रू {selectedOrder.totalPrice.toLocaleString()}</span>
                       </div>
                     </div>
@@ -272,7 +272,7 @@ export default function InquiryModal({
           {inquiryData.inquiryType === "general" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="space-y-2">
-                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#a89f91] ml-4">
+                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c] ml-4">
                   Inquiry Topic
                 </label>
                 <div className="relative">
@@ -306,7 +306,7 @@ export default function InquiryModal({
                       Quick Answer
                     </span>
                   </div>
-                  <p className="text-xs text-[#3d2b1f]/80 leading-relaxed italic font-serif">
+                  <p className="text-xs text-[#3d2b1f] leading-relaxed italic font-serif">
                     "{selectedFaq.answer}"
                   </p>
                 </div>
@@ -355,7 +355,7 @@ export default function InquiryModal({
             }
             value={inquiryData.message}
             onChange={handleInputChange}
-            className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all resize-none font-sans"
+            className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all resize-none font-sans text-[#3d2b1f] placeholder:text-[#3d2b1f]/40"
           />
         </div>
 

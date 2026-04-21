@@ -111,6 +111,12 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
       `}</style>
       
       <div className="relative w-full">
+        {/* CSS Variable injection for responsive sizing */}
+        <style>{`
+          :root { --card-width: 60%; }
+          @media (min-width: 768px) { :root { --card-width: 18%; } }
+          @media (min-width: 1024px) { :root { --card-width: 18%; } }
+        `}</style>
         <div 
           ref={scrollRef}
           onMouseDown={() => {
@@ -121,7 +127,14 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
           {infiniteChildren.map((child, index) => {
             const safeKey = (child as React.ReactElement)?.key || `carousel-item-${index}`;
             return (
-              <div key={safeKey} className="min-w-[calc(15%-8px)] md:min-w-[calc(25%-24px)] lg:min-w-[calc(25%-36px)] flex-shrink-0">
+              <div 
+                key={safeKey} 
+                className="flex-shrink-0"
+                style={{ 
+                  minWidth: "calc(var(--card-width) - 8px)",
+                  width: "calc(var(--card-width) - 8px)"
+                }}
+              >
                 {child}
               </div>
             );

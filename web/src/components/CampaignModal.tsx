@@ -100,7 +100,7 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
             transform: "translateZ(100px)",
             backfaceVisibility: "hidden",
           }}
-          className="fixed inset-0 bg-[#fdfaf5]/85 backdrop-blur-xl z-[200] flex flex-col p-8 pt-14 sm:pt-20 overflow-y-auto justify-start items-start border-r border-[#e5dfd3]/30"
+          className="fixed inset-0 bg-[#fdfaf5]/85 backdrop-blur-xl z-[1100] flex flex-col p-8 pt-14 sm:pt-20 overflow-y-auto justify-start items-start border-r border-[#e5dfd3]/30"
         >
           {/* IDENTICAL HEADER TO NAV MENU */}
           <div className="flex-shrink-0 flex justify-between items-center w-full h-16 mb-8 mt-2 sm:mt-0">

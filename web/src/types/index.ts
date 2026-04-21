@@ -7,3 +7,4 @@ export * from './order';
 export * from './customer';
 export * from './cart';
 export * from './campaign';
+export * from './voucher';

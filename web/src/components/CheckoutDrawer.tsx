@@ -7,6 +7,7 @@ import { processOrder } from "@/app/actions/checkout";
 import { validateVoucher } from "@/app/actions/vouchers";
 import { paymentAccountsQuery, activeCampaignsQuery } from "@/lib/queries";
 import InquiryModal from "@/components/InquiryModal";
+import Modal from "@/components/ui/Modal";
 import {
   ShoppingBag,
   Leaf,
@@ -31,7 +32,8 @@ import {
   Plus,
   Minus,
   Facebook,
-  Instagram
+  Instagram,
+  Sparkles,
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,6 +42,9 @@ import Input from "@/components/ui/Input";
 import { trackEvent } from "@/components/MetaPixel";
 import Link from "next/link";
 import { useUIStore } from "@/store/useUIStore";
+
+import { welcomeVoucherQuery } from "@/lib/queries";
+import { Voucher } from "@/types";
 
 interface CheckoutDrawerProps {
   isOpen: boolean;
@@ -59,6 +64,10 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
   const { lockScroll, unlockScroll } = useUIStore();
+  const [welcomeVoucher, setWelcomeVoucher] = useState<Voucher | null>(null);
+  const [hasUsedWelcome, setHasUsedWelcome] = useState(false);
+  const [hasPromptedVoucherReminder, setHasPromptedVoucherReminder] = useState(false);
+  const [showVoucherReminder, setShowVoucherReminder] = useState(false);
 
   // Handle centralized scroll lock
   useEffect(() => {
@@ -137,26 +146,36 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
     }
   }, [isOpen]);
 
-  // Fetch Campaigns for Empty State Inspiration
-  useEffect(() => {
-    if (isOpen && items.length === 0) {
-      client.fetch(activeCampaignsQuery)
-        .then(data => setCampaigns(data || []))
-        .catch(err => console.error("Campaign fetch error:", err));
-    }
-  }, [isOpen, items.length]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsInitialLoading(true);
-        const campaigns = await client.fetch(activeCampaignsQuery);
-        setCampaigns(campaigns);
+        const [campaignsData, accounts, welcome] = await Promise.all([
+          client.fetch(activeCampaignsQuery),
+          client.fetch(paymentAccountsQuery),
+          client.fetch(welcomeVoucherQuery)
+        ]);
+        
+        setCampaigns(campaignsData);
+        setPaymentAccounts(accounts);
+        setWelcomeVoucher(welcome);
         
         // Pre-apply signup incentive if applicable
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUser(user);
+          
+          // Check if user has already used the welcome voucher
+          if (welcome) {
+            const usedVoucher = await client.fetch(
+              `*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email) && $code in voucherCodes][0]`,
+              { userId: user.id, email: user.email, code: welcome.code.toLowerCase() }
+            );
+            if (usedVoucher) {
+              setHasUsedWelcome(true);
+            }
+          }
           setFormData(prev => ({
             ...prev,
             email: user.email || "",
@@ -169,16 +188,16 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
             email: user.email || ""
           }));
 
-          const signupVoucher = campaigns.flatMap((c: any) => c.vouchers || []).find((v: any) => v.code === "WELCOME5");
-          if (signupVoucher && !appliedVouchers.some(v => v.code === "WELCOME5")) {
-              const discountVal = Math.floor((subtotal * 5) / 100);
+          // Apply dynamic welcome voucher if it exists, hasn't been used, and hasn't been applied yet
+          if (welcome && !hasUsedWelcome && !appliedVouchers.some(v => v.code === welcome.code)) {
+              const discountVal = welcome.discountType === 'percentage' 
+                ? Math.floor((subtotal * welcome.discountValue) / 100)
+                : welcome.discountValue;
+                
               setDiscount(prev => prev + discountVal);
-              setAppliedVouchers(prev => [...prev, { code: "WELCOME5", discountType: "percentage", discountValue: 5, amount: discountVal }]);
+              setAppliedVouchers(prev => [...prev, { ...welcome, amount: discountVal }]);
           }
         }
-
-        const accounts = await client.fetch(paymentAccountsQuery);
-        setPaymentAccounts(accounts);
       } catch (error) {
         console.error("Error loading checkout data:", error);
       } finally {
@@ -186,7 +205,7 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
       }
     };
     if (isOpen) fetchData();
-  }, [supabase, isOpen]);
+  }, [supabase, isOpen, items.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -233,8 +252,18 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Step 1 -> 2: Review (No validation required)
+    // Step 1 -> 2: Review (With Smart Voucher Validation)
     if (activeStep === 1) {
+      if (voucherInput.trim()) {
+        alert("Please apply your voucher before proceeding!");
+        return;
+      }
+
+      if (appliedVouchers.length === 0 && !hasPromptedVoucherReminder) {
+        setShowVoucherReminder(true);
+        return;
+      }
+      
       setActiveStep(2);
       return;
     }
@@ -311,7 +340,7 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#3d2b1f]/20 backdrop-blur-sm z-[300]"
+            className="fixed inset-0 bg-[#3d2b1f]/20 backdrop-blur-sm z-[1000]"
             onClick={onClose}
           />
 
@@ -321,7 +350,7 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-[#fdfaf5] z-[310] shadow-2xl flex flex-col pt-safe-top"
+            className="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-[#fdfaf5] z-[1010] shadow-2xl flex flex-col pt-safe-top"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-[#e5dfd3] bg-white">
@@ -398,14 +427,14 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                       </div>
                       <h3 className="text-3xl font-serif italic leading-tight">Your first piece comes with a gift.</h3>
                       <p className="text-xs text-white/60 max-w-[200px] leading-relaxed">
-                        Sign up to unlock your exclusive <span className="text-[#df9152] font-bold">WELCOME5</span> voucher and get 5% off your first handcrafted piece.
+                        Sign up to unlock your exclusive <span className="text-[#df9152] font-bold">{welcomeVoucher?.code || 'WELCOME5'}</span> voucher and get {welcomeVoucher?.discountValue || 5}% off your first handcrafted piece.
                       </p>
                       
                       <div className="pt-4 flex items-center gap-3">
                         <div className="flex flex-col">
                           <span className="text-[8px] font-bold text-white/40 uppercase tracking-widest mb-1">Voucher Code</span>
                           <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/5 font-bold tracking-widest text-[#df9152] text-sm">
-                            WELCOME5
+                            {welcomeVoucher?.code || 'WELCOME5'}
                           </div>
                         </div>
                         <Button 
@@ -635,7 +664,6 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                               <div className="flex justify-between items-center">
                                 <div className="flex flex-col">
                                   <span className="text-[9px] font-sans font-bold uppercase tracking-widest text-[#a89f91]">Total</span>
-                                  <span className="text-sm font-serif italic text-[#3d2b1f] opacity-60">Inclusive of all crafting</span>
                                 </div>
                                 <span className="text-3xl font-sans font-extrabold text-[#a3573a] tracking-tighter">Rs. {finalTotal.toLocaleString()}</span>
                               </div>
@@ -657,18 +685,55 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
 
                             {/* Voucher Input */}
                             <div className="pt-6 border-t border-[#e5dfd3] border-dashed">
-                               <div className="flex flex-col mb-3 ml-4">
+                               <div className="flex flex-col mb-3 ml-4 gap-1">
                                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91]">Discount Voucher</p>
-                                 <p className="text-[8px] font-bold text-[#a3573a] uppercase tracking-tighter">(Dont forget to press apply if you add a voucher before continuing)</p>
+                                 
+                                 {/* DYNAMIC VOUCHER RIBBON */}
+                                 {(welcomeVoucher && !hasUsedWelcome || campaigns.some(c => c.vouchers?.length)) && (
+                                   <div className="space-y-3 pt-2">
+                                     <div className="flex items-center gap-2">
+                                       <Sparkles size={12} className="text-[#a3573a]" />
+                                       <p className="text-[9px] font-bold uppercase tracking-widest text-[#a3573a]">Available Vouchers (Tap to use)</p>
+                                     </div>
+                                     <div className="flex flex-wrap gap-3 items-center pt-1">
+                                       <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#3d2b1f] mr-1">Tap to use:</span>
+                                       {welcomeVoucher && !hasUsedWelcome && !appliedVouchers.some(v => v.code === welcomeVoucher.code) && (
+                                         <button 
+                                           type="button"
+                                           onClick={() => setVoucherInput(welcomeVoucher.code)} 
+                                           className="px-4 py-2 bg-[#10b981] border border-[#059669] rounded-full flex items-center gap-2 hover:bg-[#059669] transition-all group shadow-md hover:shadow-lg active:scale-95"
+                                         >
+                                           <Sparkles size={12} className="text-white fill-white/20" />
+                                           <span className="text-[11px] font-black text-white uppercase tracking-wider">{welcomeVoucher.code} (Welcome)</span>
+                                         </button>
+                                       )}
+                                       {campaigns.flatMap(c => c.vouchers || [])
+                                         .filter(v => v.code !== welcomeVoucher?.code && !appliedVouchers.some(av => av.code === v.code))
+                                         .map((v, i) => (
+                                         <button 
+                                           key={i}
+                                           type="button"
+                                           onClick={() => setVoucherInput(v.code)} 
+                                           className="px-4 py-2 bg-[#df9152] border border-[#c47d3e] rounded-full flex items-center gap-2 hover:bg-[#c47d3e] transition-all group shadow-md hover:shadow-lg active:scale-95"
+                                         >
+                                           <Tag size={12} className="text-white fill-white/20" />
+                                           <span className="text-[11px] font-black text-white uppercase tracking-wider">{v.code}</span>
+                                         </button>
+                                       ))}
+                                     </div>
+                                     <p className="text-[8px] font-bold text-[#a89f91] uppercase tracking-tighter opacity-60">* Tap a voucher to select it, then press Apply</p>
+                                   </div>
+                                 )}
                                </div>
-                               <div className="flex gap-2">
-                                  <div className="flex-1">
+                               <div className="flex flex-col gap-3 mt-4">
+                                  <div className="w-full">
                                     <Input
                                       placeholder="Enter code"
                                       containerClassName="!gap-0"
                                       value={voucherInput}
                                       onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
                                       error={voucherError}
+                                      className="text-lg py-6"
                                     />
                                   </div>
                                   <Button 
@@ -676,9 +741,10 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                                     onClick={handleApplyVoucher}
                                     isLoading={isApplyingVoucher}
                                     variant="primary"
-                                    className="!py-4"
+                                    fullWidth
+                                    className="!py-5 text-sm font-black uppercase tracking-widest bg-[#3d2b1f] hover:bg-[#a3573a]"
                                   >
-                                    Apply
+                                    Apply Voucher
                                   </Button>
                                </div>
                             </div>
@@ -703,11 +769,12 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                             leftIcon={<span className="text-[10px] font-bold pr-2 border-r border-[#e5dfd3] mr-2">+977</span>}
                           />
                           <Input
-                            label="Email Address"
+                            label="Email Address (Optional)"
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
+                            placeholder="To receive order updates"
                             icon={Mail}
                           />
                           
@@ -769,21 +836,32 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
                         >
                           <h4 className="text-lg font-serif italic mb-6">Delivery Details</h4>
                           <Input
-                            label="Address"
-                            required
-                            name="address"
-                            icon={MapPin}
-                            placeholder="Area, Building, or Street"
-                            value={formData.address}
-                            onChange={handleInputChange}
-                          />
-                          <Input
-                            label="City / Tole"
+                            label="Town / City"
                             required
                             name="city"
                             value={formData.city}
                             onChange={handleInputChange}
+                            placeholder="e.g. Kathmandu"
+                            icon={MapPin}
                           />
+                          <Input
+                            label="Tole / Area (Optional)"
+                            name="apartment"
+                            value={formData.apartment}
+                            onChange={handleInputChange}
+                            placeholder="e.g. Near Ganesh Mandir"
+                          />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91] ml-4">Additional Notes (Optional)</label>
+                             <textarea 
+                                name="address"
+                                placeholder="Specific delivery instructions or location reminders..."
+                                value={formData.address}
+                                onChange={(e: any) => handleInputChange(e)}
+                                className="w-full bg-white border border-[#e5dfd3] rounded-2xl p-6 text-sm focus:ring-1 focus:ring-[#a3573a] outline-none min-h-[120px] transition-all"
+                             />
+                          </div>
+                          
                           
                           <div className="bg-white border border-[#e5dfd3] rounded-2xl overflow-hidden mt-8">
                              <label className="flex items-center justify-between p-5 cursor-pointer hover:bg-[#fdfaf5] border border-transparent checked-parent:border-[#a3573a]/30">
@@ -930,11 +1008,55 @@ export default function CheckoutDrawer({ isOpen, onClose, onSignUp }: CheckoutDr
 
             {/* Inquiry Modal Integration */}
             <InquiryModal
-              isOpen={showInquiryModal}
-              onClose={() => setShowInquiryModal(false)}
-              title="Track your Order"
-              initialData={inquiryData}
-            />
+        isOpen={showInquiryModal}
+        onClose={() => setShowInquiryModal(false)}
+        initialData={inquiryData}
+        title="Order Inquiry"
+        subtitle="How can we help with your order?"
+      />
+
+      {/* VOUCHER REMINDER MODAL */}
+      <Modal 
+        isOpen={showVoucherReminder} 
+        onClose={() => setShowVoucherReminder(false)}
+        title="Discount Voucher"
+      >
+        <div className="text-center space-y-6">
+          <div className="w-20 h-20 bg-[#a3573a]/10 rounded-full flex items-center justify-center mx-auto text-[#a3573a]">
+            <Ticket size={32} />
+          </div>
+          
+          <div className="space-y-2">
+            <p className="text-sm text-[#3d2b1f] font-medium leading-relaxed">
+              Do you have a discount voucher you'd like to apply to this order?
+            </p>
+            <p className="text-[10px] text-[#a89f91] uppercase tracking-widest font-bold">
+              Check your email or our active campaigns
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-4">
+            <Button 
+              fullWidth 
+              onClick={() => setShowVoucherReminder(false)}
+              className="bg-[#3d2b1f] hover:bg-[#a3573a] text-white"
+            >
+              I have a voucher
+            </Button>
+            <Button 
+              variant="outline"
+              fullWidth 
+              onClick={() => {
+                setShowVoucherReminder(false);
+                setHasPromptedVoucherReminder(true);
+                setActiveStep(2);
+              }}
+            >
+              No, I don't have a voucher
+            </Button>
+          </div>
+        </div>
+      </Modal>
           </motion.div>
         </>
       )}
