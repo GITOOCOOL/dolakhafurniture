@@ -44,16 +44,16 @@ export default async function CampaignLandingPage({ params }: Props) {
 
   if (!campaign) notFound();
 
-  const themeColor = campaign.themeColor || "#a3573a";
+  const themeColor = campaign.themeColor || "accent";
 
   return (
-    <main className="min-h-screen bg-[#fdfaf5] pb-24 font-sans text-[#3d2b1f]">
+    <main className="min-h-screen bg-app pb-24 font-sans text-heading">
       {/* TOP NAVIGATION STRIP: Unified and clean */}
-      <div className="bg-[#fdfaf5] border-b border-[#e5dfd3] no-print">
+      <div className="bg-app border-b border-soft no-print">
         <div className="container mx-auto px-6 md:px-12 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <Link
             href="/campaigns"
-            className="flex items-center gap-2 text-[#3d2b1f] hover:text-[#a3573a] transition-all text-[10px] uppercase tracking-widest font-bold group"
+            className="flex items-center gap-2 text-heading hover:text-action transition-all text-[10px] uppercase tracking-widest font-bold group"
           >
             <ArrowLeft
               size={14}
@@ -67,7 +67,7 @@ export default async function CampaignLandingPage({ params }: Props) {
             welcomeVoucher={welcomeVoucher}
             label="DOWNLOAD CATALOG / PRICE LIST"
             variant="outline"
-            className="!px-8 !py-2.5 !text-[11px] !border-[#e5dfd3] !text-[#3d2b1f] hover:!bg-[#fdfaf5] hover:!border-[#a3573a]"
+            className="!px-8 !py-2.5 !text-[11px] !border-soft !text-heading hover:!bg-app hover:!border-action"
           />
         </div>
       </div>
@@ -100,7 +100,7 @@ export default async function CampaignLandingPage({ params }: Props) {
               Active Campaign
             </p>
           </div>
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-serif italic text-white leading-none">
+          <h1 className="text-4xl md:text-7xl lg:type-hero text-white leading-none">
             {campaign.title}
           </h1>
         </div>
@@ -109,7 +109,7 @@ export default async function CampaignLandingPage({ params }: Props) {
       {/* CAMPAIGN METADATA STRIP: Vouchers & Deadline */}
       {(campaign.endDate ||
         (campaign.vouchers && campaign.vouchers.length > 0)) && (
-        <div className="bg-[#a3573a] text-white py-4 no-print border-b border-white/10 shadow-sm relative z-30">
+        <div className="bg-action text-white py-4 no-print border-b border-white/10 shadow-sm relative z-30">
           <div className="container mx-auto px-6 md:px-12 flex flex-wrap items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <Leaf size={18} className="text-white/40" />
@@ -141,7 +141,7 @@ export default async function CampaignLandingPage({ params }: Props) {
                       <span className="text-[8px] uppercase tracking-widest opacity-60">
                         Voucher:
                       </span>
-                      <span className="px-3 py-1 bg-white text-[#a3573a] text-[10px] font-bold rounded-sm tracking-widest shadow-sm">
+                      <span className="px-3 py-1 bg-white text-action text-[10px] font-bold rounded-sm tracking-widest shadow-sm">
                         {v.code}
                       </span>
                     </div>
@@ -165,11 +165,11 @@ export default async function CampaignLandingPage({ params }: Props) {
             className="w-16 h-[1px]"
             style={{ backgroundColor: themeColor }}
           />
-          <h2 className="text-2xl md:text-4xl font-serif italic text-[#3d2b1f] leading-snug text-balance">
+          <h2 className="text-2xl md:text-4xl font-serif italic text-heading leading-snug text-balance">
             {campaign.tagline || `New arrivals for your home.`}
           </h2>
           {campaign.description && (
-            <p className="text-[#a89f91] text-sm md:text-lg font-light leading-relaxed italic border-l-2 border-[#e5dfd3] pl-8 max-w-2xl">
+            <p className="text-label text-sm md:text-lg font-light leading-relaxed italic border-l-2 border-soft pl-8 max-w-2xl">
               {campaign.description}
             </p>
           )}
@@ -179,10 +179,10 @@ export default async function CampaignLandingPage({ params }: Props) {
       {/* PRODUCT GRID */}
       <section className="container mx-auto px-6 md:px-12">
         <div className="flex items-center gap-4 mb-16 no-print">
-          <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#a3573a]">
+          <p className="type-label text-action">
             The Collection
           </p>
-          <div className="flex-1 h-[1px] bg-[#e5dfd3] opacity-50" />
+          <div className="flex-1 h-[1px] border-soft opacity-50" />
         </div>
 
         {campaign.products && campaign.products.length > 0 ? (
@@ -196,8 +196,8 @@ export default async function CampaignLandingPage({ params }: Props) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 border-t border-[#e5dfd3] border-dotted">
-            <p className="text-[#a89f91] italic font-serif text-2xl">
+          <div className="text-center py-24 border-t border-soft border-dotted">
+            <p className="text-label italic font-serif text-2xl">
               "Treasure from this story will be available soon."
             </p>
           </div>
@@ -205,9 +205,9 @@ export default async function CampaignLandingPage({ params }: Props) {
       </section>
 
       {/* FOOTER ACCENT */}
-      <section className="mt-32 pt-24 border-t border-[#e5dfd3] border-dotted text-center space-y-8">
-        <Leaf size={32} className="mx-auto text-[#a3573a] opacity-30" />
-        <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#a89f91]">
+      <section className="mt-32 pt-24 border-t border-soft border-dotted text-center space-y-8">
+        <Leaf size={32} className="mx-auto text-action opacity-30" />
+        <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-label">
           Crafted in Nepal
         </p>
       </section>

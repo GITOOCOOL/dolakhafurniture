@@ -27,19 +27,19 @@ export default function AuthPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fdfaf5] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#e5dfd3] border-t-[#a3573a] rounded-full animate-spin" />
+      <div className="min-h-screen bg-app flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-soft border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fdfaf5] text-[#3d2b1f] selection:bg-[#a3573a]/10 flex flex-col">
+    <div className="min-h-screen bg-app text-heading selection:bg-action/10 flex flex-col">
       {/* Navigation */}
       <div className="p-6">
         <Link 
           href="/" 
-          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#a89f91] hover:text-[#3d2b1f] transition-colors"
+          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-label hover:text-heading transition-colors"
         >
           <ArrowLeft size={14} /> Back to home
         </Link>
@@ -52,18 +52,18 @@ export default function AuthPage() {
           className="max-w-md w-full"
         >
           {/* Main Card */}
-          <div className="bg-white border border-[#e5dfd3] rounded-[3rem] p-8 md:p-12 shadow-[0_30px_60px_rgba(61,43,31,0.08)] text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#a3573a] blur-[60px] opacity-10" />
+          <div className="bg-white border border-soft rounded-[3rem] p-8 md:p-12 shadow-[0_30px_60px_rgba(61,43,31,0.08)] text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-action [60px] opacity-10" />
             
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-16 h-16 rounded-[2rem] bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center text-[#3d2b1f] mb-8 shadow-sm">
+              <div className="w-16 h-16 rounded-[2rem] bg-app border border-soft flex items-center justify-center text-heading mb-8 shadow-sm">
                 <Leaf size={28} strokeWidth={1.5} />
               </div>
 
               {/* REUSABLE AUTH FORM */}
               <AuthForm onSuccess={() => router.push("/account")} />
 
-              <div className="mt-10 pt-8 border-t border-[#e5dfd3] flex items-center justify-center gap-6 opacity-30 w-full">
+              <div className="mt-10 pt-8 border-t border-soft flex items-center justify-center gap-6 opacity-30 w-full">
                  <ShieldCheck size={20} />
                  <span className="text-[9px] font-bold uppercase tracking-widest">Secure Login</span>
               </div>

@@ -13,6 +13,7 @@ import BrowserBanner from "@/components/BrowserBanner";
 import CampaignModal from "@/components/CampaignModal";
 import NextTopLoader from 'nextjs-toploader';
 import { Suspense } from "react";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
@@ -42,7 +43,7 @@ export default async function RootLayout({
   const latestCampaign = activeCampaigns?.[0] || null;
 
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning={true} data-scroll-behavior="smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <meta
           name="viewport"
@@ -61,91 +62,83 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${serif.variable} ${sans.variable} antialiased bg-[#fdfaf5] text-[#3d2b1f] font-sans w-full min-h-screen flex flex-col`}
+        className={`${serif.variable} ${sans.variable} antialiased bg-app text-heading font-sans w-full min-h-screen flex flex-col transition-colors duration-300`}
       >
-        <NextTopLoader 
-          color="#22c55e"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={5}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow="0 0 15px rgba(34,197,94,0.6), 0 0 10px rgba(34,197,94,0.4)"
-          zIndex={999999}
-        />
-        <ToastProvider>
-          <Suspense fallback={null}>
-            <MetaPixel />
-          </Suspense>
-          
-          {/* 0. BROWSER ESCAPE BAR (For In-App Browsers) */}
-          <BrowserBanner />
-          
-          {/* 1. TOP ANNOUNCEMENT (Scrolls away) */}
-          <AnnouncementBar bulletins={bulletins} />
-          
-          {/* 2. STICKY HEADER (Persistent) */}
-          <HeaderClient latestCampaign={latestCampaign} />
-          
-          {/* 3. MAIN CONTENT */}
-          <main className="w-full relative flex-1">{children}</main>
-          
-          {/* 4. GLOBAL ELEMENTS */}
+        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
+          <NextTopLoader 
+            color="action-success"
+            initialPosition={0.08}
+            crawlSpeed={200}
+            height={5}
+            crawl={true}
+            showSpinner={false}
+            easing="ease"
+            speed={200}
+            shadow="0 0 15px rgba(34,197,94,0.6), 0 0 10px rgba(34,197,94,0.4)"
+            zIndex={999999}
+          />
+          <ToastProvider>
+            <Suspense fallback={null}>
+              <MetaPixel />
+            </Suspense>
+            
+            <BrowserBanner />
+            <AnnouncementBar bulletins={bulletins} />
+            <HeaderClient latestCampaign={latestCampaign} />
+            <main className="w-full relative flex-1">{children}</main>
+          </ToastProvider>
           <FloatingContact />
-        </ToastProvider>
 
           {/* FOOTER */}
-          <footer className="border-t border-[#e5dfd3] border-dotted bg-[#1a1c13] text-[#e2e8da] py-20 w-full">
+          <footer className="border-t border-soft border-dotted bg-app text-[#e2e8da] py-20 w-full transition-colors duration-300">
             <div className="container mx-auto px-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center md:text-left">
                 <div className="lg:col-span-2">
-                  <h3 className="text-[#fdfaf5] text-3xl font-serif italic mb-6 leading-relaxed">
+                  <h3 className="text-bone text-3xl font-serif italic mb-6 leading-relaxed">
                     "Sustainably sourced, <br /> thoughtfully crafted."
                   </h3>
-                  <p className="text-[#a89f91] text-sm font-light italic leading-relaxed">
+                  <p className="text-label type-body italic leading-relaxed">
                     Each piece is a testament to our commitment to quality and
                     sustainability. Our other platforms are just a click away,
                     where you can explore more of our story and collections.
                   </p>
                   <br />
-                  <div className="flex justify-center md:justify-start gap-8 text-[11px] uppercase tracking-[0.2em] font-medium">
+                  <div className="flex justify-center md:justify-start gap-8 type-action font-medium">
                     <a
                       href="https://facebook.com/dolakhafurniture"
                       target="_blank"
-                      className="hover:text-[#df9152] transition-colors"
+                      className="hover:text-warmth transition-colors"
                     >
                       Facebook
                     </a>
                     <a
                       href="https://instagram.com/dolakhafurnituredesign"
                       target="_blank"
-                      className="hover:text-[#df9152] transition-colors"
+                      className="hover:text-warmth transition-colors"
                     >
                       Instagram
                     </a>
                     <a
                       href="https://tiktok.com/@dolakhafurniture"
                       target="_blank"
-                      className="hover:text-[#df9152] transition-colors"
+                      className="hover:text-warmth transition-colors"
                     >
                       TikTok
                     </a>
                   </div>
                 </div>
                 <div className="md:ml-auto w-full">
-                  <p className="text-[#fdfaf5] text-xs font-serif italic mb-4">
+                  <p className="text-bone text-xs font-serif italic mb-4">
                     Join our Socials
                   </p>
-                  <div className="flex border-b border-[#3d2b1f] pb-2 max-w-xs mx-auto md:mx-0">
+                  <div className="flex border-b border-espresso pb-2 max-w-xs mx-auto md:mx-0">
                     <input
                       type="text"
                       placeholder="EMAIL ADDRESS"
-                      className="bg-transparent text-xs w-full outline-none placeholder:text-[#a89f91] placeholder:text-[10px] tracking-widest"
+                      className="bg-transparent text-xs w-full outline-none placeholder:text-label placeholder:text-[10px] tracking-widest"
                       suppressHydrationWarning
                     />
-                    <button className="text-[#df9152] font-serif italic">
+                    <button className="text-warmth font-serif italic">
                       →
                     </button>
                   </div>
@@ -153,6 +146,7 @@ export default async function RootLayout({
               </div>
             </div>
           </footer>
+        </ThemeProvider>
       </body>
     </html>
   );

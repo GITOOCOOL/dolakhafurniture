@@ -79,21 +79,21 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
           width: 100%;
           height: 2px;
           cursor: pointer;
-          background: #3d2b1f20;
+          background: var(--stone-muted);
           border-radius: 2px;
         }
         .boho-scrubber::-moz-range-track {
           width: 100%;
           height: 2px;
           cursor: pointer;
-          background: #3d2b1f20;
+          background: var(--stone-muted);
           border-radius: 2px;
         }
         .boho-scrubber::-webkit-slider-thumb {
           height: 10px;
           width: 40px;
           border-radius: 5px;
-          background: #a3573a;
+          background: var(--terracotta);
           cursor: pointer;
           -webkit-appearance: none;
           margin-top: -4px;
@@ -103,7 +103,7 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
           height: 10px;
           width: 40px;
           border-radius: 5px;
-          background: #a3573a;
+          background: var(--terracotta);
           cursor: pointer;
           border: none;
           box-shadow: 0 0 5px rgba(163,87,58,0.3);
@@ -149,7 +149,7 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
         <div className="flex items-center justify-between w-full max-w-[320px] gap-4 pt-2">
           <button 
             onClick={() => scrollByAmount('left')}
-            className="hidden md:flex text-[#a3573a] hover:opacity-70 active:scale-90 transition-all"
+            className="hidden md:flex text-action hover:opacity-70 active:scale-90 transition-all"
             aria-label="Scroll Left"
           >
             <ChevronLeft size={28} />
@@ -168,7 +168,7 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
 
           <button 
             onClick={() => scrollByAmount('right')}
-            className="hidden md:flex text-[#a3573a] hover:opacity-70 active:scale-90 transition-all"
+            className="hidden md:flex text-action hover:opacity-70 active:scale-90 transition-all"
             aria-label="Scroll Right"
           >
             <ChevronRight size={28} />

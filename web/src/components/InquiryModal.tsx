@@ -155,8 +155,8 @@ export default function InquiryModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <p className="text-[10px] text-[#5c4a3c] uppercase tracking-[0.2em] text-center mb-8 font-bold">
+    <Modal isOpen={isOpen} onClose={onClose} title={title} position="bottom">
+      <p className="type-label text-description mb-6 -mt-2">
         {subtitle}
       </p>
 
@@ -164,7 +164,7 @@ export default function InquiryModal({
         <div className="space-y-4">
           {/* PRIMARY INQUIRY TYPE */}
           <div className="space-y-2">
-            <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c] ml-4">
+            <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-description ml-4">
               How can we help?
             </label>
             <div className="relative">
@@ -172,7 +172,7 @@ export default function InquiryModal({
                 name="inquiryType"
                 value={inquiryData.inquiryType}
                 onChange={handleInputChange}
-                className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all appearance-none font-sans text-[#3d2b1f] font-medium"
+                className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all appearance-none font-sans text-heading font-medium"
               >
                 <option value="general">❓ Questions & FAQ</option>
                 <option value="order">📦 Order Inquiry</option>
@@ -180,7 +180,7 @@ export default function InquiryModal({
                 <option value="bulk">🏢 Bulk / Corporate Inquiry</option>
               </select>
               <ChevronDown
-                className="absolute right-6 top-1/2 -translate-y-1/2 text-[#3d2b1f] pointer-events-none opacity-60"
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-heading pointer-events-none"
                 size={16}
               />
             </div>
@@ -190,7 +190,7 @@ export default function InquiryModal({
           {inquiryData.inquiryType === "order" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="space-y-2">
-                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c] ml-4">
+                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-description ml-4">
                   Associated Order
                 </label>
                 <div className="relative">
@@ -200,7 +200,7 @@ export default function InquiryModal({
                         name="orderReference"
                         value={inquiryData.orderReference}
                         onChange={handleInputChange}
-                        className="w-full bg-[#fdfaf5] border border-[#a3573a]/30 px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all appearance-none font-sans font-bold"
+                        className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all appearance-none font-sans font-bold"
                       >
                         {userOrders.map((order) => (
                           <option
@@ -216,13 +216,13 @@ export default function InquiryModal({
                         <option value="other">Other / Not Listed</option>
                       </select>
                       <ChevronDown
-                        className="absolute right-6 top-1/2 -translate-y-1/2 text-[#a3573a] pointer-events-none"
+                        className="absolute right-6 top-1/2 -translate-y-1/2 text-action pointer-events-none"
                         size={16}
                       />
                     </>
                   ) : (
-                    <div className="flex items-center gap-3 p-4 bg-[#fdfaf5] border border-dashed border-[#e5dfd3] rounded-2xl text-[10px] text-[#a89f91] uppercase tracking-widest italic font-medium">
-                      <Package size={14} className="opacity-40" />
+                    <div className="flex items-center gap-3 p-4 bg-app border border-dashed border-soft/30 rounded-[1.5rem] text-[10px] text-description uppercase tracking-widest italic font-medium">
+                      <Package size={14} className="opacity-70" />
                       {isLoadingOrders
                         ? "Refreshing your catalog..."
                         : "Manual Order ID required below"}
@@ -237,29 +237,29 @@ export default function InquiryModal({
                   const selectedOrder = userOrders.find(o => (o.orderNumber === inquiryData.orderReference) || (o._id === inquiryData.orderReference));
                   if (!selectedOrder) return null;
                   return (
-                    <div className="p-6 bg-white border border-[#e5dfd3] rounded-3xl shadow-sm animate-in zoom-in-95 duration-500">
+                    <div className="p-6 bg-surface border border-soft/10 rounded-[2rem] shadow-sm animate-in zoom-in-95 duration-500">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#a3573a]">Order Summary</p>
-                          <p className="text-xs font-serif italic text-[#3d2b1f]">{new Date(selectedOrder._createdAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                          <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-action">Order Summary</p>
+                          <p className="text-xs font-serif italic text-heading">{new Date(selectedOrder._createdAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                         </div>
-                        <div className="px-3 py-1 bg-[#fdfaf5] border border-[#a3573a]/20 rounded-full">
-                          <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-[#a3573a]">{selectedOrder.status || 'Processing'}</p>
+                        <div className="px-3 py-1 bg-app border border-action/20 rounded-full">
+                          <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-action">{selectedOrder.status || 'Processing'}</p>
                         </div>
                       </div>
 
                       <div className="space-y-3 mb-4">
                         {selectedOrder.items.map((item, idx) => (
-                          <div key={idx} className="flex justify-between items-center text-[11px] text-[#3d2b1f] font-medium italic">
+                          <div key={idx} className="flex justify-between items-center text-[11px] text-heading font-medium italic">
                             <span>{item.quantity}x {item.title}</span>
-                            <span className="font-sans font-medium text-[#3d2b1f]"> रू {item.price.toLocaleString()}</span>
+                            <span className="font-sans font-medium text-heading"> रू {item.price.toLocaleString()}</span>
                           </div>
                         ))}
                       </div>
 
-                      <div className="pt-4 border-t border-dashed border-[#e5dfd3] flex justify-between items-center">
-                        <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c]">Total Value</span>
-                        <span className="text-lg font-serif italic text-[#a3573a]">रू {selectedOrder.totalPrice.toLocaleString()}</span>
+                      <div className="pt-4 border-t border-dashed border-soft/30 flex justify-between items-center">
+                        <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-description">Total Value</span>
+                        <span className="text-lg font-serif italic text-action">रू {selectedOrder.totalPrice.toLocaleString()}</span>
                       </div>
                     </div>
                   );
@@ -272,7 +272,7 @@ export default function InquiryModal({
           {inquiryData.inquiryType === "general" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="space-y-2">
-                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#5c4a3c] ml-4">
+                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-description ml-4">
                   Inquiry Topic
                 </label>
                 <div className="relative">
@@ -280,7 +280,7 @@ export default function InquiryModal({
                     name="topic"
                     value={inquiryData.topic}
                     onChange={handleInputChange}
-                    className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all appearance-none font-sans font-bold"
+                    className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all appearance-none font-sans font-bold"
                   >
                     <option value="">Select a topic...</option>
                     {faqs.map((faq) => (
@@ -291,7 +291,7 @@ export default function InquiryModal({
                     <option value="other">💬 Other Question</option>
                   </select>
                   <ChevronDown
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[#a89f91] pointer-events-none"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-label pointer-events-none"
                     size={16}
                   />
                 </div>
@@ -299,14 +299,14 @@ export default function InquiryModal({
 
               {/* INSTANT RESPONSE */}
               {selectedFaq && (
-                <div className="p-6 bg-[#fdfaf5] border border-dashed border-[#a3573a]/30 rounded-2xl animate-in zoom-in-95 duration-700">
+                <div className="p-6 bg-surface/50 border border-dashed border-action/20 rounded-[1.5rem] animate-in zoom-in-95 duration-700">
                   <div className="flex items-center gap-2 mb-3">
-                    <Sparkles size={14} className="text-[#a3573a]" />
-                    <span className="text-[9px] font-sans font-bold uppercase tracking-widest text-[#a3573a]">
+                    <Sparkles size={14} className="text-action" />
+                    <span className="text-[9px] font-sans font-bold uppercase tracking-widest text-action">
                       Quick Answer
                     </span>
                   </div>
-                  <p className="text-xs text-[#3d2b1f] leading-relaxed italic font-serif">
+                  <p className="text-xs text-heading leading-relaxed italic font-serif">
                     "{selectedFaq.answer}"
                   </p>
                 </div>
@@ -355,7 +355,7 @@ export default function InquiryModal({
             }
             value={inquiryData.message}
             onChange={handleInputChange}
-            className="w-full bg-white border border-[#e5dfd3] px-8 py-4 rounded-2xl text-sm focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all resize-none font-sans text-[#3d2b1f] placeholder:text-[#3d2b1f]/40"
+            className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all resize-none font-sans text-heading placeholder:text-heading/40"
           />
         </div>
 
@@ -365,7 +365,7 @@ export default function InquiryModal({
           size="lg"
           isLoading={inquiryStatus === "submitting"}
           className={
-            inquiryStatus === "success" ? "bg-green-600 hover:bg-green-700" : ""
+            inquiryStatus === "success" ? "bg-success hover:opacity-90 shadow-lg shadow-success/20 transition-all scale-[1.02]" : ""
           }
         >
           {inquiryStatus === "submitting"

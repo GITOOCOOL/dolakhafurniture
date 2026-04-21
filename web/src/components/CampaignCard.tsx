@@ -7,14 +7,14 @@ import { Campaign } from "@/types";
 import { ArrowRight, Sparkles, MessageCircle, Facebook } from "lucide-react";
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
-  const themeColor = campaign.themeColor || "#a3573a";
+  const themeColor = campaign.themeColor || "accent";
 
   return (
     <div 
-      className="group relative overflow-hidden rounded-[2.5rem] bg-white border border-[#e5dfd3] transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] hover:-translate-y-2 flex flex-col md:flex-row min-h-[320px]"
+      className="group relative overflow-hidden rounded-[2.5rem] bg-white border border-divider transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] hover:-translate-y-2 flex flex-col md:flex-row min-h-[320px]"
     >
       {/* Visual Side */}
-      <div className="md:w-1/2 relative overflow-hidden bg-[#fdfaf5]">
+      <div className="md:w-1/2 relative overflow-hidden bg-app">
         {campaign.banner ? (
           <Image
             src={urlFor(campaign.banner).width(800).url()}
@@ -24,7 +24,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center opacity-10">
-            <Sparkles size={80} className="text-[#a3573a]" />
+            <Sparkles size={80} className="text-action" />
           </div>
         )}
         <div 
@@ -45,7 +45,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               Active Campaign
             </p>
           </div>
-          <h2 className="text-3xl md:text-4xl font-serif italic text-[#3d2b1f] leading-tight">
+          <h2 className="text-3xl md:text-4xl font-serif italic text-heading leading-tight">
             {campaign.title}
           </h2>
           
@@ -53,15 +53,15 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           {(campaign.endDate || (campaign.vouchers && campaign.vouchers.length > 0)) && (
             <div className="flex flex-wrap items-center gap-3 pt-1">
               {campaign.endDate && (
-                <div className="text-[9px] font-sans font-extrabold uppercase tracking-widest text-[#a3573a] flex items-center gap-1.5">
-                  <div className="w-1 h-1 rounded-full bg-[#a3573a] animate-pulse" />
+                <div className="text-[9px] font-sans font-extrabold uppercase tracking-widest text-action flex items-center gap-1.5">
+                  <div className="w-1 h-1 rounded-full bg-action animate-pulse" />
                   Ends: {new Date(campaign.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </div>
               )}
               {campaign.vouchers && campaign.vouchers.map(v => (
                 <span 
                   key={v.code}
-                  className="px-2 py-0.5 bg-[#a3573a] text-[8px] font-bold text-white rounded-sm uppercase tracking-widest shadow-sm"
+                  className="px-2 py-0.5 bg-action text-[8px] font-bold text-white rounded-sm uppercase tracking-widest shadow-sm"
                 >
                   {v.code}
                 </span>
@@ -71,7 +71,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         </header>
 
         {campaign.tagline && (
-          <p className="text-[#a89f91] text-md font-light leading-relaxed italic border-l-2 border-[#e5dfd3] pl-6 py-1">
+          <p className="text-description text-md font-medium leading-relaxed italic border-l-2 border-divider pl-6 py-1">
             "{campaign.tagline}"
           </p>
         )}
@@ -79,11 +79,11 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         <div className="pt-4 flex items-center justify-between gap-4">
           <Link
             href={`/campaign/${campaign.slug}`}
-            className="inline-flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#3d2b1f] hover:text-[#a3573a] transition-all group/link"
+            className="inline-flex items-center gap-4 type-action text-heading hover:text-action transition-all group/link"
           >
             Check it out
             <div 
-              className="w-10 h-10 rounded-full flex items-center justify-center border border-[#e5dfd3] group-hover/link:border-[#a3573a] group-hover/link:bg-[#a3573a] group-hover/link:text-white transition-all duration-300"
+              className="w-10 h-10 rounded-full flex items-center justify-center border border-divider group-hover/link:border-action group-hover/link:bg-action group-hover/link:text-white transition-all duration-300"
             >
               <ArrowRight size={16} />
             </div>

@@ -61,13 +61,13 @@ export default function CategoryNav({
     return isMobile ? (
       <nav className="flex flex-col items-start justify-start flex-grow gap-8 w-full opacity-50 pt-2 h-full overflow-hidden pb-20">
         {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="h-12 md:h-14 w-64 bg-[#e5dfd3] animate-pulse rounded-2xl"></div>
+          <div key={i} className="h-12 md:h-14 w-64 border-soft animate-pulse rounded-2xl"></div>
         ))}
       </nav>
     ) : (
       <div className="flex gap-6 lg:gap-10 opacity-50">
         {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="h-4 w-16 bg-[#e5dfd3] animate-pulse rounded"></div>
+          <div key={i} className="h-4 w-16 border-soft animate-pulse rounded"></div>
         ))}
       </div>
     );
@@ -81,7 +81,7 @@ export default function CategoryNav({
             key={link.name}
             href={link.href}
             onClick={onItemClick}
-            className="text-2xl md:text-3xl font-serif italic tracking-tight text-[#3d2b1f] hover:text-[#a3573a] flex-shrink-0"
+            className="text-2xl md:text-3xl font-serif italic tracking-tight text-heading hover:text-action flex-shrink-0"
           >
             {link.name}
           </Link>
@@ -96,10 +96,10 @@ export default function CategoryNav({
         <Link
           key={link.name}
           href={link.href}
-          className="text-[#3d2b1f] whitespace-nowrap hover:text-[#a3573a] transition-colors relative group py-1"
+          className="text-heading whitespace-nowrap hover:text-action transition-colors relative group py-1"
         >
           {link.name}
-          <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#a3573a] transition-all duration-300 group-hover:w-full rounded-full"></span>
+          <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-action transition-all duration-300 group-hover:w-full rounded-full"></span>
         </Link>
       ))}
     </nav>

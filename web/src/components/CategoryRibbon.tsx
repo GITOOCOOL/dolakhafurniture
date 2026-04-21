@@ -29,17 +29,17 @@ const CategoryRibbon = ({ title, slug, subtitle, vouchers }: CategoryRibbonProps
 
   return (
     <div className="relative group w-full md:w-44 flex flex-col justify-between items-start 
-                    bg-[#fdfaf5] border-l-2 border-[#3d2b1f] px-3 py-4
+                    bg-app border-l-2 border-espresso px-3 py-4
                     shadow-sm transition-all duration-500 
-                    hover:bg-white hover:border-[#a3573a] rounded-r-md min-h-[140px]">
+                    hover:bg-white hover:border-action rounded-r-md min-h-[140px]">
 
       <div className="z-10 w-full overflow-hidden space-y-2">
-        <h2 className="text-xl md:text-xl font-serif italic font-medium text-[#3d2b1f] leading-tight capitalize">
+        <h2 className="text-xl md:text-xl font-serif italic font-medium text-heading leading-tight capitalize">
           {title}
         </h2>
         
         {formattedSubtitle && (
-          <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-[#a3573a]">
+          <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-action">
             {formattedSubtitle}
           </p>
         )}
@@ -49,8 +49,8 @@ const CategoryRibbon = ({ title, slug, subtitle, vouchers }: CategoryRibbonProps
             {vouchers.map((code) => (
               <span 
                 key={code}
-                className="inline-block px-2 py-0.5 bg-[#a3573a]/10 border border-dashed border-[#a3573a]/40 
-                           text-[8px] font-bold text-[#a3573a] rounded-sm uppercase tracking-tighter"
+                className="inline-block px-2 py-0.5 bg-action/10 border border-dashed border-action/40 
+                           text-[8px] font-bold text-action rounded-sm uppercase tracking-tighter"
               >
                 {code}
               </span>
@@ -63,9 +63,9 @@ const CategoryRibbon = ({ title, slug, subtitle, vouchers }: CategoryRibbonProps
         href={buttonHref}
         className="z-10 inline-flex items-center gap-1.5 px-3 py-1.5 mt-4 
                    text-[8px] font-bold uppercase tracking-widest
-                   rounded-full bg-[#3d2b1f] text-white
+                   rounded-full bg-espresso text-white
                    transition-all duration-300 ease-out
-                   hover:bg-[#a3573a] hover:gap-3 hover:pr-4"
+                   hover:bg-action hover:gap-3 hover:pr-4"
       >
         {buttonText}
         <span className="transition-transform group-hover:translate-x-0.5">→</span>

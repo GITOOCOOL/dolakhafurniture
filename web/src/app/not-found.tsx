@@ -4,19 +4,19 @@ import Button from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#fdfaf5] flex flex-col items-center justify-center font-sans text-[#3d2b1f] px-6 text-center">
+    <div className="min-h-screen bg-app flex flex-col items-center justify-center font-sans text-heading px-6 text-center">
       <div className="space-y-8 max-w-2xl">
-        <Leaf size={48} className="mx-auto text-[#a3573a] opacity-30" />
+        <Leaf size={48} className="mx-auto text-action opacity-30" />
         
-        <h1 className="text-8xl md:text-9xl font-serif italic text-[#3d2b1f] leading-none opacity-20">
+        <h1 className="text-8xl md:text-9xl font-serif italic text-heading leading-none opacity-20">
           404
         </h1>
         
         <div className="space-y-4">
-          <h2 className="text-3xl md:text-5xl font-serif italic text-[#3d2b1f]">
+          <h2 className="text-3xl md:type-section text-heading">
             This page has wandered off.
           </h2>
-          <p className="text-lg font-light italic text-[#a89f91] max-w-md mx-auto">
+          <p className="text-lg font-light italic text-label max-w-md mx-auto">
             The collection or piece you are looking for might have been moved, renamed, or is currently being handcrafted in our workshop.
           </p>
         </div>

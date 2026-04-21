@@ -35,7 +35,7 @@ export default async function OrdersPage() {
   );
 
   return (
-    <div className="bg-[#fdfaf5] min-h-screen">
+    <div className="bg-app min-h-screen">
       <div className="container mx-auto px-6">
         <OrdersClient orders={orders} />
       </div>

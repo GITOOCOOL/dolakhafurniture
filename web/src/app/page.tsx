@@ -28,11 +28,11 @@ export default async function Home() {
   }, {} as Record<string, Product[]>);
 
   return (
-    <div className="w-full bg-[#fdfaf5]">
+    <div className="w-full bg-app">
 
       {/* 0. TOPMOST: ACTIVE CAMPAIGN (High visibility) */}
       {activeCampaign?.products?.length > 0 && (
-        <section className="w-full py-6 md:py-10 border-b-2 border-[#a3573a]/20 bg-[#a3573a]/5">
+        <section className="w-full py-6 md:py-10 border-b-2 border-action/20 bg-app">
           <div className="container mx-auto px-6">
             <CategoryRow 
               title={`Campaign: ${activeCampaign.title}`}
@@ -48,7 +48,7 @@ export default async function Home() {
 
       {/* 1. TOP: FEATURED PRODUCTS (Using exactly the same design as Category rows) */}
       {featuredProducts.length > 0 && (
-        <section className="w-full py-4 md:py-6 border-b border-[#e5dfd3] bg-[#fdfaf5]">
+        <section className="w-full py-4 md:py-6 border-b border-soft bg-app">
           <div className="container mx-auto px-6">
             <CategoryRow 
               title="Featured"
@@ -61,24 +61,20 @@ export default async function Home() {
       )}
 
       {/* 2. TOP: CATEGORY CAROUSELS (Primary product discovery) */}
-      <div id="category-rows-section" className="w-full bg-[#fdfaf5] pb-16">
-        <div className="container mx-auto px-6 border-t border-[#e5dfd3] border-dotted pt-16 mt-8">
-          <p className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91] mb-2 text-center">Full Catalogue</p>
-          <h2 className="text-4xl text-center font-serif italic tracking-tight text-[#3d2b1f] mb-16"> Explore by Category </h2>
+      <div id="category-rows-section" className="w-full bg-app pb-16">
+        <div className="container mx-auto px-6 border-t border-soft border-dotted pt-16 mt-8">
+          <p className="type-label text-label mb-2 text-center">Full Catalogue</p>
+          <h2 className="text-4xl text-center font-serif italic tracking-tight text-heading mb-16"> Explore by Category </h2>
         </div>
         
         {categoriesInOrder.map((cat, index) => {
           const catProducts = productsByCategory[cat.slug] || [];
           if (catProducts.length === 0) return null;
           
-          const isStriped = index % 2 !== 0;
           return (
             <section
               key={cat.slug}
-              className={`py-6 md:py-8 w-full border-t border-[#e5dfd3] transition-all duration-500 ${isStriped
-                ? 'bg-stone-50'
-                : 'bg-[#fdfaf5]'
-                }`}
+              className="py-6 md:py-8 w-full border-t border-soft transition-all duration-500 bg-app"
             >
               <div className="container mx-auto px-6">
                 <CategoryRow
@@ -94,7 +90,7 @@ export default async function Home() {
       </div>
 
       {/* 3. BOTTOM: BRAND STORY / MISSION (Moved from middle for better product-first flow) */}
-      <div className="border-t border-[#e5dfd3] border-dotted">
+      <div className="border-t border-soft border-dotted">
         <Hero />
       </div>
     </div>

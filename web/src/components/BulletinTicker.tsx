@@ -27,7 +27,7 @@ export default function BulletinTicker({ bulletins = [] }: { bulletins: Bulletin
   if (!bulletins || bulletins.length === 0) return null;
 
   return (
-    <div className="w-full h-28 relative overflow-hidden bg-[#fdfaf5] border-b border-[#e5dfd3] border-dotted z-40 rounded-none">
+    <div className="w-full h-28 relative overflow-hidden bg-app border-b border-soft border-dotted z-40 rounded-none">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={bulletinIndex}

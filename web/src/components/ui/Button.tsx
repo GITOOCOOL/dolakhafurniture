@@ -31,11 +31,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = "inline-flex items-center justify-center font-bold uppercase tracking-widest transition-all duration-300 rounded-full disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]";
 
     const variants = {
-      primary: "bg-[#3d2b1f] text-[#fdfaf5] hover:bg-[#a3573a] shadow-lg",
-      secondary: "bg-[#e5dfd3] text-[#3d2b1f] hover:bg-[#d9d1c1]",
-      outline: "bg-transparent border border-[#e5dfd3] text-[#3d2b1f] hover:border-[#a3573a] hover:text-[#a3573a]",
-      ghost: "bg-transparent text-[#3d2b1f] hover:bg-[#3d2b1f]/5",
-      accent: "bg-[#a3573a] text-white hover:bg-[#3d2b1f] shadow-lg",
+      primary: "bg-espresso text-bone hover:bg-action shadow-lg",
+      secondary: "bg-stone-muted text-heading hover:bg-stone-muted/80",
+      outline: "bg-transparent border border-divider text-heading hover:border-action hover:text-action",
+      ghost: "bg-transparent text-heading hover:bg-espresso/5",
+      accent: "bg-terracotta text-white hover:bg-espresso shadow-lg",
       danger: "bg-red-600 text-white hover:bg-red-700 shadow-md",
     };
 

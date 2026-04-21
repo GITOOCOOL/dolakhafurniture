@@ -13,12 +13,12 @@ export default function CheckoutPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-[#fdfaf5] flex flex-col items-center justify-center p-6 text-center">
-      <div className="w-16 h-16 bg-[#3d2b1f] rounded-full flex items-center justify-center text-[#fdfaf5] mb-8 animate-pulse shadow-xl">
+    <div className="min-h-screen bg-app flex flex-col items-center justify-center p-6 text-center">
+      <div className="w-16 h-16 bg-espresso rounded-full flex items-center justify-center text-bone mb-8 animate-pulse shadow-xl">
         <Leaf size={32} strokeWidth={1.5} />
       </div>
-      <h1 className="text-2xl font-serif italic text-[#3d2b1f] mb-4">Redirecting to Secure Checkout...</h1>
-      <p className="text-sm text-[#a89f91] font-sans tracking-wide uppercase">Your immersive shopping session is continuing.</p>
+      <h1 className="text-2xl font-serif italic text-heading mb-4">Redirecting to Secure Checkout...</h1>
+      <p className="text-sm text-label font-sans tracking-wide uppercase">Your immersive shopping session is continuing.</p>
     </div>
   );
 }

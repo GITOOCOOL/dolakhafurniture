@@ -33,6 +33,13 @@ export default defineType({
             },
         }),
         defineField({
+            name: "isFeatured",
+            title: "Is Featured?",
+            type: "boolean",
+            description: "If enabled, this campaign will be prioritized for the global takeover modal.",
+            initialValue: false,
+        }),
+        defineField({
             name: "themeColor",
             title: "Theme Color (Hex)",
             type: "string",
@@ -81,6 +88,18 @@ export default defineType({
             title: "Short Tagline (Editorial)",
             type: "text",
             rows: 2,
+        }),
+        defineField({
+            name: "buttonText",
+            title: "Primary Button Text",
+            type: "string",
+            description: "Custom label for the CTA (e.g., 'Discover Collection'). Defaults if empty.",
+        }),
+        defineField({
+            name: "buttonLink",
+            title: "Primary Button Link",
+            type: "string",
+            description: "Direct URL or internal path. Defaults to the campaign page if empty.",
         }),
         defineField({
             name: "description",

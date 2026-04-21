@@ -17,41 +17,45 @@ export default function Error({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-[#fdfaf5] flex flex-col items-center justify-center font-sans text-[#3d2b1f] px-6 text-center">
+    <div className="min-h-screen bg-app flex flex-col items-center justify-center font-sans text-heading px-6 text-center">
       <div className="space-y-8 max-w-2xl">
-        <Leaf size={48} className="mx-auto text-[#a3573a]" />
-        
+        <Leaf size={48} className="mx-auto text-action" />
+
         <div className="space-y-4">
-          <h2 className="text-3xl md:text-5xl font-serif italic text-[#3d2b1f]">
+          <h2 className="text-3xl md:type-section text-heading">
             We hit a slight bump.
           </h2>
-          <p className="text-lg font-light italic text-[#a89f91] max-w-md mx-auto">
-            Something unexpected happened within our showroom. Our artisans have been notified.
+          <p className="text-lg font-light italic text-label max-w-md mx-auto">
+            Something unexpected happened within our website. We are working to
+            fix it.
           </p>
         </div>
 
         <div className="pt-8 w-full flex flex-col sm:flex-row items-center justify-center gap-4">
-           <Button 
-             onClick={() => reset()} 
-             size="lg" 
-             variant="outline"
-             className="shadow-sm hover:shadow-md transition-all gap-2"
-           >
-             <RotateCcw size={16} /> Try Again
-           </Button>
-           
+          <Button
+            onClick={() => reset()}
+            size="lg"
+            variant="outline"
+            className="shadow-sm hover:shadow-md transition-all gap-2"
+          >
+            <RotateCcw size={16} /> Try Again
+          </Button>
+
           <Link href="/">
-             <Button size="lg" className="shadow-lg hover:shadow-xl transition-all gap-2">
-               Return to Showroom <ArrowRight size={16} />
-             </Button>
+            <Button
+              size="lg"
+              className="shadow-lg hover:shadow-xl transition-all gap-2"
+            >
+              Return to Showroom <ArrowRight size={16} />
+            </Button>
           </Link>
         </div>
-        
+
         {/* Subtle developer debugging code (Only shows if there's a digest code) */}
         {error.digest && (
-           <p className="text-[10px] uppercase font-bold tracking-widest text-[#a89f91] opacity-50 pt-10">
-             Error Digest: {error.digest}
-           </p>
+          <p className="text-[10px] uppercase font-bold tracking-widest text-label opacity-50 pt-10">
+            Error Digest: {error.digest}
+          </p>
         )}
       </div>
     </div>

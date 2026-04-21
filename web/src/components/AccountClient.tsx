@@ -44,22 +44,22 @@ export default function AccountClient({
   };
 
   return (
-    <div className="max-w-6xl mx-auto text-[#3d2b1f]">
+    <div className="max-w-6xl mx-auto text-heading">
       {/* SUCCESS BANNER */}
       {visible && (
-        <div className="mb-12 p-8 bg-[#a3573a] text-[#fdfaf5] rounded-[3rem] font-sans font-bold uppercase tracking-[0.3em] text-center animate-in fade-in slide-in-from-top-4 duration-1000 shadow-xl">
+        <div className="mb-12 p-8 bg-action text-bone rounded-[3rem] font-sans font-bold uppercase tracking-[0.3em] text-center animate-in fade-in slide-in-from-top-4 duration-1000 shadow-xl">
           ✨ Your record has been updated
         </div>
       )}
 
       {/* HEADER - Editorial Serif style */}
-      <header className="mb-16 border-b border-[#e5dfd3] border-dotted pb-10">
-        <h1 className="text-6xl md:text-8xl font-serif italic font-medium text-[#3d2b1f] leading-none">
-          My Account<span className="text-[#a3573a]">.</span>
+      <header className="mb-16 border-b border-soft border-dotted pb-10">
+        <h1 className="type-hero font-medium text-heading leading-none">
+          My Account<span className="text-action">.</span>
         </h1>
         <div className="flex items-center gap-3 mt-4">
-          <Leaf size={14} className="text-[#a3573a] opacity-60" />
-          <p className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+          <Leaf size={14} className="text-action opacity-60" />
+          <p className="type-label text-label">
             Account / Orders / Support
           </p>
         </div>
@@ -69,7 +69,7 @@ export default function AccountClient({
         {/* LEFT COLUMN: HUB NAVIGATION */}
         <div className="lg:col-span-5 space-y-10">
           <div className="flex items-center gap-6 mb-12">
-            <div className="relative w-24 h-24 rounded-full overflow-hidden border border-[#e5dfd3] shadow-inner bg-white flex items-center justify-center">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden border border-soft shadow-inner bg-white flex items-center justify-center">
               {user.user_metadata.avatar_url ? (
                 <Image
                   src={user.user_metadata.avatar_url}
@@ -78,38 +78,38 @@ export default function AccountClient({
                   className="object-cover"
                 />
               ) : (
-                <span className="text-3xl font-bold text-[#3d2b1f] tracking-tighter">
+                <span className="text-3xl font-bold text-heading tracking-tighter">
                   {getInitials(user.user_metadata?.full_name)}
                 </span>
               )}
             </div>
             <div>
-              <p className="text-[10px] font-sans font-bold text-[#a89f91] uppercase tracking-[0.2em] mb-4">Saved Contact Details</p>
-              <h2 className="text-3xl font-serif italic text-[#3d2b1f] leading-tight">
+              <p className="text-[10px] font-sans font-bold text-label uppercase tracking-[0.2em] mb-4">Saved Contact Details</p>
+              <h2 className="text-3xl font-serif italic text-heading leading-tight">
                 Hi, {user.user_metadata.full_name?.split(" ")[0]}
               </h2>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-[10px] font-sans font-bold uppercase tracking-[0.5em] text-[#a89f91] mb-6 ml-2">
+            <h3 className="text-[10px] font-sans font-bold uppercase tracking-[0.5em] text-label mb-6 ml-2">
               Quick Navigation
             </h3>
             <Link
               href="/orders"
-              className="group flex flex-col p-8 bg-white border border-[#e5dfd3] rounded-[3rem] hover:border-[#a3573a] hover:shadow-xl transition-all duration-500"
+              className="group flex flex-col p-8 bg-white border border-soft rounded-[3rem] hover:border-action hover:shadow-xl transition-all duration-500"
             >
               <div className="flex justify-between items-center mb-4">
                 <Package
                   size={24}
-                  className="text-[#a3573a]"
+                  className="text-action"
                   strokeWidth={1.5}
                 />
-                <span className="text-[#a89f91] group-hover:text-[#a3573a] transform group-hover:translate-x-1 transition-all">
+                <span className="text-label group-hover:text-action transform group-hover:translate-x-1 transition-all">
                   →
                 </span>
               </div>
-              <p className="text-2xl font-serif italic text-[#3d2b1f]">
+              <p className="text-2xl font-serif italic text-heading">
                 View Orders
               </p>
               <p className="text-[10px] font-sans font-bold opacity-40 uppercase tracking-widest mt-2">
@@ -119,19 +119,19 @@ export default function AccountClient({
 
             <button
               onClick={() => setShowInquiryModal(true)}
-              className="group flex flex-col p-8 bg-white border border-[#e5dfd3] rounded-[3rem] hover:border-[#a3573a] hover:shadow-xl transition-all duration-500 text-left w-full"
+              className="group flex flex-col p-8 bg-white border border-soft rounded-[3rem] hover:border-action hover:shadow-xl transition-all duration-500 text-left w-full"
             >
               <div className="flex justify-between items-center mb-4">
                 <MessageCircle
                   size={24}
-                  className="text-[#a3573a]"
+                  className="text-action"
                   strokeWidth={1.5}
                 />
-                <span className="text-[#a89f91] group-hover:text-[#a3573a] transform group-hover:translate-x-1 transition-all">
+                <span className="text-label group-hover:text-action transform group-hover:translate-x-1 transition-all">
                   →
                 </span>
               </div>
-              <p className="text-2xl font-serif italic text-[#3d2b1f]">
+              <p className="text-2xl font-serif italic text-heading">
                 Send Inquiry
               </p>
               <p className="text-[10px] font-sans font-bold opacity-40 uppercase tracking-widest mt-2">
@@ -143,22 +143,22 @@ export default function AccountClient({
 
         {/* RIGHT COLUMN: SAVED ESSENTIALS */}
         <div className="lg:col-span-7 space-y-12">
-          <div className="bg-white/40 p-12 rounded-[4rem] border border-[#e5dfd3] space-y-12">
+          <div className="bg-app p-12 rounded-[4rem] border border-soft space-y-12">
             {/* CONTACT ESSENTIALS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-widest text-[#a89f91]">
+                <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-widest text-label">
                   <Mail size={12} /> Email Address
                 </div>
-                <p className="text-sm font-sans font-bold text-[#3d2b1f] break-all">
+                <p className="text-sm font-sans font-bold text-heading break-all">
                   {user.email}
                 </p>
               </div>
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-widest text-[#a89f91]">
+                <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-widest text-label">
                   <Phone size={12} /> Contact Phone
                 </div>
-                <p className="text-sm font-sans font-bold text-[#3d2b1f]">
+                <p className="text-sm font-sans font-bold text-heading">
                   {lastOrder?.customerPhone ||
                     user.user_metadata.phone ||
                     "No phone added"}
@@ -167,17 +167,17 @@ export default function AccountClient({
             </div>
 
             {/* SAVED ADDRESS (From last order) */}
-            <div className="pt-10 border-t border-[#e5dfd3] border-dotted space-y-6">
-              <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-widest text-[#a89f91]">
+            <div className="pt-10 border-t border-soft border-dotted space-y-6">
+              <div className="flex items-center gap-2 text-[10px] font-sans font-bold uppercase tracking-widest text-label">
                 <MapPin size={12} /> Last Delivery Address
               </div>
 
               {lastOrder?.shippingAddress ? (
                 <div className="space-y-2">
-                  <p className="text-2xl font-serif italic text-[#3d2b1f]">
+                  <p className="text-2xl font-serif italic text-heading">
                     {lastOrder.shippingAddress.address}
                   </p>
-                  <p className="text-sm font-sans font-bold text-[#a89f91]">
+                  <p className="text-sm font-sans font-bold text-label">
                     {lastOrder.shippingAddress.apartment
                       ? `${lastOrder.shippingAddress.apartment}, `
                       : ""}
@@ -186,14 +186,14 @@ export default function AccountClient({
                     {lastOrder.shippingAddress.postcode}
                   </p>
                   <div className="mt-8">
-                    <span className="px-4 py-1.5 bg-[#fdfaf5] border border-[#e5dfd3] rounded-full text-[8px] font-sans font-bold uppercase tracking-widest text-[#a89f91]">
+                    <span className="px-4 py-1.5 bg-app border border-soft rounded-full text-[8px] font-sans font-bold uppercase tracking-widest text-label">
                       Verified from Order #{lastOrder.orderNumber || lastOrder._id.slice(-6).toUpperCase()}
                     </span>
                   </div>
                 </div>
               ) : (
-                <div className="p-10 border-2 border-dotted border-[#e5dfd3] rounded-3xl text-center">
-                  <p className="text-sm text-[#a89f91] italic font-serif">
+                <div className="p-10 border-2 border-dotted border-soft rounded-3xl text-center">
+                  <p className="text-sm text-label italic font-serif">
                     "No delivery history found yet."
                   </p>
                 </div>
@@ -202,7 +202,7 @@ export default function AccountClient({
           </div>
 
           {/* SUPPORT FOOTNOTE */}
-          <p className="text-[10px] font-sans font-bold text-center uppercase tracking-widest text-[#a89f91] opacity-60">
+          <p className="text-[10px] font-sans font-bold text-center uppercase tracking-widest text-label opacity-60">
             For privacy updates or data requests, please contact our support.
           </p>
         </div>

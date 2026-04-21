@@ -103,22 +103,22 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
       </h1>
 
       {showRewardBanner && welcomeVoucher && (
-        <div className="bg-[#fdfaf5] border border-[#e5dfd3] rounded-2xl p-4 mb-8 flex items-center gap-3 text-left">
-          <Ticket className="text-[#a3573a]" size={20} />
-          <p className="text-[11px] font-medium text-[#3d2b1f]">
+        <div className="bg-app border border-soft rounded-2xl p-4 mb-8 flex items-center gap-3 text-left">
+          <Ticket className="text-action" size={20} />
+          <p className="text-[11px] font-medium text-heading">
             Use code <span className="font-bold underline">{welcomeVoucher.code}</span> for {welcomeVoucher.discountValue}{welcomeVoucher.discountType === 'percentage' ? '%' : ''} OFF after signup.
           </p>
         </div>
       )}
 
       {/* Tab Switcher */}
-      <div className="flex bg-[#fdfaf5] p-1 rounded-full border border-[#e5dfd3] mb-8">
+      <div className="flex bg-app p-1 rounded-full border border-soft mb-8">
         <Button
           variant={authMethod === 'social' ? 'primary' : 'ghost'}
           size="sm"
           fullWidth
           onClick={() => setAuthMethod('social')}
-          className={authMethod === 'social' ? "" : "text-[#a89f91]"}
+          className={authMethod === 'social' ? "" : "text-label"}
         >
           Social
         </Button>
@@ -127,7 +127,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
           size="sm"
           fullWidth
           onClick={() => setAuthMethod('email')}
-          className={authMethod === 'email' ? "" : "text-[#a89f91]"}
+          className={authMethod === 'email' ? "" : "text-label"}
         >
           Email
         </Button>
@@ -162,7 +162,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
               Continue with Facebook
             </Button>
 
-            <p className="text-[10px] text-[#a89f91] mt-6 leading-relaxed text-center">
+            <p className="text-[10px] text-label mt-6 leading-relaxed text-center">
               Safe & secure login via your preferred social platform.
             </p>
           </motion.div>
@@ -223,7 +223,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
                     setIsLogin(!isLogin);
                     setError("");
                   }}
-                  className="text-[10px] font-bold uppercase tracking-widest text-[#a3573a] hover:underline"
+                  className="text-[10px] font-bold uppercase tracking-widest text-action hover:underline"
                 >
                   {isLogin ? "Need an account? Signup" : "Already have an account? Login"}
                 </button>

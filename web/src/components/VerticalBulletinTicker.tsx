@@ -27,10 +27,10 @@ export default function VerticalBulletinTicker({ bulletins = [] }: { bulletins: 
   if (!bulletins || bulletins.length === 0) return null;
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-[#fdfaf5] text-[#3d2b1f] border-r border-[#e5dfd3] hidden lg:flex flex-col items-center py-12">
+    <div className="w-full h-full relative overflow-hidden bg-app text-heading border-r border-soft hidden lg:flex flex-col items-center py-12">
       
       {/* Label: Fixed at the very top */}
-      <div className="text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-[#a3573a] rotate-90 origin-center whitespace-nowrap mb-16">
+      <div className="text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-action rotate-90 origin-center whitespace-nowrap mb-16">
         Latest News
       </div>
 
@@ -47,10 +47,10 @@ export default function VerticalBulletinTicker({ bulletins = [] }: { bulletins: 
           >
             {/* The actual content: Rotated 90 degrees to fit the 80px width */}
             <div className="rotate-90 origin-center whitespace-nowrap flex flex-col items-center gap-4">
-              <h3 className="text-lg md:text-xl font-serif italic text-[#3d2b1f]">
+              <h3 className="text-lg md:text-xl font-serif italic text-heading">
                 {bulletins[bulletinIndex].title}
               </h3>
-              <p className="text-[10px] font-sans font-medium text-[#a89f91] uppercase tracking-widest max-w-[200px] text-center">
+              <p className="text-[10px] font-sans font-medium text-label uppercase tracking-widest max-w-[200px] text-center">
                 {bulletins[bulletinIndex].content}
               </p>
             </div>
@@ -59,7 +59,7 @@ export default function VerticalBulletinTicker({ bulletins = [] }: { bulletins: 
       </div>
 
       {/* Footer Label: Fixed at the bottom */}
-      <div className="text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-[#a3573a] rotate-90 origin-center whitespace-nowrap mt-16">
+      <div className="text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-action rotate-90 origin-center whitespace-nowrap mt-16">
         Dolakha Furniture
       </div>
     </div>

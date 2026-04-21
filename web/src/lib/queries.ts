@@ -46,14 +46,17 @@ export const paymentAccountsQuery = `*[_type == "paymentAccount" && isActive == 
     _id, accountName, accountNumber, bankNameOrWalletName, accountType, qrCodeImage, isActive
 }`
 
-export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"] | order(startDate desc) {
+export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"] | order(isFeatured desc, startDate desc) {
     _id,
     title,
     "slug": slug.current,
+    isFeatured,
     themeColor,
     tagline,
     description,
     banner,
+    buttonText,
+    buttonLink,
     startDate,
     endDate,
     "vouchers": vouchers[]->{code, details}
@@ -65,6 +68,8 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     "slug": slug.current,
     themeColor,
     tagline,
+    buttonText,
+    buttonLink,
     description,
     banner,
     startDate,

@@ -6,11 +6,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp } from "lucide-react";
+import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp, Sun, Moon, X } from "lucide-react";
 import AuthForm from "./AuthForm";
 import CheckoutDrawer from "./CheckoutDrawer";
+import { ThemeToggle } from "./ThemeToggle";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUIStore } from "@/store/useUIStore";
+import Modal from "./ui/Modal";
 
 interface NavbarActionsProps {
   onSearchClick: () => void;
@@ -21,8 +23,12 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
-  const { isCheckoutDrawerOpen, setIsCheckoutDrawerOpen } = useUIStore();
+  const { 
+    isCheckoutDrawerOpen, 
+    setIsCheckoutDrawerOpen,
+    isAccountModalOpen,
+    setIsAccountModalOpen
+  } = useUIStore();
   
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -99,7 +105,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     return parts[0][0].toUpperCase();
   };
 
-  if (loading) return <div className="w-20 h-8 bg-[#fdfaf5] animate-pulse rounded-full border border-[#e5dfd3]" />;
+  if (loading) return <div className="w-20 h-8 bg-app animate-pulse rounded-full border border-divider" />;
 
   return (
     <div className="flex items-center gap-6 md:gap-4 relative z-50 flex-shrink-0">
@@ -109,12 +115,15 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
         type="button"
         onPointerDown={() => onSearchClick()}
         onClick={() => onSearchClick()}
-        className="w-[38px] h-[38px] flex items-center justify-center text-[#3d2b1f] bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] rounded-full transition-all cursor-pointer flex-shrink-0"
+        className="w-[38px] h-[38px] flex items-center justify-center text-heading bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all cursor-pointer flex-shrink-0"
         aria-label="Search"
       >
         <Search size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
       </button>
       */}
+
+      {/* Theme Switcher */}
+      <ThemeToggle />
 
       {/* --- ANIMATED CART SECTION --- */}
       <div className="relative flex-shrink-0">
@@ -135,8 +144,8 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           }}
           className={`relative flex items-center justify-center w-[38px] h-[38px] shadow-sm transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
             ${totalQuantity > 0
-              ? 'bg-[#2d3020] text-[#4ade80] shadow-[0_0_15px_rgba(74,222,128,0.3)]'
-              : 'bg-[#f8f5ee] text-[#3d2b1f] hover:bg-[#eee9df]'}`}
+              ? 'bg-app-invert text-action-success shadow-[0_0_15px_rgba(74,222,128,0.3)]'
+               : 'bg-clay text-heading hover:bg-stone-muted/30 shadow-sm'}`}
         >
           <div className="flex items-center gap-1">
             <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
@@ -146,7 +155,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 bg-[#4ade80] text-[#2d3020] text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-[#2d3020]"
+              className="absolute -top-1 -right-1 bg-action-success text-app-invert text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-app-invert"
             >
               {totalQuantity}
             </motion.span>
@@ -162,12 +171,12 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
               className="absolute top-full right-0 mt-4 z-[100] whitespace-nowrap"
             >
-              <div className="bg-[#2d3020] text-[#4ade80] px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 border border-[#4ade80]/20">
+              <div className="bg-app-invert text-action-success px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 border border-action-success/20">
                 <span>Checkout here</span>
                 <ArrowUp size={12} className="animate-bounce" />
               </div>
               {/* Tooltip Arrow */}
-              <div className="absolute -top-1 right-4 w-2 h-2 bg-[#2d3020] rotate-45 border-t border-l border-[#4ade80]/20" />
+              <div className="absolute -top-1 right-4 w-2 h-2 bg-app-invert rotate-45 border-t border-l border-action-success/20" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -178,17 +187,17 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
         <button
           type="button"
           onClick={() => setIsAccountModalOpen(true)}
-          className="w-[38px] h-[38px] flex items-center justify-center bg-[#f8f5ee] shadow-sm hover:bg-[#eee9df] rounded-full transition-all text-[#3d2b1f] cursor-pointer touch-manipulation group flex-shrink-0"
+           className="w-[38px] h-[38px] flex items-center justify-center bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all text-heading cursor-pointer touch-manipulation group flex-shrink-0"
         >
           {user ? (
             user.user_metadata.avatar_url ? (
               <img
                 src={user.user_metadata.avatar_url}
-                className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-[#e5dfd3] shadow-sm group-hover:border-[#a3573a] transition-all object-cover flex-shrink-0"
+                 className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider shadow-sm group-hover:border-action transition-all object-cover flex-shrink-0"
                 alt="profile"
               />
             ) : (
-              <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full bg-[#3d2b1f] text-[#fdfaf5] flex items-center justify-center text-[9px] md:text-[10px] font-bold tracking-tighter border border-[#e5dfd3] shadow-sm group-hover:bg-[#a3573a] transition-all flex-shrink-0">
+               <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full bg-espresso text-bone flex items-center justify-center text-[9px] md:text-[10px] font-bold tracking-tighter border border-divider shadow-sm group-hover:bg-action transition-all flex-shrink-0">
                 {getInitials(user.user_metadata.full_name)}
               </div>
             )
@@ -199,113 +208,80 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           )}
         </button>
 
-        {/* --- ACCOUNT SLIDE-OUT DRAWER --- */}
-        <AnimatePresence>
-          {isAccountModalOpen && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-[#3d2b1f]/20 backdrop-blur-sm z-[200]"
-                onClick={() => setIsAccountModalOpen(false)}
-              />
-
-              {/* Drawer */}
-              <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#fdfaf5] z-[210] shadow-2xl flex flex-col pt-safe-top rounded-none"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-[#e5dfd3]">
-                  <h2 className="text-2xl font-serif italic text-[#3d2b1f]">
-                    {user ? "My Account" : "Welcome"}
-                  </h2>
-                  <button
-                    onClick={() => setIsAccountModalOpen(false)}
-                    className="p-2 -mr-2 text-[#3d2b1f] hover:bg-[#e5dfd3]/50 rounded-none transition-colors"
-                  >
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  </button>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                  {user ? (
-                    <div className="flex flex-col gap-8 h-full">
-                      <div className="flex items-center gap-4">
-                        {user.user_metadata.avatar_url ? (
-                          <img
-                            src={user.user_metadata.avatar_url}
-                            className="w-16 h-16 rounded-full border border-[#e5dfd3] shadow-sm object-cover"
-                            alt="profile"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-full bg-[#3d2b1f] text-[#fdfaf5] flex items-center justify-center text-xl font-bold tracking-tighter border border-[#e5dfd3] shadow-sm">
-                            {getInitials(user.user_metadata.full_name)}
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-lg font-medium text-[#3d2b1f] mb-1">
-                            Hi, {user.user_metadata.full_name?.split(" ")[0] || "User"}
-                          </p>
-                          <p className="text-sm text-[#a89f91]">{user.email}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-2">
-                        <Link
-                          href="/account"
-                          onClick={() => setIsAccountModalOpen(false)}
-                          className="flex items-center justify-between p-4 bg-white border border-[#e5dfd3] rounded-xl hover:border-[#a3573a] hover:shadow-sm transition-all group"
-                        >
-                          <span className="font-medium text-[#3d2b1f]">Account</span>
-                          <span className="text-[#a89f91] group-hover:text-[#a3573a] transition-colors">→</span>
-                        </Link>
-                        <Link
-                          href="/orders"
-                          onClick={() => setIsAccountModalOpen(false)}
-                          className="flex items-center justify-between p-4 bg-white border border-[#e5dfd3] rounded-xl hover:border-[#a3573a] hover:shadow-sm transition-all group"
-                        >
-                          <span className="font-medium text-[#3d2b1f]">View Orders</span>
-                          <span className="text-[#a89f91] group-hover:text-[#a3573a] transition-colors">→</span>
-                        </Link>
-                      </div>
-
-                      <div className="mt-auto pb-8">
-                        <button
-                          onClick={() => {
-                            setIsAccountModalOpen(false);
-                            handleLogout();
-                          }}
-                          className="w-full py-4 text-sm font-bold tracking-widest uppercase text-[#3d2b1f] border border-[#3d2b1f] rounded-none hover:bg-[#3d2b1f] hover:text-[#fdfaf5] transition-colors"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
+        <Modal
+          isOpen={isAccountModalOpen}
+          onClose={() => setIsAccountModalOpen(false)}
+          position="right"
+          title={user ? "My Account" : "Welcome"}
+        >
+          <div className="w-full h-full flex flex-col">
+            {user ? (
+              <div className="flex flex-col gap-8 h-full">
+                <div className="flex items-center gap-4">
+                  {user.user_metadata.avatar_url ? (
+                    <img
+                      src={user.user_metadata.avatar_url}
+                        className="w-16 h-16 rounded-full border border-soft/20 shadow-sm object-cover"
+                      alt="profile"
+                    />
                   ) : (
-                    <div className="flex flex-col gap-8 h-full text-center py-4">
-                      <div className="mx-auto w-12 h-12 rounded-none bg-[#fdfaf5] border border-[#e5dfd3] flex items-center justify-center text-[#a3573a] shadow-sm">
-                        <Leaf size={20} strokeWidth={1.5} />
-                      </div>
-
-                      <AuthForm
-                        onSuccess={() => setIsAccountModalOpen(false)}
-                        showRewardBanner={true}
-                      />
+                      <div className="w-16 h-16 rounded-full bg-espresso text-bone flex items-center justify-center text-xl font-bold tracking-tighter border border-soft/20 shadow-sm">
+                      {getInitials(user.user_metadata.full_name)}
                     </div>
                   )}
+                  <div>
+                    <p className="type-product text-heading mb-1">
+                      Hi, {user.user_metadata.full_name?.split(" ")[0] || "User"}
+                    </p>
+                      <p className="type-label text-description lowercase">{user.email}</p>
+                  </div>
                 </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/account"
+                    onClick={() => setIsAccountModalOpen(false)}
+                    className="flex items-center justify-between p-5 bg-surface border border-soft/20 rounded-2xl hover:border-action transition-all group"
+                  >
+                    <span className="type-product text-heading">Account Settings</span>
+                    <span className="text-description group-hover:text-action transition-colors">→</span>
+                  </Link>
+                  <Link
+                    href="/orders"
+                    onClick={() => setIsAccountModalOpen(false)}
+                    className="flex items-center justify-between p-5 bg-surface border border-soft/20 rounded-2xl hover:border-action transition-all group"
+                  >
+                    <span className="type-product text-heading">View Orders</span>
+                    <span className="text-description group-hover:text-action transition-colors">→</span>
+                  </Link>
+                </div>
+
+                <div className="mt-auto pb-8">
+                  <button
+                    onClick={() => {
+                      setIsAccountModalOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full py-5 text-xs font-bold tracking-widest uppercase text-heading border-2 border-espresso rounded-2xl hover:bg-espresso hover:text-bone transition-all"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-8 h-full text-center py-4">
+                  <div className="mx-auto w-12 h-12 rounded-none bg-app border border-soft/20 flex items-center justify-center text-action shadow-sm">
+                  <Leaf size={20} strokeWidth={1.5} />
+                </div>
+
+                <AuthForm
+                  onSuccess={() => setIsAccountModalOpen(false)}
+                  showRewardBanner={true}
+                />
+              </div>
+            )}
+          </div>
+        </Modal>
       </div>
 
       {/* --- CHECKOUT DRAWER --- */}

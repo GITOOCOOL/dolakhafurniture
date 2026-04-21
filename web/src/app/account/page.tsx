@@ -37,7 +37,7 @@ export default async function AccountPage({
   );
 
   return (
-    <div className="bg-[#fdfaf5] min-h-screen pt-32 pb-20 font-sans text-[#3d2b1f]">
+    <div className="bg-app min-h-screen pt-32 pb-20 font-sans text-heading">
       <div className="container mx-auto px-6">
         <AccountClient
           user={user}

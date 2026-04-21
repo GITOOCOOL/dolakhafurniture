@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useUIStore } from "@/store/useUIStore";
 import Link from "next/link";
+import Modal from "@/components/ui/Modal";
 
 interface CampaignModalProps {
   campaign: Campaign | null;
@@ -18,6 +19,7 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
   const {
     isCampaignModalOpen,
     setCampaignModalOpen,
+    setIsAccountModalOpen,
     lockScroll,
     unlockScroll,
   } = useUIStore();
@@ -89,129 +91,147 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
   const firstVoucher = campaign.vouchers?.[0]?.code || "NEWYEAR10";
 
   return (
-    <AnimatePresence>
-      {isCampaignModalOpen && (
-        <motion.div
-          initial={{ opacity: 0, x: "-100%" }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: "-100%" }}
-          transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
-          style={{
-            transform: "translateZ(100px)",
-            backfaceVisibility: "hidden",
-          }}
-          className="fixed inset-0 bg-[#fdfaf5]/85 backdrop-blur-xl z-[1100] flex flex-col p-8 pt-14 sm:pt-20 overflow-y-auto justify-start items-start border-r border-[#e5dfd3]/30"
-        >
-          {/* IDENTICAL HEADER TO NAV MENU */}
-          <div className="flex-shrink-0 flex justify-between items-center w-full h-16 mb-8 mt-2 sm:mt-0">
-            <div className="flex items-center gap-2">
-              <Leaf className="text-[#a3573a]" size={18} />
-              <p className="text-xs font-serif italic tracking-widest text-[#3d2b1f]">
-                New Year Offer
-              </p>
-            </div>
-            <button
-              onClick={handleClose}
-              className="p-4 bg-[#3d2b1f] text-[#fdfaf5] rounded-full shadow-lg transition-all"
-            >
-              <X size={20} strokeWidth={2} />
-            </button>
+    <Modal
+      isOpen={isCampaignModalOpen}
+      onClose={handleClose}
+      position="left"
+      title="Special Offers"
+    >
+      <div className="w-full flex-1 flex flex-col">
+        {/* Banner Section */}
+        {campaign.banner && (
+          <div className="relative h-64 md:h-96 rounded-[2rem] overflow-hidden flex-shrink-0 mb-8 border border-soft/50">
+            <img
+              src={urlFor(campaign.banner).width(1200).url()}
+              alt={campaign.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-bone/20 via-transparent to-transparent" />
           </div>
+        )}
 
-          <div className="w-full flex-1 flex flex-col">
-            {/* Banner Section */}
-            {campaign.banner && (
-              <div className="relative h-64 md:h-96 rounded-[2rem] overflow-hidden flex-shrink-0 mb-8 border border-[#e5dfd3]/50">
-                <img
-                  src={urlFor(campaign.banner).width(1200).url()}
-                  alt={campaign.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#fdfaf5]/20 via-transparent to-transparent" />
+        <div className="text-center pb-10 max-w-2xl mx-auto w-full">
+          <h2 className="text-4xl md:text-6xl font-serif italic mb-6 text-heading leading-tight">
+            {campaign.tagline || campaign.title}
+          </h2>
+
+          <p className="type-label text-description font-medium leading-relaxed mb-10 px-4">
+            {campaign.description}
+          </p>
+
+          {/* Interaction Hub: Voucher Chips + Buttons Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-12 text-left">
+            {/* Column 1: Voucher Display (Literal Chip Parity) */}
+            <div className="flex flex-col items-center justify-center p-8 bg-surface border border-soft/20 rounded-[2rem] gap-6">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-description/60 font-bold">
+                Available Vouchers
               </div>
-            )}
-
-            <div className="text-center pb-20 max-w-2xl mx-auto w-full">
-              <h2 className="text-4xl md:text-7xl font-serif italic mb-6 text-[#3d2b1f] leading-tight">
-                {campaign.tagline || campaign.title}
-              </h2>
-
-              <p className="text-lg md:text-xl text-[#a89f91] font-medium leading-relaxed mb-10">
-                {campaign.description}
-              </p>
-
-              {/* Voucher Tile */}
-              <div
-                className="relative group p-10 rounded-3xl bg-[#a3573a]/5 border-2 border-dashed border-[#a3573a]/30 transition-all duration-500 hover:bg-[#a3573a]/10 cursor-pointer mb-12"
-                onClick={() => copyToClipboard(firstVoucher)}
-              >
-                <div className="text-[12px] uppercase tracking-[0.4em] text-[#a3573a] font-bold mb-3">
-                  Tap to copy code
-                </div>
-                <div className="text-4xl md:text-6xl font-serif italic text-[#3d2b1f] flex items-center justify-center gap-4">
-                  {firstVoucher}
-                  {copied ? (
-                    <Check className="text-green-600" size={32} />
-                  ) : (
-                    <Copy className="opacity-40" size={24} />
-                  )}
-                </div>
-              </div>
-
-              {/* Primary Action Buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <button
-                  onClick={handleClose}
-                  className="h-16 flex items-center justify-center rounded-2xl border-2 border-[#3d2b1f] text-[#3d2b1f] font-bold uppercase tracking-widest text-xs hover:bg-[#3d2b1f]/5 transition-all"
-                >
-                  Start Shopping 🛋️
-                </button>
-                <Link
-                  href={`/campaign/${campaign.slug}`}
-                  onClick={handleClose}
-                  className="h-16 flex items-center justify-center rounded-2xl bg-[#a3573a] text-white font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#a3573a]/20 hover:bg-[#3d2b1f] transition-all"
-                >
-                  See Campaign Products 🏮
-                </Link>
-              </div>
-
-              <AnimatePresence>
-                {isInApp && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-10 p-5 rounded-2xl bg-[#a3573a]/10 border-2 border-[#a3573a]/30 flex flex-col items-center gap-4"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="text-2xl pt-1">💡</div>
-                      <div className="flex-1 text-left">
-                        <p className="text-[11px] uppercase font-black tracking-[0.2em] text-[#a3573a] mb-2">Better Experience Tip</p>
-                        <p className="text-[13px] text-[#3d2b1f] font-medium leading-relaxed">
-                          Browsing from Messenger? Tap the <span className="font-bold underline">3 dots (⋮ or ...)</span> above and select <span className="font-bold">"Open in Browser"</span>.
-                        </p>
-                      </div>
-                    </div>
-                    {/* Visual Guide: Animated Arrow */}
-                    <motion.div
-                      animate={{ y: [0, 8, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
-                      className="mt-2 text-[#a3573a]"
+              <div className="flex flex-wrap justify-center gap-3">
+                {campaign.vouchers && campaign.vouchers.length > 0 ? (
+                  campaign.vouchers.map((v) => (
+                    <button
+                      key={v.code}
+                      onClick={() => copyToClipboard(v.code)}
+                      className="group relative px-6 py-3 bg-heading border border-soft/20 rounded-full flex items-center gap-3 transition-all hover:bg-action active:scale-95"
                     >
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 13l5 5 5-5M12 18V6" />
-                      </svg>
-                    </motion.div>
-                  </motion.div>
+                      <div className="w-2 h-2 rounded-full bg-app group-hover:bg-white animate-pulse" />
+                      <span className="type-action text-app group-hover:text-white uppercase">
+                        {v.code}
+                      </span>
+                      {copied ? (
+                        <Check size={14} className="text-green-500 group-hover:text-white" />
+                      ) : (
+                        <Copy size={14} className="opacity-40 group-hover:opacity-100 text-app group-hover:text-white" />
+                      )}
+                    </button>
+                  ))
+                ) : (
+                  <button
+                    onClick={() => copyToClipboard(firstVoucher)}
+                    className="group relative px-6 py-3 bg-heading border border-soft/20 rounded-full flex items-center gap-3 transition-all hover:bg-action active:scale-95"
+                  >
+                     <div className="w-2 h-2 rounded-full bg-app group-hover:bg-white animate-pulse" />
+                    <span className="type-action text-app group-hover:text-white uppercase">
+                      {firstVoucher}
+                    </span>
+                    {copied ? (
+                      <Check size={14} className="text-green-500 group-hover:text-white" />
+                    ) : (
+                      <Copy size={14} className="opacity-40 group-hover:opacity-100 text-app group-hover:text-white" />
+                    )}
+                  </button>
                 )}
-              </AnimatePresence>
+              </div>
+              <p className="text-[10px] uppercase tracking-widest text-action font-bold">
+                Tap to copy
+              </p>
+            </div>
+
+            {/* Column 2: Action Stack */}
+            <div className="flex flex-col gap-4 md:gap-5 justify-between h-full">
+              <button
+                onClick={handleClose}
+                className="flex-1 min-h-[64px] flex items-center justify-center rounded-[1.5rem] border-2 border-espresso text-heading font-bold uppercase tracking-widest text-[10px] md:text-xs hover:bg-espresso/5 transition-all py-6"
+              >
+                Start Shopping 🛋️
+              </button>
+              {campaign.buttonLink === "#signup" ? (
+                <button
+                  onClick={() => {
+                    handleClose();
+                    setIsAccountModalOpen(true);
+                  }}
+                  className="flex-1 min-h-[64px] flex items-center justify-center rounded-[1.5rem] bg-action text-white font-bold uppercase tracking-widest text-[10px] md:text-xs shadow-lg shadow-accent/20 hover:bg-espresso transition-all py-6"
+                >
+                  {campaign.buttonText || "Sign Up Now! 🏮"}
+                </button>
+              ) : (
+                <Link
+                  href={campaign.buttonLink || `/campaign/${campaign.slug}`}
+                  onClick={handleClose}
+                  className="flex-1 min-h-[64px] flex items-center justify-center rounded-[1.5rem] bg-action text-white font-bold uppercase tracking-widest text-[10px] md:text-xs shadow-lg shadow-accent/20 hover:bg-espresso transition-all py-6"
+                >
+                  {campaign.buttonText || "See Campaign Products 🏮"}
+                </Link>
+              )}
             </div>
           </div>
 
-          <div className="w-full text-center py-6 text-[10px] uppercase tracking-widest text-[#a89f91] border-t border-[#e5dfd3]/50">
-            Honest Craft, Dolakha Furniture
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <AnimatePresence>
+            {isInApp && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-10 p-5 rounded-2xl bg-action/10 border-2 border-action/30 flex flex-col items-center gap-4"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="text-2xl pt-1">💡</div>
+                  <div className="flex-1 text-left">
+                    <p className="text-[11px] uppercase font-black tracking-[0.2em] text-action mb-2">Better Experience Tip</p>
+                    <p className="text-[13px] text-heading font-medium leading-relaxed">
+                      Browsing from Messenger? Tap the <span className="font-bold underline">3 dots (⋮ or ...)</span> above and select <span className="font-bold">"Open in Browser"</span>.
+                    </p>
+                  </div>
+                </div>
+                {/* Visual Guide: Animated Arrow */}
+                <motion.div
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                  className="mt-2 text-action"
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 13l5 5 5-5M12 18V6" />
+                  </svg>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="w-full text-center py-6 text-[10px] uppercase tracking-widest text-label border-t border-soft/50 mt-10">
+        Honest Craft, Dolakha Furniture
+      </div>
+    </Modal>
   );
 }

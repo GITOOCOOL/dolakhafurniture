@@ -35,21 +35,21 @@ export default async function CategoryPage({ params }: Props) {
   if (!data.category) notFound();
 
   return (
-    <div className="bg-[#fdfaf5] min-h-screen pt-32 pb-20 font-sans text-[#3d2b1f]">
+    <div className="bg-app min-h-screen pt-32 pb-20 font-sans text-heading">
       <div className="container mx-auto px-6">
         {/* SECTION HEADER */}
         <header className="mb-20 max-w-6xl">
           <div className="flex items-center gap-3 mb-6">
-            <Leaf size={14} className="text-[#a3573a] opacity-60" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#a3573a]">
+            <Leaf size={14} className="text-action opacity-60" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-action">
               Collection Archive
             </p>
           </div>
-          <h1 className="text-6xl md:text-8xl font-serif italic font-medium text-[#3d2b1f] leading-none mb-10">
+          <h1 className="type-hero font-medium text-heading leading-none mb-10">
             {data.category.title}
-            <span className="text-[#a3573a]">.</span>
+            <span className="text-action">.</span>
           </h1>
-          <p className="text-lg md:text-xl font-serif italic text-[#a89f91] max-w-2xl leading-relaxed border-l-2 border-[#e5dfd3] pl-6">
+          <p className="text-lg md:text-xl font-serif italic text-label max-w-2xl leading-relaxed border-l-2 border-soft pl-6">
             "
             {data.category.description ||
               ` pieces designed to elevate your home with the essence of Dolakha.`}
@@ -59,14 +59,14 @@ export default async function CategoryPage({ params }: Props) {
 
         {/* PRODUCT GRID */}
         {data.products.length === 0 ? (
-          <div className="py-24 border-t border-[#e5dfd3] border-dotted text-center">
-            <p className="text-[#a89f91] italic font-serif text-2xl">
+          <div className="py-24 border-t border-soft border-dotted text-center">
+            <p className="text-label italic font-serif text-2xl">
               "New treasures for this collection are currently being
               handcrafted."
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-[#e5dfd3] border-dotted pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-soft border-dotted pt-16">
             {data.products.map((product: Product, index: number) => (
               <Link
                 href={`/product/${product.slug}`}
@@ -74,7 +74,7 @@ export default async function CategoryPage({ params }: Props) {
                 className="group flex flex-col space-y-6"
               >
                 {/* IMAGE CONTAINER */}
-                <div className="aspect-[3/4] relative overflow-hidden rounded-[3rem] bg-white border border-[#e5dfd3] shadow-sm transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(163,87,58,0.1)] group-hover:border-[#a3573a]/20">
+                <div className="aspect-[3/4] relative overflow-hidden rounded-[3rem] bg-white border border-soft shadow-sm transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(163,87,58,0.1)] group-hover:border-action/20">
                   <img
                     src={urlFor(product.mainImage).width(800).url()}
                     alt={product.title}
@@ -82,8 +82,8 @@ export default async function CategoryPage({ params }: Props) {
                   />
 
                   {product.stock !== undefined && product.stock <= 0 && (
-                    <div className="absolute top-6 right-6 bg-white/80 backdrop-blur-lg border border-[#e5dfd3] text-[#3d2b1f] px-6 py-2.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-xl z-20 flex flex-col items-center gap-1 text-center leading-tight">
-                      <span className="text-[#a3573a]">OUT OF STOCK</span>
+                    <div className="absolute top-6 right-6 bg-app  border border-soft text-heading px-6 py-2.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-xl z-20 flex flex-col items-center gap-1 text-center leading-tight">
+                      <span className="text-action">OUT OF STOCK</span>
                       <span className="opacity-70 text-[8px] normal-case font-medium italic">
                         will be made after order
                       </span>
@@ -92,7 +92,7 @@ export default async function CategoryPage({ params }: Props) {
 
                   {/* View Details Label */}
                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                    <span className="bg-[#3d2b1f] text-[#fdfaf5] px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">
+                    <span className="bg-espresso text-bone px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">
                       View Details
                     </span>
                   </div>
@@ -101,23 +101,23 @@ export default async function CategoryPage({ params }: Props) {
                 {/* PRODUCT INFO */}
                 <div className="px-4 space-y-3">
                   <div className="flex justify-between items-baseline gap-4">
-                    <h2 className="text-3xl font-serif italic font-medium text-[#3d2b1f] group-hover:text-[#a3573a] transition-colors leading-tight">
+                    <h2 className="text-3xl font-serif italic font-medium text-heading group-hover:text-action transition-colors leading-tight">
                       {product.title}
                     </h2>
                     {/* FONT CORRECTION: Price set to font-sans */}
-                    <span className="text-lg font-sans font-bold text-[#a3573a] whitespace-nowrap">
+                    <span className="text-lg font-sans font-bold text-action whitespace-nowrap">
                       Rs. {product.price}
                     </span>
                   </div>
 
-                  <p className="text-[#a89f91] text-sm font-light italic leading-relaxed line-clamp-2">
+                  <p className="text-label type-body italic leading-relaxed line-clamp-2">
                     {product.description ||
                       "Made with care in Nepal, bringing elegance to your home."}
                   </p>
 
                   <div className="pt-4">
                     {/* FONT CORRECTION: Numbers set to font-sans */}
-                    <span className="inline-block border-b border-[#e5dfd3] pb-1 text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#e5dfd3] group-hover:text-[#a3573a] group-hover:border-[#a3573a] transition-all duration-300">
+                    <span className="inline-block border-b border-soft pb-1 text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-label group-hover:text-action group-hover:border-action transition-all duration-300">
                       Archive No.{" "}
                       <span className="font-sans">
                         {String(index + 1).padStart(2, "0")}
@@ -131,17 +131,17 @@ export default async function CategoryPage({ params }: Props) {
         )}
 
         {/* BOTTOM NAVIGATION */}
-        <div className="mt-48 pt-16 border-t border-[#e5dfd3] border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-[10px] font-medium uppercase tracking-[0.4em] text-[#a89f91]">
+        <div className="mt-48 pt-16 border-t border-soft border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="text-[10px] font-medium uppercase tracking-[0.4em] text-label">
             Dolakha / {data.category.title}
           </div>
           <Link
             href="/"
-            className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#3d2b1f] hover:text-[#a3573a] transition-colors border-b border-[#3d2b1f] hover:border-[#a3573a] pb-1"
+            className="type-label text-heading hover:text-action transition-colors border-b border-espresso hover:border-action pb-1"
           >
             Back to Showroom ↑
           </Link>
-          <div className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+          <div className="type-label text-label">
             EST. 2024
           </div>
         </div>

@@ -7,10 +7,12 @@ interface UIStore {
   scrollPos: number;
   isCampaignModalOpen: boolean;
   isCheckoutDrawerOpen: boolean;
+  isAccountModalOpen: boolean;
   lockScroll: (id: string) => void;
   unlockScroll: (id: string) => void;
   setCampaignModalOpen: (isOpen: boolean) => void;
   setIsCheckoutDrawerOpen: (isOpen: boolean) => void;
+  setIsAccountModalOpen: (isOpen: boolean) => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -18,9 +20,11 @@ export const useUIStore = create<UIStore>((set) => ({
   scrollPos: 0,
   isCampaignModalOpen: false,
   isCheckoutDrawerOpen: false,
+  isAccountModalOpen: false,
   
   setCampaignModalOpen: (isOpen: boolean) => set({ isCampaignModalOpen: isOpen }),
   setIsCheckoutDrawerOpen: (isOpen: boolean) => set({ isCheckoutDrawerOpen: isOpen }),
+  setIsAccountModalOpen: (isOpen: boolean) => set({ isAccountModalOpen: isOpen }),
   
   lockScroll: (id: string) => set((state) => {
     const next = new Set(state.activeLocks);

@@ -27,11 +27,11 @@ export default function PDFDownloadButton({ campaign, welcomeVoucher, label, cla
     setIsClient(true);
   }, []);
 
-  const baseStyles = "flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg active:scale-95 no-print";
+  const baseStyles = "flex items-center gap-3 px-6 py-2.5 rounded-full type-action transition-all shadow-md active:scale-95 no-print";
   
   const variants = {
-    glass: "bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-black/60",
-    outline: "bg-white border border-[#e5dfd3] text-[#3d2b1f] hover:bg-stone-50 shadow-sm"
+    glass: "bg-invert text-app hover:bg-action hover:text-white border border-soft",
+    outline: "bg-surface border border-soft text-heading hover:bg-stone-muted/10 shadow-sm"
   };
 
   if (!isClient) return null;

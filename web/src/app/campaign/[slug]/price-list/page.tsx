@@ -26,13 +26,13 @@ export default async function CampaignPriceListPage({ params }: Props) {
   });
 
   return (
-    <main className="min-h-screen bg-[#fdfaf5] pb-24 font-sans text-[#3d2b1f] pt-12">
+    <main className="min-h-screen bg-app pb-24 font-sans text-heading pt-12">
       {/* HEADER SECTION */}
       <div className="container mx-auto px-6 md:px-12 mb-8">
         <div className="flex justify-between items-center mb-8 no-print">
           <Link
             href={`/campaign/${slug}`}
-            className="flex items-center gap-2 text-[#a89f91] hover:text-[#3d2b1f] transition-all text-[10px] uppercase tracking-widest font-bold"
+            className="flex items-center gap-2 text-label hover:text-heading transition-all text-[10px] uppercase tracking-widest font-bold"
           >
             <ArrowLeft size={14} />
             Back to Story
@@ -42,15 +42,15 @@ export default async function CampaignPriceListPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="text-center space-y-2 max-w-xl mx-auto border-b border-[#e5dfd3]/50 pb-8">
+        <div className="text-center space-y-2 max-w-xl mx-auto border-b border-soft/50 pb-8">
           <div className="flex justify-center mb-2 opacity-30">
-            <Sparkles size={24} className="text-[#a3573a]" />
+            <Sparkles size={24} className="text-action" />
           </div>
-          <h1 className="text-3xl md:text-5xl font-serif italic font-medium leading-tight">
+          <h1 className="text-3xl md:type-section font-medium leading-tight">
             {campaign.title}
-            <span className="text-[#a3573a]">.</span>
+            <span className="text-action">.</span>
           </h1>
-          <p className="text-[8px] font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+          <p className="text-[8px] font-bold uppercase tracking-[0.4em] text-label">
             Campaign Price List — {currentDate}
           </p>
         </div>
@@ -61,8 +61,8 @@ export default async function CampaignPriceListPage({ params }: Props) {
         {campaign.products && campaign.products.length > 0 ? (
           <CategorizedProductGrid products={campaign.products} />
         ) : (
-          <div className="text-center py-24 border-t border-[#e5dfd3] border-dotted">
-            <p className="text-[#a89f91] italic font-serif text-2xl">
+          <div className="text-center py-24 border-t border-soft border-dotted">
+            <p className="text-label italic font-serif text-2xl">
               "No products are currently linked to this campaign."
             </p>
           </div>
@@ -70,19 +70,19 @@ export default async function CampaignPriceListPage({ params }: Props) {
       </div>
 
       {/* FOOTER ACCENT */}
-      <section className="container mx-auto px-6 md:px-12 mt-32 pt-16 border-t border-[#e5dfd3] border-dotted text-center space-y-6">
-        <p className="text-[#a89f91] font-serif italic text-lg max-w-lg mx-auto leading-relaxed">
+      <section className="container mx-auto px-6 md:px-12 mt-32 pt-16 border-t border-soft border-dotted text-center space-y-6">
+        <p className="text-label font-serif italic text-lg max-w-lg mx-auto leading-relaxed">
           "
           {campaign.tagline ||
             `A  selection of handcrafted pieces designed for the modern sanctuary.`}
           "
         </p>
         <div className="flex justify-center items-center gap-8 pt-8">
-          <div className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+          <div className="type-label text-label">
             EST. 2024
           </div>
-          <div className="w-1.5 h-1.5 rounded-full bg-[#a3573a]" />
-          <div className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#a89f91]">
+          <div className="w-1.5 h-1.5 rounded-full bg-action" />
+          <div className="type-label text-label">
             Dolakha Archive
           </div>
         </div>

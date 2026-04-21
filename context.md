@@ -37,10 +37,15 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 - **Hybrid Data Flow**:
   - **Dynamic Pages**: Critical pages (Campaigns, Price Lists) use `force-dynamic` and `no-store` to ensure real-time inventory and pricing accuracy.
   - **Static Content**: Marketing landing pages and category lists are served via Cloudflare's edge for maximum performance.(Dont know about this, if its still the case, gotta check and verify and understand)
-- **Design System: Glassmorphism / Boho-Premium**:(Dont know we are still using the glassmorphism or not but I kinda like whatever the system we have now)
-  - Custom tailored HSL color palettes (Espresso, Bone, Terracotta).
-  - Heavy use of backdrop-blur and organic rounded corners.
-- **Shared Schemas**: Content blueprints are designed to be shared between the current Web platform and the upcoming Mobile application.
+- **Theme Design System: Heritage Atelier (Literal Semantic)**
+  - **Philosophy**: "Warm Minimalism" & "Tactile Craftsmanship". A sturdy, grounded aesthetic that mirrors the durability of physical furniture.
+  - **Naming**: Literal Intent-based tokens (`bg-app`, `text-heading`, `border-divider`) for robust themeability.
+  - **Aesthetic**: Rejection of glassmorphism and transparency in favor of solid surfaces, defined borders, and high-contrast typography.
+  - **Typography**: Paired **Cormorant Garamond** (Serif/Poetic) with **Montserrat** (Sans/Architectural).
+  - **Alternative Directions**:
+    - _Modern Industrial_: Grayscale, sharp black lines, rigid architectural grids.
+    - _Nordic Retreat_: Pale woods, soft grays, and rounded, friendly organic shapes.
+    - _Lux Boutique_: Deep blacks, gold accents, and ultra-fine, sophisticated lines.
 
 ---
 
@@ -121,6 +126,7 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 2. **Query Management**: All GROQ queries MUST live in `web/src/lib/queries.ts`.
 3. **Component Reusability**: Extract logic (like `PriceListTable`) into standalone components to maintain consistency across PDF and Web views.
 4. **Copywriting & UI Tone**: Avoid over-the-top buzzwords (e.g., "artisanal", "meticulous", "investment"). Use simple, direct, and helpful language.
+5. **Styling Governance**: For any UI or layout changes, developers MUST review and adhere to **[StylingGuide.md](file:///Users/suraj/Developer/dolakha-mac/dolakhafurniture/StylingGuide.md)**. Any new colors or roles must be added there first.
 
 ---
 

@@ -44,13 +44,13 @@ export default function BrowserBanner() {
           initial={{ y: 150, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 150, opacity: 0 }}
-          className="fixed bottom-0 left-0 right-0 bg-[#1a1c13] text-white z-[1000] border-t border-[#df9152]/20 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]"
+          className="fixed bottom-0 left-0 right-0 bg-app text-white z-[1000] border-t border-warmth/20 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]"
         >
           <div className="container mx-auto px-5 py-4">
             <div className="flex items-center gap-4">
               <button 
                 onClick={handleDismiss}
-                className="absolute -top-4 left-4 w-8 h-8 bg-[#1a1c13] text-white rounded-full flex items-center justify-center shadow-2xl border border-white/20 active:scale-95 transition-all z-[10]"
+                className="absolute -top-4 left-4 w-8 h-8 bg-app text-white rounded-full flex items-center justify-center shadow-2xl border border-white/20 active:scale-95 transition-all z-[10]"
               >
                 <X size={16} strokeWidth={3} />
               </button>
@@ -58,17 +58,17 @@ export default function BrowserBanner() {
               {/* Step 1: Text Instructions */}
               <div className="flex-1 space-y-1 ml-4 pt-1">
                 <div className="flex items-center gap-2">
-                  <span className="bg-[#df9152] text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0">1</span>
-                  <p className="text-[11px] font-bold tracking-tight">Tap the <span className="text-[#df9152]">...</span> at the bottom</p>
+                  <span className="bg-warmth text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <p className="text-[11px] font-bold tracking-tight">Tap the <span className="text-warmth">...</span> at the bottom</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="bg-[#df9152] text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span className="bg-warmth text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0">2</span>
                   <p className="text-[11px] font-bold tracking-tight">Choose <span className="underline">Open in Browser</span></p>
                 </div>
               </div>
 
               {/* Step 2: Full Footer Mimic Graphic */}
-              <div className="relative flex-shrink-0 bg-white/5 px-4 py-3 rounded-2xl border border-white/10 flex items-center gap-5">
+              <div className="relative flex-shrink-0 bg-app px-4 py-3 rounded-2xl border border-white/10 flex items-center gap-5">
                 {/* Simplified icons matching the screenshot */}
                 <div className="flex gap-4 opacity-20">
                   <div className="w-3 h-3 border-r-2 border-b-2 border-white rotate-[135deg]" /> {/* Back */}
@@ -83,8 +83,8 @@ export default function BrowserBanner() {
 
                   {/* Highlighted Target dots */}
                   <div className="relative flex gap-0.5">
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
-                    <div className="w-1 h-1 bg-white/40 rounded-full" />
+                    <div className="w-1 h-1 bg-app rounded-full" />
+                    <div className="w-1 h-1 bg-app rounded-full" />
                     
                     {/* The 3rd Dot (Target) */}
                     <div className="relative">
@@ -98,9 +98,9 @@ export default function BrowserBanner() {
                           duration: 2,
                           times: [0, 0.5, 1] 
                         }}
-                        className="absolute inset-0 bg-[#df9152] rounded-full blur-[6px]"
+                        className="absolute inset-0 bg-warmth rounded-full [6px]"
                       />
-                      <div className="relative w-1.5 h-1.5 bg-[#df9152] rounded-full shadow-[0_0_8px_#df9152]" />
+                      <div className="relative w-1.5 h-1.5 bg-warmth rounded-full shadow-[0_0_8px_warmth]" />
 
                       {/* ANIMATED TAPPING FINGER - Now pointing DOWN at the real phone UI */}
                       <motion.div 
@@ -115,7 +115,7 @@ export default function BrowserBanner() {
                           times: [0, 0.4, 0.5, 0.6, 1],
                           ease: "easeInOut"
                         }}
-                        className="absolute -bottom-6 sm:-bottom-8 left-1/2 -translate-x-[20%] text-[#df9152] z-[20] pointer-events-none rotate-180"
+                        className="absolute -bottom-6 sm:-bottom-8 left-1/2 -translate-x-[20%] text-warmth z-[20] pointer-events-none rotate-180"
                       >
                         {/* Flipped Stylized Pointing Finger SVG */}
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="black" strokeWidth="0.5">

@@ -29,7 +29,7 @@ export default async function BulletinPage({ params }: Props) {
     const { slug } = await params;
     const data = await client.fetch(`*[_type == "bulletin" && slug.current == $slug][0]`, { slug });
     return (
-        <div className="container mx-auto px-6 flex flex-col gap-6 items-center pt-32 pb-20 font-sans text-[#3d2b1f] bg-[#fdfaf5] min-h-screen overflow-x-hidden">
+        <div className="container mx-auto px-6 flex flex-col gap-6 items-center pt-32 pb-20 font-sans text-heading bg-app min-h-screen overflow-x-hidden">
             <div className="image ">
                 <Image
                     src={urlFor(data.mainImage).width(100).url()}
@@ -46,12 +46,12 @@ export default async function BulletinPage({ params }: Props) {
             <div className="flex items-center gap-6">
 
 
-                <div className="content font-sans text-[#3d2b1f]">
+                <div className="content font-sans text-heading">
                     {data.content}
                 </div>
 
             </div>
-            <div className="button flex justify-center items-center ml-6 mr-6 py-6 px-12 rounded-full bg-[#a3573a] text-white font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-700 shadow-xl">
+            <div className="button flex justify-center items-center ml-6 mr-6 py-6 px-12 rounded-full bg-action text-white font-sans font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-700 shadow-xl">
                 <button>
                     <Link href="/shop">Shop Now</Link>
                 </button>

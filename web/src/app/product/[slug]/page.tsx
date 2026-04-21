@@ -62,13 +62,13 @@ export default async function ProductPage({ params }: Props) {
   }
 
   return (
-    /* Changed bg-stone-50 to your new Boho Cream (#fdfaf5) */
-    <div className="bg-[#fdfaf5] min-h-screen text-[#3d2b1f] selection:bg-[#a3573a]/20">
+    /* Changed bg-stone-50 to your new Boho Cream (bone) */
+    <div className="bg-app min-h-screen text-heading selection:bg-action/20">
       {/* 
           IMPORTANT: The real UI shift happens inside <ProductDetail />.
           Ensure that component uses:
           - Serif Garamond for titles
-          - Terracotta (#a3573a) for "Add to Cart" 
+          - Terracotta (accent) for "Add to Cart" 
           - Organic, rounded corners (rounded-[3rem])
       */}
       <ProductDetail product={product} />

@@ -21,14 +21,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-[10px] font-bold uppercase tracking-widest text-[#a89f91] ml-4 block"
+            className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4 block"
           >
             {label}
           </label>
         )}
         <div className="relative group">
           {LeftIcon && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a89f91] group-focus-within:text-[#a3573a] transition-colors pointer-events-none">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-description group-focus-within:text-action transition-colors pointer-events-none">
               {React.isValidElement(LeftIcon) ? (
                 LeftIcon
               ) : (
@@ -40,9 +40,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={`
-              w-full bg-white border border-[#e5dfd3] rounded-2xl text-sm 
-              text-[#1a1c13] font-medium placeholder:text-[#a89f91]/40
-              focus:outline-none focus:ring-1 focus:ring-[#a3573a] transition-all
+              w-full bg-surface border border-soft rounded-2xl type-body 
+              text-heading placeholder:text-description/40
+              focus:outline-none focus:ring-1 focus:ring-action transition-all
               disabled:opacity-50 disabled:cursor-not-allowed
               ${LeftIcon ? "pl-12 pr-6" : "px-6"} 
               py-4

@@ -3,10 +3,10 @@ import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/
 import { Campaign, Voucher } from '@/types';
 import { urlFor } from '@/lib/sanity';
 
-const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
+const styles = (themeColor: string = 'warmth') => StyleSheet.create({
   page: {
     padding: 0,
-    backgroundColor: '#FAF9F6', // Bone / Cream
+    backgroundColor: 'app', // Bone / Cream
     fontFamily: 'Helvetica',
   },
   // FIRST PAGE / COVER
@@ -14,7 +14,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#FAF9F6',
+    backgroundColor: 'app',
   },
   heroBanner: {
     width: '100%',
@@ -28,7 +28,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   coverTitle: {
     fontSize: 32,
     fontFamily: 'Times-Roman',
-    color: '#2C1E1A',
+    color: 'heading',
     marginBottom: 5,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -67,7 +67,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   voucherHeading: {
     fontSize: 11,
     fontFamily: 'Helvetica-Bold',
-    color: '#2C1E1A',
+    color: 'heading',
     marginBottom: 10,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -87,7 +87,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   promoText: {
     fontSize: 9,
     lineHeight: 1.6,
-    color: '#3d2b1f',
+    color: 'espresso',
   },
   promoCode: {
     fontFamily: 'Helvetica-Bold',
@@ -98,7 +98,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   // PRODUCT PAGE (3x2 Grid)
   section: {
     padding: '20 40 40 40', // Minimal top padding to max out space
-    backgroundColor: '#FAF9F6',
+    backgroundColor: 'app',
     height: '100%',
   },
   header: {
@@ -113,7 +113,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   title: {
     fontSize: 12,
     fontFamily: 'Times-Roman',
-    color: '#2C1E1A',
+    color: 'heading',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -155,7 +155,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   productName: {
     fontSize: 11, // Increased
     fontFamily: 'Helvetica-Bold',
-    color: '#2C1E1A',
+    color: 'heading',
     marginBottom: 4,
     textTransform: 'uppercase',
     maxHeight: 28,
@@ -187,8 +187,8 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   // BACK COVER
   backCover: {
     height: '100%',
-    backgroundColor: '#2C1E1A',
-    color: '#FAF9F6',
+    backgroundColor: 'heading',
+    color: 'app',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -219,7 +219,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   },
   qrText: {
     fontSize: 10,
-    color: '#FAF9F6',
+    color: 'app',
     marginTop: 15,
     opacity: 0.8,
     fontFamily: 'Helvetica',
@@ -242,7 +242,7 @@ const styles = (themeColor: string = '#D2691E') => StyleSheet.create({
   },
   whatsappText: {
     fontSize: 10,
-    color: '#FAF9F6',
+    color: 'app',
     marginTop: 8,
     fontFamily: 'Helvetica-Oblique',
     opacity: 0.8,
@@ -342,7 +342,7 @@ export const CampaignPDF = ({ campaign, welcomeVoucher }: Props) => {
         <Page key={pageIdx} size="A4" style={currentStyles.section}>
           <View style={currentStyles.header}>
             <Text style={currentStyles.title}>{campaign.title} • Catalogue</Text>
-            <Text style={{ fontSize: 8, color: campaign.themeColor || '#D2691E' }}>{pageIdx + 1}</Text>
+            <Text style={{ fontSize: 8, color: campaign.themeColor || 'warmth' }}>{pageIdx + 1}</Text>
           </View>
           
           <View style={currentStyles.grid}>

@@ -1,45 +1,113 @@
 @import "tailwindcss";
 
-:root {
-  /* 1. Change the base "Paper" feel */
-  --background: #fdfaf5; /* Warm Bone/Cream */
-  --foreground: #3d2b1f; /* Deep Espresso (not harsh black) */
+/* 
+  ==========================================================================
+  I. THEME TOKENS (LITERAL SEMANTIC SYSTEM)
+  ==========================================================================
+  A robust, descriptive naming system for crystalline clarity in theming.
   
-  /* 2. Map Boho colors to existing Tailwind class names */
-  --color-blue-50: #fff4f1;    /* Hardcoded bg-blue-50 -> Soft Blush */
-  --color-blue-600: #a3573a;   /* Hardcoded bg-blue-600 -> Terracotta */
-  --color-green-100: #e2e8da;  /* Hardcoded bg-green-100 -> Muted Sage */
-  --color-yellow-500: #df9152; /* Hardcoded bg-yellow-500 -> Ochre */
+  ⚠️ DIRECTIVE: For any changes to this system, you MUST first review 
+  the source of truth in /StylingGuide.md.
+*/
+
+html {
+  /* Brand Core (Private Palette) */
+  --raw-bone: #fdfaf5;
+  --raw-espresso: #3d2b1f;
+  --raw-muted: #5d5449;
+  --raw-muted-light: #a89f91;
+  --raw-stone: #8a7d6a;
+  --raw-stone-light: #e5dfd3;
+  --raw-clay: #f2ece0;
+  --raw-terracotta: #a3573a;
+  --raw-ochre: #df9152;
+
+  /* Literal Semantic Mapping (Public API) */
+  --bg-app: var(--raw-bone);
+  --bg-surface: var(--raw-clay);
+  --text-heading: var(--raw-espresso);
+  --text-body: var(--raw-espresso);
+  --text-description: var(--raw-muted);
+  --text-label: var(--raw-muted-light);
+  --border-divider: var(--raw-stone);
+  --border-soft: var(--raw-stone-light);
+  --accent-action: var(--raw-terracotta);
+  --accent-warmth: var(--raw-ochre);
+  --accent-success: #22c55e;
+  --app-invert: #1a1c13;
+
+  /* Functional Overrides */
+  --background: var(--bg-app);
+  --foreground: var(--text-body);
 }
 
+/** @theme inline */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  
-  /* 3. Force organic shapes globally */
-  --radius-md: 1rem;    /* Makes rounded-md softer */
-  --radius-lg: 1.5rem;  /* Makes rounded-lg much more organic */
-  
-  /* 4. Swap to a "Boho-friendly" font if you have one */
-  --font-sans: "Charter", "Georgia", serif; 
+  /* Literal Classes */
+  --color-app: var(--bg-app);
+  --color-surface: var(--bg-surface);
+  --color-heading: var(--text-heading);
+  --color-body: var(--text-body);
+  --color-description: var(--text-description);
+  --color-label: var(--text-label);
+  --color-divider: var(--border-divider);
+  --color-soft: var(--border-soft);
+  --color-action: var(--accent-action);
+  --color-warmth: var(--accent-warmth);
+  --color-success: var(--accent-success);
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-invert: var(--app-invert);
+
+  /* Design Tokens */
+  --radius-md: 1rem;    
+  --radius-lg: 1.5rem;  
+  --font-sans: "Montserrat", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
 }
 
-/* 5. Dark mode for Boho (Deep Forest/Clay instead of pure black) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1a1c13; /* Deep Olive Green */
-    --foreground: #e2e8da; /* Soft Sage text */
-  }
+/* 
+  ==========================================================================
+  II. DARK MODE OVERRIDES (MANUAL TOGGLE)
+  ==========================================================================
+  In Tailwind v4, we must explicitly define the manual dark variant.
+*/
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Deep Olive Theme Remapping */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-app: #22251a;        /* Lighter Forest Green */
+  --bg-surface: #2d3122;    /* Correspondingly lighter surface */
+  --text-heading: #ffffff;  /* Bright White */
+  --text-body: #ffffff;     /* Bright White */
+  --text-description: #a89f91;
+  --text-label: #5d5449;
+  --border-divider: #3d3f32;
+  --border-soft: #2d3023;
+  --accent-action: #a3573a; /* Keep Terracotta warmth */
+  --accent-warmth: #df9152; /* Keep Ochre warmth */
+  --app-invert: var(--raw-bone);
+
+  --background: var(--bg-app);
+  --foreground: var(--text-body);
 }
+
+/* 
+  ==========================================================================
+  II. GLOBAL DEFAULTS
+  ==========================================================================
+*/
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  /* Use a Serif font for that 'editorial-meets-boho' vibe */
+  background: var(--bg-app);
+  color: var(--text-body);
   font-family: var(--font-sans); 
   -webkit-font-smoothing: antialiased;
 }
 
+/* Scrollbar Utility to hide bars but keep functionality */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -49,7 +117,101 @@ body {
   scrollbar-width: none;
 }
 
-/* 6. PRINT / PDF CATALOG STYLES */
+/* 
+  ==========================================================================
+  III. TYPOGRAPHIC SYSTEM (LITERAL ROLES)
+  ==========================================================================
+*/
+
+@layer utilities {
+  /* Poetic Display Titles (Hero sections) */
+  .type-hero {
+    @apply font-serif italic font-medium leading-[1.1] tracking-tight text-6xl md:text-8xl lg:text-9xl;
+  }
+
+  /* Structural Section Headings */
+  .type-section {
+    @apply font-serif italic font-medium leading-tight text-3xl md:text-5xl lg:text-6xl;
+  }
+
+  /* Product & Card Headings */
+  .type-product {
+    @apply font-serif italic font-semibold leading-snug text-lg md:text-xl lg:text-2xl;
+  }
+
+  /* Primary Reading / Body Text */
+  .type-body {
+    @apply font-sans font-light leading-relaxed text-sm md:text-base;
+  }
+
+  /* Architectural Metadata & Labels */
+  .type-label {
+    @apply font-sans font-bold uppercase tracking-[0.4em] text-[10px];
+  }
+
+  /* Buttons, Links & Navigation */
+  .type-action {
+    @apply font-sans font-bold uppercase tracking-widest text-[11px] md:text-xs;
+  }
+}
+
+/* 
+  ==========================================================================
+  IV. UI PATTERNS & CUSTOM STYLES
+  ==========================================================================
+*/
+
+.no-scrollbar::-webkit-scrollbar { display: none !important; }
+.no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
+/* Custom Boho Scrubber (Carousel) */
+.boho-scrubber {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+}
+.boho-scrubber:focus { outline: none; }
+.boho-scrubber::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  background: var(--border-divider);
+  border-radius: 2px;
+}
+.boho-scrubber::-moz-range-track {
+  width: 100%;
+  height: 2px;
+  cursor: pointer;
+  background: var(--border-divider);
+  border-radius: 2px;
+}
+.boho-scrubber::-webkit-slider-thumb {
+  height: 10px;
+  width: 40px;
+  border-radius: 5px;
+  background: var(--accent-action);
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -4px;
+  box-shadow: 0 0 5px rgba(163,87,58,0.3);
+}
+.boho-scrubber::-moz-range-thumb {
+  height: 10px;
+  width: 40px;
+  border-radius: 5px;
+  background: var(--accent-action);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 5px rgba(163,87,58,0.3);
+}
+
+/* 
+  ==========================================================================
+  IV. PDF / PRINT CATALOG STYLES
+  ==========================================================================
+*/
+
 @media print {
   @page {
     margin: 15mm;
@@ -63,18 +225,13 @@ body {
   }
 
   /* Hide navigation and functional buttons */
-  .no-print, 
-  header, 
-  nav, 
-  button, 
-  footer,
-  aside {
+  .no-print, header, nav, button, footer, aside {
     display: none !important;
   }
 
   body {
     background: white !important;
-    color: #3d2b1f !important;
+    color: var(--text-heading) !important;
     padding: 0 !important;
     margin: 0 !important;
   }
@@ -83,7 +240,7 @@ body {
     padding-top: 0 !important;
   }
 
-  /* Adjust Hero for Print - Ensure cover page takes full page in PDF */
+  /* Layout and PDF Pagination fixes */
   section.relative.h-\[70vh\], 
   section.relative.h-\[85vh\],
   section.relative.h-\[35vh\],
@@ -94,7 +251,6 @@ body {
     display: flex !important;
   }
 
-  /* Force Grid layouts specifically for paginated chunks */
   .grid-cols-2 {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -111,7 +267,6 @@ body {
     page-break-after: avoid;
   }
 
-  /* Fix for Next.js Image component in print */
   img {
     max-width: 100% !important;
     height: auto !important;

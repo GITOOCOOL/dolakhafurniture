@@ -12,18 +12,18 @@ interface ModalProps {
   title?: string;
   children: React.ReactNode;
   className?: string;
-  position?: "center" | "right" | "left";
+  position?: "center" | "right" | "left" | "bottom";
   hideCloseButton?: boolean;
 }
 
-export default function Modal({ 
-  isOpen, 
-  onClose, 
-  title, 
-  children, 
-  className = "", 
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  className = "",
   position = "center",
-  hideCloseButton = false
+  hideCloseButton = false,
 }: ModalProps) {
   const { lockScroll, unlockScroll } = useUIStore();
   const [mounted, setMounted] = useState(false);
@@ -36,17 +36,18 @@ export default function Modal({
   // Prevent scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      lockScroll('ui-modal');
+      lockScroll("ui-modal");
     } else {
-      unlockScroll('ui-modal');
+      unlockScroll("ui-modal");
     }
-    return () => unlockScroll('ui-modal');
+    return () => unlockScroll("ui-modal");
   }, [isOpen, lockScroll, unlockScroll]);
 
   const positions = {
     center: "sm:items-center sm:justify-center sm:px-4",
     right: "items-stretch justify-end",
     left: "items-stretch justify-start",
+    bottom: "items-end justify-center",
   };
 
   const variants = {
@@ -65,9 +66,15 @@ export default function Modal({
       animate: { x: 0 },
       exit: { x: "-100%" },
     },
+    bottom: {
+      initial: { y: "100%" },
+      animate: { y: 0 },
+      exit: { y: "100%" },
+    },
   };
 
-  const isDrawer = position === "right" || position === "left";
+  const isDrawer =
+    position === "right" || position === "left" || position === "bottom";
 
   if (!mounted) return null;
 
@@ -75,49 +82,63 @@ export default function Modal({
     <AnimatePresence>
       {isOpen && (
         <div className={`fixed inset-0 z-[1000] flex ${positions[position]}`}>
-          {/* Backdrop */}
+          {/* Backdrop (Solid & Defined) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-[#3d2b1f]/20 backdrop-blur-sm"
+            className="absolute inset-0 bg-overlay"
           />
 
-          {/* Modal Content */}
+          {/* Modal Master Shell */}
           <motion.div
             initial={variants[position].initial}
             animate={variants[position].animate}
             exit={variants[position].exit}
-            transition={isDrawer ? { type: "spring", damping: 25, stiffness: 200 } : { type: "spring", duration: 0.5, bounce: 0.3 }}
+            transition={
+              isDrawer
+                ? { type: "spring", damping: 35, stiffness: 5000, mass: 0.2 }
+                : { type: "spring", duration: 0.25, bounce: 0.0 }
+            }
             className={`
-              relative bg-[#fdfaf5] border-[#e5dfd3] shadow-2xl flex flex-col transition-all duration-300
-              ${isDrawer 
-                ? "h-full w-full sm:w-[500px] border-l rounded-none" 
-                : "w-full h-full sm:h-auto sm:max-w-xl sm:border sm:rounded-[2.5rem] p-0 sm:p-10 sm:max-h-[85dvh] overflow-hidden"
+              relative bg-app border-divider shadow-2xl flex flex-col transition-all duration-300
+              ${
+                position === "right" || position === "left"
+                  ? `h-full w-full sm:w-[500px] rounded-none ${position === "right" ? "border-l" : "border-r"}`
+                  : position === "bottom"
+                    ? "w-full sm:max-w-3xl h-[85dvh] rounded-t-[2.5rem] border-t"
+                    : "w-full h-full sm:h-auto sm:max-w-xl sm:border sm:rounded-[2.5rem] p-0 shadow-sm sm:max-h-[85dvh] overflow-hidden"
               }
               ${className}
             `}
           >
-            {/* Close Button */}
-            {!hideCloseButton && (
-              <button
-                onClick={onClose}
-                className={`absolute top-6 right-6 p-2 text-[#a89f91] hover:text-[#3d2b1f] hover:bg-[#3d2b1f]/5 transition-all z-20 ${isDrawer ? "rounded-none" : "rounded-full"}`}
-              >
-                <X size={24} />
-              </button>
-            )}
-
-            {title && (
-              <div className={`mb-8 ${isDrawer ? "p-6 border-b" : "text-center"}`}>
-                <h3 className={`${isDrawer ? "text-2xl" : "text-3xl"} font-serif italic mb-2 text-[#3d2b1f]`}>{title}</h3>
-                {!isDrawer && <div className="w-12 h-0.5 bg-[#a3573a] mx-auto rounded-full opacity-30" />}
+            {/* Standardized Master Header */}
+            <div
+              className={`flex items-center justify-between p-8 border-b border-soft/20 flex-shrink-0 relative z-20`}
+            >
+              <div className="flex items-center gap-3">
+                {isDrawer && position === "left" && (
+                  <div className="w-2 h-2 rounded-full bg-action animate-pulse" />
+                )}
+                <h3 className="type-section text-heading">
+                  {title || (position === "left" ? "Navigation" : "Info")}
+                </h3>
               </div>
-            )}
 
-            <div 
-              className={`relative z-10 font-sans flex-1 overflow-y-auto custom-scrollbar ${isDrawer ? "p-6 md:p-8" : ""}`}
+              {!hideCloseButton && (
+                <button
+                  onClick={onClose}
+                  className="w-12 h-12 bg-heading text-app rounded-full shadow-xl flex items-center justify-center transition-all hover:bg-action active:scale-95 translate-x-2"
+                  aria-label="Close"
+                >
+                  <X size={20} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+
+            <div
+              className={`relative z-10 font-sans flex-1 overflow-y-auto custom-scrollbar ${isDrawer ? "p-8" : "p-10"}`}
               style={{ WebkitOverflowScrolling: "touch" }}
             >
               {children}
@@ -126,7 +147,6 @@ export default function Modal({
         </div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }
-

@@ -27,11 +27,11 @@ export default function CategorizedProductGrid({ products }: CategorizedProductG
         <section key={category} className="space-y-12">
           {/* Category Header */}
           <div className="relative">
-            <h2 className="text-3xl md:text-5xl font-serif italic text-[#3d2b1f] relative z-10">
-              {category}<span className="text-[#a3573a]">.</span>
+            <h2 className="text-3xl md:type-section text-heading relative z-10">
+              {category}<span className="text-action">.</span>
             </h2>
-            <div className="absolute -bottom-4 left-0 w-24 h-1 bg-[#a3573a]/20 rounded-full" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#a89f91] mt-4">
+            <div className="absolute -bottom-4 left-0 w-24 h-1 bg-action/20 rounded-full" />
+            <p className="type-label text-label mt-4">
               {groupedProducts[category].length} {groupedProducts[category].length === 1 ? 'Piece' : 'Pieces'} in Collection
             </p>
           </div>
@@ -46,8 +46,8 @@ export default function CategorizedProductGrid({ products }: CategorizedProductG
       ))}
 
       {categories.length === 0 && (
-        <div className="text-center py-24 border-t border-[#e5dfd3] border-dotted">
-          <p className="text-[#a89f91] italic font-serif text-2xl">
+        <div className="text-center py-24 border-t border-soft border-dotted">
+          <p className="text-label italic font-serif text-2xl">
             "No products found in this selection."
           </p>
         </div>

@@ -22,7 +22,7 @@ export default function AnnouncementBar({ bulletins }: AnnouncementBarProps) {
   if (bulletins.length === 0) return null;
 
   return (
-    <div className="bg-[#a3573a] text-[#fdfaf5] h-12 md:h-14 flex items-center justify-center overflow-hidden relative z-[60]">
+    <div className="bg-action text-bone h-12 md:h-14 flex items-center justify-center overflow-hidden relative z-[60]">
       <div className="container mx-auto px-4 text-center">
         <AnimatePresence mode="wait">
           <motion.div
