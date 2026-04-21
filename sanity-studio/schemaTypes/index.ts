@@ -11,4 +11,6 @@ import inquiry from './inquiry'
 import campaign from './campaign'
 import faq from './faq'
 
-export const schemaTypes = [product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry, campaign, faq]
+import lead from './lead'
+
+export const schemaTypes = [product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry, lead, campaign, faq]

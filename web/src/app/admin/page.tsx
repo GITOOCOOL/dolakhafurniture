@@ -23,6 +23,8 @@ export default async function AdminDashboard() {
     recentInquiries,
     activeProductsCount,
     lowStockCount,
+    revenueSum,
+    pendingOrdersCount,
   ] = await Promise.all([
     client.fetch(`count(*[_type == "order"])`, {}, { useCdn: false }),
     client.fetch(`count(*[_type == "inquiry"])`, {}, { useCdn: false }),
@@ -35,7 +37,12 @@ export default async function AdminDashboard() {
     }`, {}, { useCdn: false }),
     client.fetch(`count(*[_type == "product" && isActive == true])`, {}, { useCdn: false }),
     client.fetch(`count(*[_type == "product" && isActive == true && stock < 3])`, {}, { useCdn: false }),
+    client.fetch(`math::sum(*[_type == "order"].totalPrice)`, {}, { useCdn: false }),
+    client.fetch(`count(*[_type == "order" && status in ["pending", "processing"]])`, {}, { useCdn: false }),
   ]);
+
+  const totalRevenue = Math.round(revenueSum || 0);
+  const activeOrdersCount = pendingOrdersCount || 0;
 
   const supabase = await createClient();
   const { count: usersCount } = await supabase
@@ -48,22 +55,28 @@ export default async function AdminDashboard() {
       {/* STATS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <StatCard 
-          title="Total Orders" 
-          value={ordersCount?.toString() || "0"} 
-          change="Lifetime" 
+          title="Total Revenue" 
+          value={`Rs. ${totalRevenue.toLocaleString()}`} 
+          change="Lifetime Gross" 
+          icon={TrendingUp} 
+        />
+        <StatCard 
+          title="Active Orders" 
+          value={activeOrdersCount.toString()} 
+          change={`${ordersCount} Total`} 
           icon={Package} 
         />
         <StatCard 
-          title="Active Products" 
-          value={activeProductsCount?.toString() || "0"} 
-          change={lowStockCount > 0 ? `${lowStockCount} Low Stock` : "All Healthy"} 
-          icon={Box} 
+          title="Inventory Alert" 
+          value={`${lowStockCount} Items`} 
+          change={lowStockCount > 0 ? "Needs Attention" : "All Healthy"} 
+          icon={AlertTriangle} 
           alert={lowStockCount > 0}
         />
         <StatCard 
-          title="Inquiries" 
-          value={inquiriesCount?.toString() || "0"} 
-          change={`${pendingInquiriesCount} Pending`} 
+          title="New Inquiries" 
+          value={pendingInquiriesCount.toString()} 
+          change={`${inquiriesCount} Total`} 
           icon={Clock} 
         />
         <StatCard 

@@ -9,26 +9,20 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { inquiryId, status, priority, internalNotes, source } = await request.json();
+    const { leadId, ...updates } = await request.json();
 
-    if (!inquiryId) {
-      return NextResponse.json({ error: "Missing inquiryId" }, { status: 400 });
+    if (!leadId) {
+      return NextResponse.json({ error: "Missing leadId" }, { status: 400 });
     }
 
-    const patchData: any = {};
-    if (status) patchData.status = status;
-    if (priority) patchData.priority = priority;
-    if (internalNotes !== undefined) patchData.internalNotes = internalNotes;
-    if (source) patchData.source = source;
-
     const result = await sanityAdminClient
-      .patch(inquiryId)
-      .set(patchData)
+      .patch(leadId)
+      .set(updates)
       .commit();
 
     return NextResponse.json({ success: true, result });
   } catch (error: any) {
-    console.error("Inquiry status update error:", error);
+    console.error("Lead update error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

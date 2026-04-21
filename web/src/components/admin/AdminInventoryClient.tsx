@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Box, Search, Check, AlertTriangle, EyeOff, Facebook, Filter, X, ChevronDown, Tag } from "lucide-react";
+import { Box, Search, Check, AlertTriangle, EyeOff, Facebook, Filter, X, ChevronDown, Tag, Plus, RefreshCcw } from "lucide-react";
 import Image from "next/image";
+import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
 
 interface Product {
   _id: string;
@@ -18,6 +20,11 @@ interface Product {
 export default function AdminInventoryClient({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState(initialProducts);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  
+  // Restock State
+  const [productToRestock, setProductToRestock] = useState<Product | null>(null);
+  const [restockAmount, setRestockAmount] = useState(1);
+  const [isRestockSubmitting, setIsRestockSubmitting] = useState(false);
 
   // Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,6 +76,32 @@ export default function AdminInventoryClient({ initialProducts }: { initialProdu
       console.error(err);
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleRestock = async () => {
+    if (!productToRestock) return;
+    setIsRestockSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/inventory", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          productId: productToRestock._id, 
+          field: "stock", 
+          value: restockAmount,
+          operation: "inc"
+        }),
+      });
+      if (res.ok) {
+        setProducts(products.map(p => p._id === productToRestock._id ? { ...p, stock: p.stock + restockAmount } : p));
+        setProductToRestock(null);
+        setRestockAmount(1);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRestockSubmitting(false);
     }
   };
 
@@ -208,17 +241,27 @@ export default function AdminInventoryClient({ initialProducts }: { initialProdu
                   </td>
                   
                   <td className="px-8 py-6">
-                     <div className="relative flex items-center">
-                        <input 
-                          type="number"
-                          value={product.stock || 0}
-                          disabled={updatingId === product._id}
-                          onChange={(e) => updateField(product._id, "stock", parseInt(e.target.value, 10))}
-                          className={`w-full bg-transparent border rounded-lg px-3 py-2 text-sm font-bold text-heading disabled:opacity-50 transition-colors focus:outline-none ${product.stock <= 0 ? 'border-red-500/30 text-red-600 bg-red-500/5 hover:border-red-500/50 focus:border-red-500' : product.stock < 3 ? 'border-orange-500/30 text-orange-600 bg-orange-500/5 hover:border-orange-500/50' : 'border-transparent hover:border-soft focus:border-action/30'}`}
-                        />
-                        {product.stock <= 0 && <AlertTriangle size={12} className="absolute right-3 text-red-500 pointer-events-none" />}
-                     </div>
-                  </td>
+                      <div className="relative flex items-center group/stock">
+                         <input 
+                           type="number"
+                           value={product.stock || 0}
+                           disabled={updatingId === product._id}
+                           onChange={(e) => updateField(product._id, "stock", parseInt(e.target.value, 10))}
+                           className={`w-full bg-transparent border rounded-lg pl-3 pr-10 py-2 text-sm font-bold text-heading disabled:opacity-50 transition-colors focus:outline-none ${product.stock <= 0 ? 'border-red-500/30 text-red-600 bg-red-500/5 hover:border-red-500/50 focus:border-red-500' : product.stock < 3 ? 'border-orange-500/30 text-orange-600 bg-orange-500/5 hover:border-orange-500/50' : 'border-transparent hover:border-soft focus:border-action/30'}`}
+                         />
+                         <button 
+                           onClick={() => {
+                             setProductToRestock(product);
+                             setRestockAmount(1);
+                           }}
+                           className="absolute right-2 p-1.5 bg-action text-white rounded-md opacity-0 group-hover/stock:opacity-100 hover:bg-heading transition-all shadow-lg scale-90"
+                           title="Quick Restock"
+                         >
+                            <Plus size={12} />
+                         </button>
+                         {product.stock <= 0 && <AlertTriangle size={12} className="absolute right-3 text-red-500 pointer-events-none group-hover/stock:hidden" />}
+                      </div>
+                   </td>
                   
                   <td className="px-8 py-6 text-center">
                     <button
@@ -253,6 +296,68 @@ export default function AdminInventoryClient({ initialProducts }: { initialProdu
           )}
         </div>
       </div>
+
+      {/* RESTOCK MODAL */}
+      <Modal
+        isOpen={!!productToRestock}
+        onClose={() => !isRestockSubmitting && setProductToRestock(null)}
+        title="Arrival of New Inventory"
+      >
+        {productToRestock && (
+          <div className="space-y-8 py-4">
+             <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-action/10 text-action rounded-full flex items-center justify-center border border-action/20">
+                   <RefreshCcw size={32} />
+                </div>
+                <div>
+                   <h3 className="type-section text-lg uppercase tracking-widest">{productToRestock.title}</h3>
+                   <p className="type-label text-label normal-case italic font-serif mt-2">
+                     Current Stock: <span className="text-heading font-bold not-italic">{productToRestock.stock} units</span>
+                   </p>
+                </div>
+             </div>
+
+             <div className="space-y-6">
+                <div className="space-y-3">
+                   <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">
+                      Units to Add
+                   </label>
+                   <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => setRestockAmount(Math.max(1, restockAmount - 1))}
+                        className="w-14 h-14 bg-soft rounded-2xl flex items-center justify-center hover:bg-action hover:text-white transition-all text-xl font-bold"
+                      >
+                         -
+                      </button>
+                      <input 
+                        type="number" 
+                        className="flex-1 bg-surface border border-soft rounded-[2rem] px-6 py-4 text-2xl font-bold text-heading text-center focus:outline-none"
+                        value={restockAmount}
+                        onChange={(e) => setRestockAmount(parseInt(e.target.value) || 0)}
+                      />
+                      <button 
+                        onClick={() => setRestockAmount(restockAmount + 1)}
+                        className="w-14 h-14 bg-soft rounded-2xl flex items-center justify-center hover:bg-action hover:text-white transition-all text-xl font-bold"
+                      >
+                         +
+                      </button>
+                   </div>
+                </div>
+             </div>
+
+             <div className="flex gap-4">
+                <Button variant="ghost" fullWidth onClick={() => setProductToRestock(null)} disabled={isRestockSubmitting}>Cancel</Button>
+                <Button 
+                   fullWidth 
+                   onClick={handleRestock}
+                   isLoading={isRestockSubmitting}
+                >
+                   Finalize Restock
+                </Button>
+             </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

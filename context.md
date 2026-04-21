@@ -67,8 +67,10 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
   - Dynamic CTA buttons ("Order Custom Piece" vs "Inquiry Now").
 
 - **Admin Management Console**:
-  - **Orders HUB**: Real-time fulfillment tracking and manual order entry.
-  - **Inventory Center**: Direct price/stock management and visibility toggles.
+  - **Orders HUB**: Real-time fulfillment tracking, manual order entry, and secure deletion.
+  - **Service Inquiries**: Standardized channel for order tracking, FAQs, and general support.
+  - **Artisan Leads CRM**: Sales intelligence pipeline with 'Elevation' workflow, deal status tracking, and priority management.
+  - **Inventory Center**: Quick restocking tool, direct price/stock management, and visibility toggles.
   - **Content Central**: High-density dashboard for managing Bulletins and Campaigns.
   - [Detailed Design & Logs](file:///Users/suraj/Developer/dolakha-mac/dolakhafurniture/AdminDashboardFeature.md)
 - **Marketing & Catalog Hub**:
@@ -94,7 +96,9 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 
 ### **1. 🎯 Meta Integration & Ads Optimization**
 
-- 📅 **Agenda 1: Advanced Conversion Tracking**: Implement event tracking for high-intent actions (WhatsApp inquiries, PDF downloads) to improve ad attribution.
+- 📅 **Agenda 1: Advanced Conversion Tracking**: Implement event tracking for high-intent actions (WhatsApp inquiries, PDF downloads).
+- 📅 **Agenda 2: Artisan CRM Intelligence**: Implement Lead Status cycles and internal note-taking for high-intent inquiries.
+- 📅 **Agenda 3: Meta Messaging Unified Inbox**: Integrate Facebook/Instagram DMs directly into the Artisan CRM dashboard.
 
 ### **2. 💎 Website Optimizations & UI/UX Refinements**
 

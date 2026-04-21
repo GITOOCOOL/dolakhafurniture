@@ -135,9 +135,12 @@ export default function ProductDetail({ product }: { product: Product }) {
             </p>
           </header>
 
-          <h2 className="text-[10px] font-sans font-bold uppercase tracking-widest text-description mb-4">About this piece</h2>
-          <p className="text-md text-heading leading-relaxed italic max-w-lg">
-            "{product.description || "Every piece of Dolakha furniture is handcrafted with passion, blending traditional Nepali artistry with modern functional design."}"
+          <p className="text-[10px] font-sans font-bold uppercase tracking-[0.25em] text-label mb-4 opacity-100 flex items-center gap-2">
+            <span className="w-4 h-[1px] bg-label" />
+            The Artisan's Story
+          </p>
+          <p className="text-xl text-heading leading-[1.8] font-serif italic max-w-xl indent-8">
+            {product.description || "Every piece of Dolakha furniture is handcrafted with passion, blending traditional Nepali artistry with modern functional design."}
           </p>
 
           {/* SPECIFICATIONS */}
@@ -145,30 +148,26 @@ export default function ProductDetail({ product }: { product: Product }) {
             product.length ||
             product.breadth ||
             product.height) && (
-            <div className="space-y-4 pt-4">
-              <h3 className="text-[10px] font-bold uppercase tracking-widest text-action">
-                Specifications
+            <div className="space-y-6 pt-8 border-t border-soft border-dotted">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-action">
+                Dimensions & Craft
               </h3>
-              <div className="grid grid-cols-2 gap-y-3 text-sm">
+              <div className="grid grid-cols-2 gap-x-12 gap-y-6">
                 {product.material && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-bold uppercase text-description">
-                      Material
-                    </span>
-                    <span className="font-medium">{product.material}</span>
+                  <div className="space-y-1.5">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-label opacity-40">Composition</p>
+                    <p className="text-sm font-bold text-heading">{product.material}</p>
                   </div>
                 )}
                 {(product.length || product.breadth || product.height) && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-bold uppercase text-description">
-                      Dimensions
-                    </span>
-                    <span className="font-sans font-semibold">
+                  <div className="space-y-1.5">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-label opacity-40">Cabinetry Size</p>
+                    <p className="text-sm font-sans font-bold text-heading tracking-widest">
                       {[product.length, product.breadth, product.height]
                         .filter(Boolean)
                         .join(" x ")}{" "}
                       in
-                    </span>
+                    </p>
                   </div>
                 )}
               </div>
@@ -216,18 +215,18 @@ export default function ProductDetail({ product }: { product: Product }) {
               fullWidth
               size="xl"
               variant={isSuccess ? "accent" : "primary"}
-              className={
+              className={`rounded-full py-8 text-[11px] tracking-[0.3em] font-sans font-bold transition-all duration-500 scale-100 active:scale-[0.98] ${
                 isSuccess
                   ? "shadow-[0_20px_40px_rgba(163,87,58,0.3)]"
-                  : "hover:shadow-[0_20px_40px_rgba(163,87,58,0.2)]"
-              }
+                  : "hover:shadow-[0_25px_50px_rgba(163,87,58,0.2)] hover:-translate-y-1"
+              }`}
               leftIcon={isSuccess ? <ShieldCheck size={18} /> : undefined}
             >
               {isSuccess
-                ? "Added to home"
+                ? "Reserved in Cart"
                 : product.stock !== undefined && product.stock <= 0
-                  ? "Order Custom Piece"
-                  : "Add to Cart"}
+                  ? "Order Custom Studio Piece"
+                  : "Add to Private Collection"}
             </Button>
 
             <p className="text-center text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-description">

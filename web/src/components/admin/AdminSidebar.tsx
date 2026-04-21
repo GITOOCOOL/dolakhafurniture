@@ -10,6 +10,7 @@ import {
   LayoutDashboard, 
   Package, 
   MessageSquare, 
+  TrendingUp,
   Users, 
   Settings, 
   ChevronRight,
@@ -22,7 +23,8 @@ const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Inventory", href: "/admin/inventory", icon: Box },
   { label: "Orders", href: "/admin/orders", icon: Package },
-  { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+  { label: "Service Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+  { label: "Sales Leads", href: "/admin/leads", icon: TrendingUp },
   { label: "User Roles", href: "/admin/users", icon: Users },
 ];
 

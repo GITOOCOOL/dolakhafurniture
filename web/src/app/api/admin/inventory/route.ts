@@ -12,24 +12,23 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { productId, field, value } = await request.json();
+    const { productId, field, value, operation } = await request.json();
 
     if (!productId || !field) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Prepare the patch object based on the field
-    const patchData: any = {};
-    patchData[field] = value;
+    let transaction = sanityAdminClient.patch(productId);
 
-    // Optional: if bumping stock up, update lastRestocked? 
-    // We'll let the user manually or rely on hooks, but a simple check:
-    // Actually, setting lastRestocked would require knowing the previous stock. We'll skip for now.
+    if (operation === "inc") {
+      transaction = transaction
+        .inc({ [field]: value })
+        .set({ lastRestocked: new Date().toISOString() });
+    } else {
+      transaction = transaction.set({ [field]: value });
+    }
 
-    const result = await sanityAdminClient
-      .patch(productId)
-      .set(patchData)
-      .commit();
+    const result = await transaction.commit();
 
     return NextResponse.json({ success: true, product: result });
   } catch (error: any) {

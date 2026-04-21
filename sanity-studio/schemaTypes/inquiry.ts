@@ -2,7 +2,7 @@ import { defineField, defineType } from "sanity";
 
 export default defineType({
     name: "inquiry",
-    title: "Inquiry",
+    title: "Support Inquiry",
     type: "document",
     fields: [
         defineField({
@@ -31,29 +31,38 @@ export default defineType({
             type: "string",
             options: {
                 list: [
-                    { title: "📦 Order Question", value: "order" },
-                    { title: "🪑 Product Customization", value: "custom" },
-                    { title: "❓ General FAQ", value: "general" },
-                    { title: "🏢 Bulk / Corporate", value: "bulk" },
+                    { title: "📦 Order Update / Tracking", value: "tracking" },
+                    { title: "🪑 Product Information", value: "product" },
+                    { title: "❓ General Question", value: "general" },
+                    { title: "🏢 Business / Bulk Enquiry", value: "business" },
                 ]
             }
         }),
         defineField({
-            name: "orderReference",
-            title: "Order Reference",
+            name: "status",
+            title: "Status",
             type: "string",
-            description: "Selected order number for context"
+            initialValue: "new",
+            options: {
+                list: [
+                    { title: "New", value: "new" },
+                    { title: "In Progress", value: "progress" },
+                    { title: "Resolved", value: "resolved" },
+                    { title: "Elevated to Lead", value: "elevated" },
+                ]
+            }
         }),
         defineField({
-            name: "topic",
-            title: "FAQ Topic",
-            type: "string",
-            description: "Selected FAQ category"
+            name: "productReference",
+            title: "Related Product",
+            type: "reference",
+            to: [{ type: "product" }]
         }),
         defineField({
             name: "createdAt",
             title: "Created At",
             type: "datetime",
+            initialValue: (new Date()).toISOString(),
         }),
     ],
 });

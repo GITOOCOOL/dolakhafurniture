@@ -43,6 +43,7 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
 
   // Filter Logic
   const filteredOrders = useMemo(() => {
@@ -60,9 +61,29 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
       if (typeFilter === "manual") matchesType = !!order.isPhoneOrder;
       if (typeFilter === "website") matchesType = !order.isPhoneOrder;
 
-      return matchesSearch && matchesStatus && matchesSource && matchesType;
+      // DATE LOGIC
+      let matchesDate = true;
+      if (dateFilter) {
+        const createdAt = new Date(order._createdAt).getTime();
+        const now = new Date().getTime();
+        const dayMs = 24 * 60 * 60 * 1000;
+
+        if (dateFilter === "today") {
+          const startOfToday = new Date().setHours(0, 0, 0, 0);
+          matchesDate = createdAt >= startOfToday;
+        } else if (dateFilter === "7days") {
+          matchesDate = createdAt >= (now - (7 * dayMs));
+        } else if (dateFilter === "30days") {
+          matchesDate = createdAt >= (now - (30 * dayMs));
+        } else if (dateFilter === "month") {
+          const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+          matchesDate = createdAt >= startOfMonth;
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesSource && matchesType && matchesDate;
     });
-  }, [orders, searchQuery, statusFilter, sourceFilter, typeFilter]);
+  }, [orders, searchQuery, statusFilter, sourceFilter, typeFilter, dateFilter]);
 
   // Keep internal state in sync with server data when it changes
   useEffect(() => {
@@ -127,100 +148,111 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
         </button>
       </div>
 
-      {/* FILTER BAR */}
-      <div className="bg-surface border border-soft rounded-[2.5rem] p-6 lg:p-10 mb-8 space-y-6 shadow-sm">
-         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8">
-            {/* Search */}
-            <div className="md:col-span-6 relative">
-               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={18} />
+      {/* FILTER BAR (UNIFIED DESIGN) */}
+      <div className="bg-app border border-soft rounded-[2.5rem] p-6 space-y-6 shadow-sm">
+         <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+            {/* SEARCH */}
+            <div className="relative flex-1 group">
+               <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40 group-focus-within:text-action group-focus-within:opacity-100 transition-all" />
                <input 
-                 type="text" 
-                 placeholder="Search by Order #, Name, or Phone..." 
-                 className="w-full bg-app border border-soft rounded-2xl pl-16 pr-6 py-4 text-sm font-medium text-heading focus:outline-none focus:ring-1 focus:ring-action transition-all"
-                 value={searchQuery}
-                 onChange={(e) => setSearchQuery(e.target.value)}
+                  type="text"
+                  placeholder="Search by Order #, Name or Phone..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-surface border border-soft rounded-2xl pl-16 pr-6 py-4 text-sm font-medium text-heading focus:outline-none focus:ring-1 focus:ring-action focus:border-transparent transition-all shadow-inner"
                />
-               {searchQuery && (
-                 <button 
-                   onClick={() => setSearchQuery("")}
-                   className="absolute right-6 top-1/2 -translate-y-1/2 text-label hover:text-heading"
-                 >
-                   <X size={14} />
-                 </button>
+            </div>
+
+            {/* QUICK FILTERS */}
+            <div className="flex flex-wrap items-center gap-3">
+               <div className="h-8 w-px bg-divider mx-4 hidden lg:block" />
+               
+               {/* CHANNEL/TYPE FILTER */}
+               <div className="relative group">
+                  <select 
+                     value={typeFilter}
+                     onChange={(e) => setTypeFilter(e.target.value)}
+                     className="appearance-none bg-surface border border-soft rounded-xl pl-10 pr-10 py-3 text-[10px] font-bold uppercase tracking-widest text-heading focus:outline-none focus:border-action/40 transition-all cursor-pointer min-w-[160px]"
+                  >
+                     <option value="all">All Channels</option>
+                     <option value="website">Website Sales</option>
+                     <option value="manual">Manual Sales</option>
+                  </select>
+                  <Filter size={12} className="absolute left-4 top-1/2 -translate-y-1/2 text-label opacity-40" />
+                  <ChevronDown size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-label opacity-40" />
+               </div>
+
+               {/* SOURCE FILTER */}
+               <div className="relative group">
+                  <select 
+                     value={sourceFilter}
+                     onChange={(e) => setSourceFilter(e.target.value)}
+                     className="appearance-none bg-surface border border-soft rounded-xl pl-10 pr-10 py-3 text-[10px] font-bold uppercase tracking-widest text-heading focus:outline-none focus:border-action/40 transition-all cursor-pointer min-w-[160px]"
+                  >
+                     <option value="all">All Sources</option>
+                     <option value="website">Website</option>
+                     <option value="walk-in">Walk-In</option>
+                     <option value="whatsapp">WhatsApp</option>
+                     <option value="phone">Phone Call</option>
+                     <option value="facebook">Facebook</option>
+                  </select>
+                  <Package size={12} className="absolute left-4 top-1/2 -translate-y-1/2 text-label opacity-40" />
+                  <ChevronDown size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-label opacity-40" />
+               </div>
+
+               {/* DATE FILTER */}
+               <div className="relative group">
+                  <select 
+                     value={dateFilter || ""}
+                     onChange={(e) => setDateFilter(e.target.value || null)}
+                     className="appearance-none bg-surface border border-soft rounded-xl pl-10 pr-10 py-3 text-[10px] font-bold uppercase tracking-widest text-heading focus:outline-none focus:border-action/40 transition-all cursor-pointer"
+                  >
+                     <option value="">All Time</option>
+                     <option value="today">Today</option>
+                     <option value="7days">Last 7 Days</option>
+                     <option value="30days">Last 30 Days</option>
+                     <option value="month">This Month</option>
+                  </select>
+                  <Calendar size={12} className="absolute left-4 top-1/2 -translate-y-1/2 text-label opacity-40" />
+                  <ChevronDown size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-label opacity-40" />
+               </div>
+
+               {(searchQuery || statusFilter !== "all" || sourceFilter !== "all" || typeFilter !== "all" || dateFilter) && (
+                  <button 
+                     onClick={() => {
+                        setSearchQuery("");
+                        setStatusFilter("all");
+                        setSourceFilter("all");
+                        setTypeFilter("all");
+                        setDateFilter(null);
+                     }}
+                     className="flex items-center gap-2 px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                  >
+                     <X size={14} /> Clear All
+                  </button>
                )}
-            </div>
-
-            {/* Type Filter */}
-            <div className="md:col-span-4 relative">
-               <Filter className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={14} />
-               <select 
-                 className="w-full bg-app border border-soft rounded-2xl pl-14 pr-6 py-4 text-xs font-bold uppercase tracking-widest text-heading appearance-none focus:outline-none focus:ring-1 focus:ring-action outline-none cursor-pointer"
-                 value={typeFilter}
-                 onChange={(e) => setTypeFilter(e.target.value)}
-               >
-                 <option value="all">Channel: All</option>
-                 <option value="website">🛒 Website Orders</option>
-                 <option value="manual">🚶 Manual/Phone</option>
-               </select>
-               <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-label opacity-40 pointer-events-none" size={12} />
-            </div>
-
-            {/* Status Filter */}
-            <div className="md:col-span-4 relative">
-               <Filter className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={14} />
-               <select 
-                 className="w-full bg-app border border-soft rounded-2xl pl-14 pr-6 py-4 text-xs font-bold uppercase tracking-widest text-heading appearance-none focus:outline-none focus:ring-1 focus:ring-action outline-none cursor-pointer"
-                 value={statusFilter}
-                 onChange={(e) => setStatusFilter(e.target.value)}
-               >
-                 <option value="all">Status: All</option>
-                 <option value="pending">Pending</option>
-                 <option value="processing">Processing</option>
-                 <option value="shipped">Shipped</option>
-                 <option value="delivered">Delivered</option>
-                 <option value="cancelled">Cancelled</option>
-               </select>
-               <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-label opacity-40 pointer-events-none" size={12} />
-            </div>
-
-            {/* Source Filter */}
-            <div className="md:col-span-4 relative">
-               <Package className="absolute left-6 top-1/2 -translate-y-1/2 text-label opacity-40" size={14} />
-               <select 
-                 className="w-full bg-app border border-soft rounded-2xl pl-14 pr-6 py-4 text-xs font-bold uppercase tracking-widest text-heading appearance-none focus:outline-none focus:ring-1 focus:ring-action outline-none cursor-pointer"
-                 value={sourceFilter}
-                 onChange={(e) => setSourceFilter(e.target.value)}
-               >
-                 <option value="all">Source: All</option>
-                 <option value="website">Website</option>
-                 <option value="walk-in">Walk-in</option>
-                 <option value="whatsapp">WhatsApp</option>
-                 <option value="phone">Phone Call</option>
-                 <option value="facebook">Facebook</option>
-               </select>
-               <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-label opacity-40 pointer-events-none" size={12} />
             </div>
          </div>
 
-         {/* ACTIVE FILTERS SUMMARY */}
-         {(searchQuery || statusFilter !== "all" || sourceFilter !== "all" || typeFilter !== "all") && (
-           <div className="flex items-center justify-between pt-4 border-t border-soft/50">
-              <p className="text-[10px] font-bold text-label uppercase tracking-widest">
-                 Found <span className="text-heading">{filteredOrders.length}</span> matching orders
-              </p>
-              <button 
-                onClick={() => {
-                  setSearchQuery("");
-                  setStatusFilter("all");
-                  setSourceFilter("all");
-                  setTypeFilter("all");
-                }}
-                className="text-[9px] font-bold text-action hover:text-heading uppercase tracking-widest transition-colors flex items-center gap-2"
-              >
-                 <X size={12} /> Clear all filters
-              </button>
-           </div>
-         )}
+         {/* STATUS TABS */}
+         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-t border-soft pt-6">
+            <button 
+               onClick={() => setStatusFilter("all")}
+               className={`px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${statusFilter === "all" ? 'bg-invert text-app shadow-lg' : 'bg-soft text-label hover:bg-divider'}`}
+            >
+               All Orders
+            </button>
+            {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((val) => (
+               <button 
+                  key={val}
+                  onClick={() => setStatusFilter(val)}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${statusFilter === val ? 'bg-invert text-app shadow-lg font-black' : 'bg-soft text-label hover:bg-divider'}`}
+               >
+                  {val === statusFilter && <CheckCircle2 size={12} />}
+                  {val.charAt(0).toUpperCase() + val.slice(1)}
+               </button>
+            ))}
+         </div>
       </div>
 
       <ManualOrderModal 

@@ -151,14 +151,35 @@ export const adminOrdersQuery = `*[_type == "order"] | order(_createdAt desc) {
 export const adminInquiriesQuery = `*[_type == "inquiry"] | order(_createdAt desc) {
   _id,
   _createdAt,
-  customerName,
-  customerEmail,
-  customerPhone,
+  name,
+  email,
+  phone,
   message,
-  subject,
+  inquiryType,
   status,
   productReference-> {
     title,
     "slug": slug.current
+  }
+}`
+
+export const adminLeadsQuery = `*[_type == "lead"] | order(_createdAt desc) {
+  _id,
+  _createdAt,
+  customerName,
+  email,
+  phone,
+  status,
+  priority,
+  internalNotes,
+  source,
+  productReference-> {
+    title,
+    "slug": slug.current
+  },
+  originalInquiry-> {
+    _id,
+    _createdAt,
+    message
   }
 }`

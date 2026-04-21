@@ -11,7 +11,8 @@ export default function AdminHeaderClient() {
   let pageTitle = "Overview";
   if (pathname?.includes("/inventory")) pageTitle = "Inventory";
   else if (pathname?.includes("/orders")) pageTitle = "Orders";
-  else if (pathname?.includes("/inquiries")) pageTitle = "Inquiries";
+  else if (pathname?.includes("/inquiries")) pageTitle = "Service Inquiries";
+  else if (pathname?.includes("/leads")) pageTitle = "Sales Leads";
   else if (pathname?.includes("/users")) pageTitle = "User Roles";
 
   return (
