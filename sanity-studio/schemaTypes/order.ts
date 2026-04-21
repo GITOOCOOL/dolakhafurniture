@@ -7,8 +7,7 @@ export default {
       name: "orderNumber",
       title: "Order Number",
       type: "string",
-      readOnly: true,
-      description: "System generated unique identifier (e.g., #DF-A4F2)",
+      description: "System generated unique identifier, or manually enter one for phone orders (e.g., #DF-A4F2)",
     },
     { name: "supabaseUserId", title: "Supabase User ID", type: "string" },
     { name: "customerName", title: "Customer Name", type: "string" },
@@ -17,8 +16,7 @@ export default {
       name: "voucherCodes", 
       title: "Applied Voucher Codes", 
       type: "array", 
-      of: [{ type: "string" }],
-      readOnly: true 
+      of: [{ type: "string" }]
     },
     {
       name: "customerPhone",
@@ -81,6 +79,13 @@ export default {
         {
           type: "object",
           fields: [
+            { 
+              name: "product", 
+              title: "Link to Store Product (Optional)", 
+              type: "reference", 
+              to: [{ type: "product" }],
+              description: "Select an existing product from the catalog."
+            },
             { name: "title", type: "string" },
             { name: "price", type: "number" },
             { name: "quantity", type: "number" },
