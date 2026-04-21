@@ -382,20 +382,27 @@ export default function CheckoutDrawer({
       isOpen={isOpen}
       onClose={onClose}
       position="right"
+      noPadding
       title={
-        isSuccess ? "Success" : items.length === 0 ? "Empty Cart" : "Checkout"
+        isSuccess ? (
+          "Success"
+        ) : items.length === 0 ? (
+          "Empty Cart"
+        ) : (
+          <div className="flex items-center gap-3">
+            <span>Checkout</span>
+            <span className="type-label text-description/40 text-[9px] translate-y-[1px]">
+              Step {activeStep} of 4
+            </span>
+          </div>
+        )
       }
     >
       <div className="w-full h-full flex flex-col">
-        {!isSuccess && items.length > 0 && (
-          <p className="type-label text-description mb-6 -mt-2">
-            Step {activeStep} of 4
-          </p>
-        )}
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 no-scrollbar">
           {items.length === 0 && !isSuccess && (
-            <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-description/30 pb-6">
+            <p className="text-[9px] uppercase font-bold tracking-[0.2em] text-description/30 pb-4">
               Check our active campaigns
             </p>
           )}
@@ -650,15 +657,15 @@ export default function CheckoutDrawer({
             <form
               id="checkout-form"
               onSubmit={handleCheckout}
-              className="space-y-10 pb-20"
+              className="space-y-6 pb-6"
             >
               {activeStep === 1 && (
                 <motion.section
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="space-y-8"
+                  className="space-y-6"
                 >
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     <style
                       dangerouslySetInnerHTML={{
                         __html: `
@@ -695,10 +702,10 @@ export default function CheckoutDrawer({
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -20 }}
-                            className="group flex gap-4 p-4 bg-surface border border-soft rounded-3xl hover:border-action/30 transition-all shadow-sm"
+                            className="group flex gap-3 p-3 bg-surface border border-soft rounded-2xl hover:border-action/30 transition-all shadow-sm"
                           >
                             {/* Item Image */}
-                            <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-app flex-shrink-0 border border-soft/50">
+                            <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-app flex-shrink-0 border border-soft/50">
                               <img
                                 src={urlFor(item.mainImage).width(160).url()}
                                 className="object-contain w-full h-full p-2"
@@ -710,10 +717,10 @@ export default function CheckoutDrawer({
                             <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                               <div>
                                 <div className="flex justify-between items-start gap-2">
-                                  <h5 className="type-product text-heading truncate">
+                                  <h5 className="type-product !text-base text-heading truncate">
                                     {item.title}
                                   </h5>
-                                  <span className="type-label text-action flex-shrink-0">
+                                  <span className="type-label text-action text-[9px] flex-shrink-0">
                                     x {item.quantity}
                                   </span>
                                 </div>
@@ -771,14 +778,14 @@ export default function CheckoutDrawer({
 
                     {/* FINAL TOTAL */}
                     {/* FINAL TOTAL */}
-                    <div className="flex flex-col gap-4 pt-6 border-t border-divider bg-app p-6 rounded-3xl border-dotted shadow-sm">
+                    <div className="flex flex-col gap-3 pt-5 border-t border-divider bg-app p-5 rounded-2xl border-dotted shadow-sm">
                       <div className="flex justify-between items-center">
                         <div className="flex flex-col">
                           <span className="type-label text-description">
                             Total
                           </span>
                         </div>
-                        <span className="text-4xl font-serif italic text-action tracking-tighter">
+                        <span className="text-2xl font-sans font-bold text-action tracking-tight">
                           Rs. {finalTotal.toLocaleString()}
                         </span>
                       </div>
@@ -806,8 +813,8 @@ export default function CheckoutDrawer({
                     </div>
 
                     {/* Voucher Input */}
-                    <div className="pt-6 border-t border-divider border-dashed">
-                      <div className="flex flex-col mb-3 ml-1 gap-1">
+                    <div className="pt-4 border-t border-divider border-dashed">
+                      <div className="flex flex-col mb-2 ml-1 gap-0.5">
                         <p className="type-label text-description">
                           Discount Voucher
                         </p>
@@ -833,13 +840,13 @@ export default function CheckoutDrawer({
                                     onClick={() =>
                                       setVoucherInput(welcomeVoucher.code)
                                     }
-                                    className="px-4 py-2 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
+                                    className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
                                   >
                                     <Sparkles
-                                      size={12}
+                                      size={10}
                                       className="text-app fill-app/20"
                                     />
-                                    <span className="type-action text-app">
+                                    <span className="type-action text-app text-[9px]">
                                       {welcomeVoucher.code}
                                     </span>
                                   </button>
@@ -858,13 +865,13 @@ export default function CheckoutDrawer({
                                     key={i}
                                     type="button"
                                     onClick={() => setVoucherInput(v.code)}
-                                    className="px-4 py-2 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
+                                    className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
                                   >
                                     <Tag
-                                      size={12}
+                                      size={10}
                                       className="text-app fill-app/20"
                                     />
-                                    <span className="type-action text-app">
+                                    <span className="type-action text-app text-[9px]">
                                       {v.code}
                                     </span>
                                   </button>
@@ -877,7 +884,7 @@ export default function CheckoutDrawer({
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-col gap-3 mt-4">
+                      <div className="flex flex-col gap-2.5 mt-2">
                         <div className="w-full">
                           <Input
                             placeholder="Enter code"
@@ -887,7 +894,7 @@ export default function CheckoutDrawer({
                               setVoucherInput(e.target.value.toUpperCase())
                             }
                             error={voucherError}
-                            className="text-lg py-6"
+                            className="text-sm py-4"
                           />
                         </div>
                         <Button
@@ -896,7 +903,7 @@ export default function CheckoutDrawer({
                           isLoading={isApplyingVoucher}
                           variant="primary"
                           fullWidth
-                          className="!py-5 bg-invert hover:bg-action"
+                          className="!py-4 bg-invert hover:bg-action text-[11px]"
                         >
                           Apply Voucher
                         </Button>
@@ -1206,7 +1213,7 @@ export default function CheckoutDrawer({
                           {totalPieces} Handcrafted Items
                         </p>
                       </div>
-                      <p className="text-3xl font-sans font-extrabold text-action tracking-tighter">
+                      <p className="text-3xl font-sans font-bold text-action tracking-tight">
                         Rs. {finalTotal.toLocaleString()}
                       </p>
                     </div>
@@ -1243,19 +1250,17 @@ export default function CheckoutDrawer({
 
         {/* Footer Actions */}
         {!isSuccess && items.length > 0 && (
-          <div className="flex-shrink-0 py-8 border-t border-soft/10 flex items-center justify-between gap-6 px-2 mt-8">
-            {activeStep > 1 ? (
+          <div className="flex-shrink-0 pt-0 pb-0 border-t border-soft/10 flex items-center justify-center gap-6 px-6 relative">
+            {activeStep > 1 && (
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 type-action text-description hover:text-heading transition-all group"
+                className="absolute left-6 flex items-center gap-2 type-action text-description hover:text-heading transition-all group"
               >
                 <div className="p-2 group-hover:bg-soft/10 rounded-full transition-all">
                   <ArrowLeft size={16} />
                 </div>
                 <span>Back</span>
               </button>
-            ) : (
-              <div />
             )}
 
             <Button
@@ -1268,7 +1273,7 @@ export default function CheckoutDrawer({
               disabled={
                 activeStep === 1 && items.length > 0 && isInitialLoading
               }
-              className="flex-1 max-w-[280px] !py-5"
+              className="flex-1 max-w-[280px] !py-5 rounded-b-none"
               rightIcon={
                 activeStep < 4 ? (
                   <ChevronRight size={18} />

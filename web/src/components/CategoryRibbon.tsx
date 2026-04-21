@@ -1,43 +1,56 @@
-import React from 'react'
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 
-type CategoryRibbonProps = { 
-  title: string; 
+type CategoryRibbonProps = {
+  title: string;
   slug: string;
   subtitle?: string;
   vouchers?: string[];
   description?: string;
 };
 
-const CategoryRibbon = ({ title, slug, subtitle, vouchers, description }: CategoryRibbonProps) => {
-  const isFeatured = slug === 'featured';
-  const isCampaign = slug.startsWith('campaign/');
-  
-  const buttonText = isFeatured ? 'Shop All' : 'Explore';
-  const buttonHref = isFeatured ? '/shop' : isCampaign ? `/${slug}` : `/category/${slug}`;
+const CategoryRibbon = ({
+  title,
+  slug,
+  subtitle,
+  vouchers,
+  description,
+}: CategoryRibbonProps) => {
+  const isFeatured = slug === "featured";
+  const isCampaign = slug.startsWith("campaign/");
 
-  const defaultFeaturedDesc = "Our top-rated pieces for every room. We focus on well-built construction and reliable materials to give you comfortable furniture that lasts.";
-  const displayDescription = description || (isFeatured ? defaultFeaturedDesc : null);
+  const buttonText = isFeatured ? "Shop All" : "Explore";
+  const buttonHref = isFeatured
+    ? "/shop"
+    : isCampaign
+      ? `/${slug}`
+      : `/category/${slug}`;
 
-  const formattedSubtitle = subtitle && !isNaN(Date.parse(subtitle))
-    ? `Ends on: ${new Date(subtitle).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
-    : subtitle;
+  const defaultFeaturedDesc =
+    "Our top-rated pieces for every room. We focus on well-built construction and reliable materials to give you comfortable furniture that lasts.";
+  const displayDescription =
+    description || (isFeatured ? defaultFeaturedDesc : null);
+
+  const formattedSubtitle =
+    subtitle && !isNaN(Date.parse(subtitle))
+      ? `Ends on: ${new Date(subtitle).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
+      : subtitle;
 
   return (
-    <div className="relative group w-full md:w-44 flex flex-col items-start 
-                    bg-app border-l-2 border-divider px-4 py-3 md:py-4 lg:py-8 lg:px-6
+    <div
+      className="relative group w-full flex flex-row items-center justify-between
+                    bg-app px-4 py-4 md:py-6 md:px-8
                     shadow-sm transition-all duration-500 
-                    hover:bg-surface hover:border-action rounded-r-md min-h-[80px] lg:h-full">
-
-      <div className="z-10 w-full grid grid-cols-2 lg:grid-cols-1 gap-4 lg:gap-8 items-stretch lg:items-start">
-        
-        {/* LEFT COLUMN (Mobile) / TOP SECTION (Desktop) */}
-        <div className="flex flex-col justify-between h-full lg:h-auto space-y-4">
+                    hover:bg-surface hover:border-action rounded-r-md min-h-[80px]"
+    >
+      <div className="z-10 w-full flex flex-row gap-8 items-center lg:items-center">
+        {/* LEFT SECTION (Branding) */}
+        <div className="flex-shrink-0 w-fit flex flex-col justify-between space-y-4">
           <div className="space-y-2">
             <h2 className="type-product text-heading leading-tight capitalize transition-colors group-hover:text-action">
               {title}
             </h2>
-            
+
             {formattedSubtitle && (
               <p className="type-label text-action text-[8px] lg:text-[10px]">
                 {formattedSubtitle}
@@ -47,7 +60,7 @@ const CategoryRibbon = ({ title, slug, subtitle, vouchers, description }: Catego
             {vouchers && vouchers.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {vouchers.map((code) => (
-                  <span 
+                  <span
                     key={code}
                     className="type-label inline-block px-2 py-0.5 bg-surface border border-action/40 
                                text-action rounded-sm tracking-tighter"
@@ -68,10 +81,10 @@ const CategoryRibbon = ({ title, slug, subtitle, vouchers, description }: Catego
           </Link>
         </div>
 
-        {/* RIGHT COLUMN (Mobile) / BOTTOM SECTION (Desktop) */}
+        {/* RIGHT SECTION (Description) */}
         {displayDescription && (
-          <div className="flex flex-col justify-center lg:justify-start lg:pt-8 lg:border-t lg:border-soft lg:border-dotted border-l border-soft/30 pl-4 lg:pl-0 lg:border-l-0">
-            <p className="type-body text-description leading-relaxed italic text-[11px] lg:text-[13px] line-clamp-3 lg:line-clamp-none">
+          <div className="flex-1 flex flex-col justify-center lg:justify-start border-l border-soft/30 pl-4 lg:pl-8">
+            <p className="type-body text-description leading-relaxed italic text-[11px] md:text-[13px]">
               {displayDescription}
             </p>
           </div>

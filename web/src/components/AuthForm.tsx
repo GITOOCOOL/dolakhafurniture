@@ -98,7 +98,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
 
   return (
     <div className="relative z-10 w-full">
-      <h1 className="text-3xl font-serif italic mb-4 text-center">
+      <h1 className="type-product text-heading mb-6 text-center">
         {isLogin ? "Join our community." : "Create an account."}
       </h1>
 

@@ -9,11 +9,12 @@ import { useUIStore } from "@/store/useUIStore";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title?: string;
+  title?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
   position?: "center" | "right" | "left" | "bottom";
   hideCloseButton?: boolean;
+  noPadding?: boolean;
 }
 
 export default function Modal({
@@ -24,6 +25,7 @@ export default function Modal({
   className = "",
   position = "center",
   hideCloseButton = false,
+  noPadding = false,
 }: ModalProps) {
   const { lockScroll, unlockScroll } = useUIStore();
   const [mounted, setMounted] = useState(false);
@@ -115,15 +117,17 @@ export default function Modal({
           >
             {/* Standardized Master Header */}
             <div
-              className={`flex items-center justify-between p-8 border-b border-soft/20 flex-shrink-0 relative z-20`}
+              className={`flex items-center justify-between px-8 py-4 border-b border-soft/20 flex-shrink-0 relative z-20`}
             >
               <div className="flex items-center gap-3">
                 {isDrawer && position === "left" && (
                   <div className="w-2 h-2 rounded-full bg-action animate-pulse" />
                 )}
-                <h3 className="type-section text-heading">
-                  {title || (position === "left" ? "Navigation" : "Info")}
-                </h3>
+                <div className="flex items-baseline gap-3">
+                  <h3 className="type-label text-heading text-[12px]">
+                    {title || (position === "left" ? "Navigation" : "Info")}
+                  </h3>
+                </div>
               </div>
 
               {!hideCloseButton && (
@@ -138,7 +142,9 @@ export default function Modal({
             </div>
 
             <div
-              className={`relative z-10 font-sans flex-1 overflow-y-auto custom-scrollbar ${isDrawer ? "p-8" : "p-10"}`}
+              className={`relative z-10 font-sans flex-1 overflow-y-auto custom-scrollbar ${
+                noPadding ? "p-0" : isDrawer ? "px-6 py-4" : "p-10"
+              }`}
               style={{ WebkitOverflowScrolling: "touch" }}
             >
               {children}

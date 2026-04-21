@@ -66,57 +66,11 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
   return (
     <div ref={containerRef} className="flex-1 relative group w-full px-0 overflow-visible flex flex-col gap-2">
       <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none !important; }
-        .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-        
-        .boho-scrubber {
-          -webkit-appearance: none;
-          width: 100%;
-          background: transparent;
-        }
-        .boho-scrubber:focus { outline: none; }
-        .boho-scrubber::-webkit-slider-runnable-track {
-          width: 100%;
-          height: 2px;
-          cursor: pointer;
-          background: var(--stone-muted);
-          border-radius: 2px;
-        }
-        .boho-scrubber::-moz-range-track {
-          width: 100%;
-          height: 2px;
-          cursor: pointer;
-          background: var(--stone-muted);
-          border-radius: 2px;
-        }
-        .boho-scrubber::-webkit-slider-thumb {
-          height: 10px;
-          width: 40px;
-          border-radius: 5px;
-          background: var(--terracotta);
-          cursor: pointer;
-          -webkit-appearance: none;
-          margin-top: -4px;
-          box-shadow: 0 0 5px rgba(163,87,58,0.3);
-        }
-        .boho-scrubber::-moz-range-thumb {
-          height: 10px;
-          width: 40px;
-          border-radius: 5px;
-          background: var(--terracotta);
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 0 5px rgba(163,87,58,0.3);
-        }
+        /* Card width injection for responsive sizing */
+        :root { --card-width: 60%; }
+        @media (min-width: 768px) { :root { --card-width: 18%; } }
+        @media (min-width: 1024px) { :root { --card-width: 18%; } }
       `}</style>
-      
-      <div className="relative w-full">
-        {/* CSS Variable injection for responsive sizing */}
-        <style>{`
-          :root { --card-width: 60%; }
-          @media (min-width: 768px) { :root { --card-width: 18%; } }
-          @media (min-width: 1024px) { :root { --card-width: 18%; } }
-        `}</style>
         <div 
           ref={scrollRef}
           onMouseDown={() => {
@@ -140,7 +94,6 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
             );
           })}
         </div>
-      </div>
 
       {/* REPOSITIONED FOOTER CONTROLS AREA */}
       <div className="flex flex-col items-center gap-1 w-full px-4 mb-4 mt-2">

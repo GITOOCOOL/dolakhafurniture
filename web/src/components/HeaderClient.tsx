@@ -21,12 +21,12 @@ interface HeaderClientProps {
 
 export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { 
-    lockScroll, 
-    unlockScroll, 
+  const {
+    lockScroll,
+    unlockScroll,
     setCampaignModalOpen,
     isSearchOpen,
-    setIsSearchOpen 
+    setIsSearchOpen,
   } = useUIStore();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,7 +87,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
               >
                 <Menu size={26} className="md:w-7 md:h-7" strokeWidth={1.5} />
               </button>
-              
+
               {/* Promo Trigger */}
               <div className="flex items-center">
                 {latestCampaign && (
@@ -117,7 +117,13 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                     className="w-full h-full text-action opacity-[0.35] absolute transition-transform duration-700 group-hover:scale-110"
                   >
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <line x1="4" y1="18" x2="20" y2="18" className="opacity-30" />
+                    <line
+                      x1="4"
+                      y1="18"
+                      x2="20"
+                      y2="18"
+                      className="opacity-30"
+                    />
                   </svg>
                   <img
                     src="/logo.png"
@@ -143,15 +149,27 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
           </div>
         </div>
 
-        {/* --- STICKY MINIMAL SEARCH TRIGGER (Hanging below the surface) --- */}
-        <div className="flex justify-end px-6 md:px-12 pt-3 pointer-events-none">
+        {/* --- FULL-WIDTH SEARCH TRIGGER --- */}
+        <div className="container mx-auto px-6 pt-4 pointer-events-none">
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="pointer-events-auto bg-app/80 backdrop-blur-md border border-soft shadow-sm p-4 rounded-full text-heading/40 hover:text-action hover:scale-110 transition-all duration-500 group flex items-center gap-3"
+            className="pointer-events-auto w-full bg-app/50 backdrop-blur-md border border-soft/50 shadow-sm px-6 py-4 rounded-2xl text-label hover:border-action transition-all duration-500 group flex items-center justify-between"
             aria-label="Search Collection"
           >
-            <Search size={22} className="md:w-6 md:h-6" strokeWidth={1.2} />
-            <span className="text-[9px] font-sans font-bold uppercase tracking-[0.2em] group-hover:text-action transition-colors">Search</span>
+            <div className="flex items-center gap-4">
+              <Search
+                size={18}
+                className="text-action opacity-50 group-hover:opacity-100 transition-opacity"
+                strokeWidth={1.5}
+              />
+              <span className="text-[11px] font-sans font-medium lowercase tracking-wide text-description group-hover:text-heading transition-colors">
+                Search by name, material, or style...
+              </span>
+            </div>
+            <div className="hidden md:flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.2em] text-label opacity-40 group-hover:opacity-100">
+              <span>Quick Search</span>
+              <span className="text-action">→</span>
+            </div>
           </button>
         </div>
 
@@ -179,7 +197,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                 <input
                   autoFocus
                   type="text"
-                  placeholder="Search by collection, material, or style..."
+                  placeholder="Search by name, material, or style..."
                   className="w-full bg-transparent border-b-2 border-soft text-heading placeholder:text-label text-2xl md:text-4xl py-6 focus:outline-none focus:border-action transition-all font-light"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -195,7 +213,11 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                   {isSearching && (
                     <div className="w-6 h-6 border-2 border-action border-t-transparent rounded-full animate-spin" />
                   )}
-                  <Search size={40} strokeWidth={1} className="text-action opacity-30 group-focus-within:opacity-100 transition-opacity" />
+                  <Search
+                    size={40}
+                    strokeWidth={1}
+                    className="text-action opacity-30 group-focus-within:opacity-100 transition-opacity"
+                  />
                 </div>
               </div>
 
@@ -205,12 +227,20 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                   searchResults.length > 0 ? (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                       <div className="flex justify-between items-end border-b border-soft pb-4">
-                        <h3 className="type-label text-label uppercase tracking-widest">Results found ({searchResults.length})</h3>
-                        <p className="type-label text-description italic">Scroll for more</p>
+                        <h3 className="type-label text-label uppercase tracking-widest">
+                          Results found ({searchResults.length})
+                        </h3>
+                        <p className="type-label text-description italic">
+                          Scroll for more
+                        </p>
                       </div>
                       <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {searchResults.map((product) => (
-                          <div key={product._id} className="h-full" onClick={() => setIsSearchOpen(false)}>
+                          <div
+                            key={product._id}
+                            className="h-full"
+                            onClick={() => setIsSearchOpen(false)}
+                          >
                             <ProductCard product={product} />
                           </div>
                         ))}
@@ -222,15 +252,28 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                         <div className="w-16 h-16 rounded-full bg-soft/10 flex items-center justify-center mb-6">
                           <Search size={32} className="text-label" />
                         </div>
-                        <h3 className="text-2xl font-serif italic text-heading mb-2">No results matched your craft</h3>
-                        <p className="text-description max-w-xs">Double check your spelling or try searching for materials like "teak" or "velvet".</p>
+                        <h3 className="text-2xl font-serif italic text-heading mb-2">
+                          No results matched your craft
+                        </h3>
+                        <p className="text-description max-w-xs">
+                          Double check your spelling or try searching for
+                          materials like "teak" or "velvet".
+                        </p>
                       </div>
                     )
                   )
                 ) : (
                   <div className="flex flex-wrap justify-center gap-4 pt-8">
-                    <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-label w-full text-center mb-2">Popular Searches</span>
-                    {['Sofa Sets', 'Dining Tables', 'Wardrobes', 'Beds', 'Office Chairs'].map((term) => (
+                    <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-label w-full text-center mb-2">
+                      Popular Searches
+                    </span>
+                    {[
+                      "Sofa Sets",
+                      "Dining Tables",
+                      "Wardrobes",
+                      "Beds",
+                      "Office Chairs",
+                    ].map((term) => (
                       <button
                         key={term}
                         type="button"
@@ -262,37 +305,57 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                   setIsMenuOpen(false);
                   setCampaignModalOpen(true);
                 }}
-                className="w-full mb-10 p-6 rounded-[2rem] bg-heading border border-soft/20 flex items-center justify-between group overflow-hidden relative"
+                className="w-full mb-10 p-6 rounded-[2rem] bg-surface border border-divider flex items-center justify-between group overflow-hidden relative"
               >
                 <div className="relative z-10 flex items-center gap-5">
                   <span className="text-3xl animate-bounce-slow">🏮</span>
                   <div className="text-left">
-                    <p className="type-label text-app/50 uppercase tracking-[0.2em] text-[9px] mb-1">
+                    <p className="type-label text-description uppercase tracking-[0.2em] text-[9px] mb-1">
                       Limited Time Offer
                     </p>
-                    <p className="type-product text-app group-hover:text-white transition-colors">
+                    <p className="type-product text-heading group-hover:text-action transition-colors">
                       {latestCampaign.title}
                     </p>
                   </div>
                 </div>
-                <div className="relative z-10 w-10 h-10 rounded-full border border-soft/20 flex items-center justify-center text-app group-hover:bg-white group-hover:text-action transition-all">
+                <div className="relative z-10 w-10 h-10 rounded-full border border-divider flex items-center justify-center text-heading group-hover:bg-action group-hover:text-app transition-all">
                   →
                 </div>
               </button>
             )}
 
-            <CategoryNav isMobile={true} onItemClick={() => setIsMenuOpen(false)} />
+            <CategoryNav
+              isMobile={true}
+              onItemClick={() => setIsMenuOpen(false)}
+            />
           </div>
 
           <div className="flex-shrink-0 w-full border-t border-soft/20 pt-10 pb-6 mt-10">
             <div className="flex gap-8 mb-6">
-              <a href="https://facebook.com/dolakhafurniture" className="text-heading/40 hover:text-action transition-all"><Facebook size={22} strokeWidth={1.5} /></a>
-              <a href="https://instagram.com/dolakhafurnituredesign" className="text-heading/40 hover:text-action transition-all"><Instagram size={22} strokeWidth={1.5} /></a>
-              <a href="https://tiktok.com/@dolakhafurniture" className="text-heading/40 hover:text-action transition-all">
-                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" /></svg>
+              <a
+                href="https://facebook.com/dolakhafurniture"
+                className="text-heading/40 hover:text-action transition-all"
+              >
+                <Facebook size={22} strokeWidth={1.5} />
+              </a>
+              <a
+                href="https://instagram.com/dolakhafurnituredesign"
+                className="text-heading/40 hover:text-action transition-all"
+              >
+                <Instagram size={22} strokeWidth={1.5} />
+              </a>
+              <a
+                href="https://tiktok.com/@dolakhafurniture"
+                className="text-heading/40 hover:text-action transition-all"
+              >
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
+                </svg>
               </a>
             </div>
-            <p className="type-label text-description/40 uppercase tracking-[0.3em] text-[10px]">Honest Craft, Nepal</p>
+            <p className="type-label text-description/40 uppercase tracking-[0.3em] text-[10px]">
+              Honest Craft, Nepal
+            </p>
           </div>
         </div>
       </Modal>

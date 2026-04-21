@@ -11,7 +11,7 @@ import FloatingContact from "@/components/FloatingContact";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import BrowserBanner from "@/components/BrowserBanner";
 import CampaignModal from "@/components/CampaignModal";
-import NextTopLoader from 'nextjs-toploader';
+import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -37,13 +37,18 @@ export default async function RootLayout({
 }) {
   const [bulletins, activeCampaigns] = await Promise.all([
     client.fetch<Bulletin[]>(bulletinQuery),
-    client.fetch<Campaign[]>(activeCampaignsQuery)
+    client.fetch<Campaign[]>(activeCampaignsQuery),
   ]);
 
   const latestCampaign = activeCampaigns?.[0] || null;
 
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      className="scroll-smooth"
+      suppressHydrationWarning
+      data-scroll-behavior="smooth"
+    >
       <head>
         <meta
           name="viewport"
@@ -64,24 +69,28 @@ export default async function RootLayout({
       <body
         className={`${serif.variable} ${sans.variable} antialiased bg-app text-heading font-sans w-full min-h-screen flex flex-col transition-colors duration-300`}
       >
-        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
-          <NextTopLoader 
-            color="action-success"
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="system"
+          enableSystem
+        >
+          <NextTopLoader
+            color="#df9152"
             initialPosition={0.08}
             crawlSpeed={200}
-            height={5}
+            height={6}
             crawl={true}
             showSpinner={false}
             easing="ease"
             speed={200}
-            shadow="0 0 15px rgba(34,197,94,0.6), 0 0 10px rgba(34,197,94,0.4)"
+            shadow="0 0 20px rgba(223, 145, 82, 0.9), 0 0 10px rgba(223, 145, 82, 0.7)"
             zIndex={999999}
           />
           <ToastProvider>
             <Suspense fallback={null}>
               <MetaPixel />
             </Suspense>
-            
+
             <BrowserBanner />
             <AnnouncementBar bulletins={bulletins} />
             <HeaderClient latestCampaign={latestCampaign} />
@@ -90,55 +99,55 @@ export default async function RootLayout({
           <FloatingContact />
 
           {/* FOOTER */}
-          <footer className="border-t border-soft border-dotted bg-app text-[#e2e8da] py-20 w-full transition-colors duration-300">
+          <footer className="border-t border-soft border-dotted bg-app text-description py-24 w-full transition-colors duration-300">
             <div className="container mx-auto px-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-center md:text-left">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 text-center md:text-left">
                 <div className="lg:col-span-2">
-                  <h3 className="text-bone text-3xl font-serif italic mb-6 leading-relaxed">
+                  <h3 className="type-section text-heading mb-8">
                     "Sustainably sourced, <br /> thoughtfully crafted."
                   </h3>
-                  <p className="text-label type-body italic leading-relaxed">
+                  <p className="type-body text-description italic max-w-md mx-auto md:mx-0">
                     Each piece is a testament to our commitment to quality and
                     sustainability. Our other platforms are just a click away,
                     where you can explore more of our story and collections.
                   </p>
                   <br />
-                  <div className="flex justify-center md:justify-start gap-8 type-action font-medium">
+                  <div className="flex justify-center md:justify-start gap-10 type-action">
                     <a
                       href="https://facebook.com/dolakhafurniture"
                       target="_blank"
-                      className="hover:text-warmth transition-colors"
+                      className="text-label hover:text-action transition-colors"
                     >
                       Facebook
                     </a>
                     <a
                       href="https://instagram.com/dolakhafurnituredesign"
                       target="_blank"
-                      className="hover:text-warmth transition-colors"
+                      className="text-label hover:text-action transition-colors"
                     >
                       Instagram
                     </a>
                     <a
                       href="https://tiktok.com/@dolakhafurniture"
                       target="_blank"
-                      className="hover:text-warmth transition-colors"
+                      className="text-label hover:text-action transition-colors"
                     >
                       TikTok
                     </a>
                   </div>
                 </div>
-                <div className="md:ml-auto w-full">
-                  <p className="text-bone text-xs font-serif italic mb-4">
-                    Join our Socials
+                <div className="md:ml-auto w-full max-w-sm">
+                  <p className="type-label text-heading mb-6">
+                    Join our Newsletter
                   </p>
-                  <div className="flex border-b border-espresso pb-2 max-w-xs mx-auto md:mx-0">
+                  <div className="flex border-b border-divider pb-3">
                     <input
                       type="text"
                       placeholder="EMAIL ADDRESS"
-                      className="bg-transparent text-xs w-full outline-none placeholder:text-label placeholder:text-[10px] tracking-widest"
+                      className="bg-transparent type-label w-full outline-none placeholder:text-description/40"
                       suppressHydrationWarning
                     />
-                    <button className="text-warmth font-serif italic">
+                    <button className="text-action hover:translate-x-1 transition-transform">
                       →
                     </button>
                   </div>

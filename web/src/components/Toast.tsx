@@ -63,7 +63,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 
                 <div className="flex flex-col min-w-0 flex-1">
                   <span className="text-[8px] font-sans font-extrabold uppercase tracking-[0.3em] text-app/50 leading-none mb-1">
-                    Confirmed
+                    Added to Cart
                   </span>
                   <span className="font-sans font-bold uppercase tracking-widest text-[11px] truncate">
                     {toast.message}

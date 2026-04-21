@@ -13,20 +13,28 @@ type CategoryRowProps = {
   description?: string;
 };
 
-const CategoryRow = ({ title, slug, products, autoScroll = false, subtitle, vouchers, description }: CategoryRowProps) => {
+const CategoryRow = ({
+  title,
+  slug,
+  products,
+  autoScroll = false,
+  subtitle,
+  vouchers,
+  description,
+}: CategoryRowProps) => {
   const validProducts = products?.filter(Boolean) || [];
-  
+
   if (!validProducts.length) return null;
   return (
-    <section className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start lg:items-stretch w-full overflow-visible">
-      {/* Ribbon: Spans full width on mobile, side-aligned on desktop */}
-      <div className="flex-shrink-0 w-fit md:w-44 px-1 md:px-0">
-        <CategoryRibbon 
-          title={title} 
-          slug={slug} 
-          subtitle={subtitle} 
-          vouchers={vouchers} 
-          description={description} 
+    <section className="flex flex-col gap-4 w-full overflow-visible border-l-2 border-divider ml-1 lg:ml-0">
+      {/* Ribbon: Spans full width as a banner header */}
+      <div className="flex-shrink-0 w-full px-1">
+        <CategoryRibbon
+          title={title}
+          slug={slug}
+          subtitle={subtitle}
+          vouchers={vouchers}
+          description={description}
         />
       </div>
 
@@ -41,6 +49,5 @@ const CategoryRow = ({ title, slug, products, autoScroll = false, subtitle, vouc
     </section>
   );
 };
-
 
 export default CategoryRow;
