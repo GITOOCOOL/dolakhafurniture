@@ -266,9 +266,9 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
 
       <div className="space-y-6">
         {filteredOrders.length > 0 ? filteredOrders.map((order) => (
-          <div key={order._id} className="bg-app border border-soft rounded-[3rem] p-10 shadow-sm hover:border-action/20 transition-all duration-500 overflow-hidden relative group">
+          <div key={order._id} className="bg-app border border-soft rounded-[3rem] p-6 md:p-10 shadow-sm hover:border-action/20 transition-all duration-500 overflow-hidden relative group">
             {/* STATUS BADGE */}
-            <div className="absolute top-10 right-10 flex items-center gap-4">
+            <div className="relative sm:absolute sm:top-10 sm:right-10 flex flex-wrap items-center gap-3 mb-6 sm:mb-0">
                <div className="relative">
                 <select 
                   value={order.status?.toLowerCase() || "pending"}
@@ -365,7 +365,7 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                  <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-6">Order Contents</p>
                  <div className="space-y-4">
                     {order.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center bg-soft/30 p-6 rounded-2xl border border-soft/50">
+                      <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-soft/30 p-4 sm:p-6 rounded-2xl border border-soft/50 gap-4">
                            <div className="flex items-center gap-6">
                              <div className="w-12 h-16 bg-white rounded-lg border border-soft flex-shrink-0 relative overflow-hidden shadow-sm">
                                {item.imageUrl ? (
@@ -391,13 +391,13 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                                 </p>
                              </div>
                           </div>
-                        <p className="text-sm font-bold text-heading">Rs. {item.price * item.quantity}</p>
+                        <p className="text-sm font-bold text-heading self-end md:self-auto">Rs. {item.price * item.quantity}</p>
                       </div>
                     ))}
                  </div>
 
-                 <div className="mt-8 pt-8 border-t border-soft border-dotted flex justify-between items-end">
-                    <div className="flex gap-16">
+                 <div className="mt-8 pt-8 border-t border-soft border-dotted flex flex-col sm:flex-row justify-between items-start sm:items-end gap-8">
+                    <div className="flex flex-col sm:flex-row gap-6 sm:gap-16 w-full sm:w-auto">
                       <div>
                         <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-1">Total</p>
                         <h4 className="text-xl font-sans font-bold text-heading">Rs. {order.totalPrice}</h4>
@@ -415,10 +415,10 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                         </>
                       ) : null}
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 w-full sm:w-auto">
                        <button 
                          onClick={() => setSelectedOrder(order)}
-                         className="flex items-center gap-2 px-8 py-3 bg-invert text-app rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-action transition-all shadow-lg"
+                         className="flex items-center gap-2 flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-3 bg-invert text-app rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-action transition-all shadow-lg"
                        >
                           <Plus size={14} /> Full Breakdown
                        </button>
@@ -651,7 +651,7 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                 {/* Restore Stock Option */}
                 <button 
                   onClick={() => setShouldRestoreStock(!shouldRestoreStock)}
-                  className={`w-full flex items-center gap-4 p-5 rounded-[2rem] border transition-all ${shouldRestoreStock ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-700" : "bg-surface border-soft text-label"}`}
+                  className={`w-full flex flex-wrap items-center gap-3 p-5 rounded-[2rem] border transition-all ${shouldRestoreStock ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-700" : "bg-surface border-soft text-label"}`}
                 >
                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${shouldRestoreStock ? "bg-emerald-500 text-white" : "border-2 border-soft"}`}>
                       {shouldRestoreStock && <CheckCircle2 size={14} />}

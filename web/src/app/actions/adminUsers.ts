@@ -43,29 +43,34 @@ export async function addStaffMember(data: {
       user_metadata: { full_name: data.fullName }
     });
 
-    if (authError) throw authError;
+    if (authError) {
+      console.error("Auth Creation Error:", authError);
+      return { 
+        success: false, 
+        message: authError.message.includes("already registered") 
+          ? "This email is already registered in the system." 
+          : `Auth Error: ${authError.message}` 
+      };
+    }
 
-    // 3. Update the Profile Role
-    // Profiles are usually created via DB trigger, so we update the existing row
+    if (!authData.user) {
+      return { success: false, message: "User creation failed: No user data returned." };
+    }
+
+    // 3. Ensure the Profile exists with the correct role
+    // We try an upsert here to be absolutely safe against race conditions with DB triggers
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
-      .update({ 
+      .upsert({ 
+        id: authData.user.id,
+        email: data.email,
         role: data.role.toLowerCase(),
         full_name: data.fullName
-      })
-      .eq("id", authData.user.id);
+      }, { onConflict: 'id' });
 
     if (profileError) {
-      // If update fails, maybe the trigger hasn't finished or doesn't exist
-      // We attempt a direct insert just in case
-      await supabaseAdmin
-        .from("profiles")
-        .insert({
-          id: authData.user.id,
-          email: data.email,
-          full_name: data.fullName,
-          role: data.role.toLowerCase()
-        });
+      console.error("Profile Creation Error:", profileError);
+      return { success: false, message: `Profile Link Error: ${profileError.message}` };
     }
 
     revalidatePath("/admin/users");
@@ -76,7 +81,7 @@ export async function addStaffMember(data: {
       email: data.email
     };
   } catch (error: any) {
-    console.error("Staff Onboarding Error:", error);
-    return { success: false, message: error.message || "Failed to onboard new staff member." };
+    console.error("Staff Onboarding System Failure:", error);
+    return { success: false, message: error.message || "A system error occurred during recruitment." };
   }
 }
