@@ -24,6 +24,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [avatarError, setAvatarError] = useState(false);
   const { 
     isCheckoutDrawerOpen, 
     setIsCheckoutDrawerOpen,
@@ -135,11 +136,24 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   }, [isAccountModalOpen, lockScroll, unlockScroll]);
 
 
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    const parts = name.split(" ");
-    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return parts[0][0].toUpperCase();
+  const getInitials = (userName?: string, userEmail?: string) => {
+    if (!userName && !userEmail) return "U";
+    
+    // 1. Try full name
+    if (userName) {
+      const parts = userName.split(" ").filter(p => p.length > 0);
+      if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+      if (parts.length === 1) return parts[0][0].toUpperCase();
+    }
+
+    // 2. Fallback to Email prefix
+    if (userEmail) {
+      const emailPrefix = userEmail.split("@")[0];
+      if (emailPrefix.length >= 2) return emailPrefix.substring(0, 2).toUpperCase();
+      return emailPrefix[0].toUpperCase();
+    }
+
+    return "U";
   };
 
 
@@ -228,15 +242,19 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           {loading ? (
             <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider animate-pulse bg-soft" />
           ) : user ? (
-            user.user_metadata?.avatar_url ? (
+            user.user_metadata?.avatar_url && !avatarError ? (
               <img
                 src={user.user_metadata.avatar_url}
-                 className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider shadow-sm group-hover:border-action transition-all object-cover flex-shrink-0"
+                onError={() => {
+                  setAvatarError(true);
+                  console.log("Google's icon couldn't be fetched, showing the initials of the account instead.");
+                }}
+                className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider shadow-sm group-hover:border-action transition-all object-cover flex-shrink-0"
                 alt="profile"
               />
             ) : (
-               <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full bg-espresso text-bone flex items-center justify-center text-[9px] md:text-[10px] font-bold tracking-tighter border border-divider shadow-sm group-hover:bg-action transition-all flex-shrink-0">
-                {getInitials(user.user_metadata?.full_name)}
+              <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full bg-espresso text-bone flex items-center justify-center text-[9px] md:text-[10px] font-bold tracking-tighter border border-divider shadow-sm group-hover:bg-action transition-all flex-shrink-0 uppercase">
+                {getInitials(user.user_metadata?.full_name, user.email)}
               </div>
             )
           ) : (
@@ -256,15 +274,19 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
             {user ? (
               <div className="flex flex-col gap-8 h-full">
                 <div className="flex items-center gap-4">
-                  {user.user_metadata.avatar_url ? (
+                  {user.user_metadata.avatar_url && !avatarError ? (
                     <img
                       src={user.user_metadata.avatar_url}
-                        className="w-16 h-16 rounded-full border border-soft/20 shadow-sm object-cover"
+                      onError={() => {
+                        setAvatarError(true);
+                        console.log("Google's icon couldn't be fetched, showing the initials of the account instead.");
+                      }}
+                      className="w-16 h-16 rounded-full border border-soft/20 shadow-sm object-cover"
                       alt="profile"
                     />
                   ) : (
-                      <div className="w-16 h-16 rounded-full bg-espresso text-bone flex items-center justify-center text-xl font-bold tracking-tighter border border-soft/20 shadow-sm">
-                      {getInitials(user.user_metadata.full_name)}
+                    <div className="w-16 h-16 rounded-full bg-espresso text-bone flex items-center justify-center text-xl font-bold tracking-tighter border border-soft/20 shadow-sm uppercase">
+                      {getInitials(user.user_metadata.full_name, user.email)}
                     </div>
                   )}
                   <div>
