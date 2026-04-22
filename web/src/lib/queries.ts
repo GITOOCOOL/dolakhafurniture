@@ -137,6 +137,7 @@ export const adminOrdersQuery = `*[_type == "order"] | order(_createdAt desc) {
   customerEmail,
   customerPhone,
   totalPrice,
+  advanceDeposit,
   discountValue,
   voucherCodes,
   items[] {

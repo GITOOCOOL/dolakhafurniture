@@ -21,6 +21,7 @@ interface Order {
   customerPhone?: string;
   totalPrice: number;
   discountValue?: number;
+  advanceDeposit?: number;
   voucherCodes?: string[];
   _createdAt: string;
   shippingAddress?: any;
@@ -386,9 +387,23 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                  </div>
 
                  <div className="mt-8 pt-8 border-t border-soft border-dotted flex justify-between items-end">
-                    <div>
-                      <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-1">Grand Total</p>
-                      <h4 className="text-3xl font-sans font-bold text-heading">Rs. {order.totalPrice}</h4>
+                    <div className="flex gap-16">
+                      <div>
+                        <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-1">Total</p>
+                        <h4 className="text-xl font-sans font-bold text-heading">Rs. {order.totalPrice}</h4>
+                      </div>
+                      {order.advanceDeposit && order.advanceDeposit > 0 ? (
+                        <>
+                          <div>
+                            <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-emerald-500 mb-1">Deposit Paid</p>
+                            <h4 className="text-xl font-sans font-bold text-emerald-600">Rs. {order.advanceDeposit}</h4>
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-red-500 mb-1">Balance Due</p>
+                            <h4 className="text-xl font-sans font-bold text-red-600">Rs. {Math.max(0, order.totalPrice - order.advanceDeposit)}</h4>
+                          </div>
+                        </>
+                      ) : null}
                     </div>
                     <div className="flex gap-3">
                        <button 
@@ -503,11 +518,29 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                            <span>-Rs. {selectedOrder.discountValue}</span>
                         </div>
                       )}
-                      <div className="flex justify-between items-center pt-4">
-                         <span className="text-[10px] uppercase font-bold tracking-widest text-app/40">Amount Payable</span>
-                         <span className="text-3xl font-bold">Rs. {selectedOrder.totalPrice}</span>
-                      </div>
-                   </div>
+                       <div className="flex justify-between items-center pt-4 border-b border-app/10 pb-4 mb-4">
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-app/40">Total Price</span>
+                          <span className="text-3xl font-bold">Rs. {selectedOrder.totalPrice}</span>
+                       </div>
+
+                       {selectedOrder.advanceDeposit && selectedOrder.advanceDeposit > 0 ? (
+                         <div className="space-y-4 pt-4 border-t border-app/10 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                            <div className="flex justify-between items-center text-xs text-emerald-400 font-bold">
+                               <span className="uppercase tracking-widest opacity-60">Advance Deposit Paid</span>
+                               <span>Rs. {selectedOrder.advanceDeposit}</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-2">
+                               <span className="text-[10px] uppercase font-bold tracking-widest text-red-400">Remaining Balance Due</span>
+                               <span className="text-2xl font-bold text-red-400">Rs. {Math.max(0, selectedOrder.totalPrice - selectedOrder.advanceDeposit)}</span>
+                            </div>
+                         </div>
+                       ) : (
+                         <div className="flex justify-between items-center pt-2 text-xs opacity-40">
+                            <span className="uppercase tracking-widest italic">No advance deposit logged</span>
+                            <span>Balance: Rs. {selectedOrder.totalPrice}</span>
+                         </div>
+                       )}
+                    </div>
                 </div>
               </div>
             </div>

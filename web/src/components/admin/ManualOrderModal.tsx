@@ -55,7 +55,8 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
     city: "",
     state: "Bagmati",
     orderSource: "walk-in",
-    internalNotes: ""
+    internalNotes: "",
+    advanceDeposit: 0
   });
 
   // Discount/Voucher State
@@ -85,6 +86,7 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
   const voucherDiscount = appliedVouchers.reduce((acc, v) => acc + v.amount, 0);
   const totalDiscount = voucherDiscount + manualDiscount;
   const netTotal = Math.max(0, grossTotal - totalDiscount);
+  const balanceDue = Math.max(0, netTotal - formData.advanceDeposit);
 
   // Search Logic
   useEffect(() => {
@@ -243,6 +245,7 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
         orderSource: formData.orderSource,
         internalNotes: formData.internalNotes,
         discountValue: totalDiscount,
+        advanceDeposit: formData.advanceDeposit,
         voucherCodes: appliedVouchers.map(v => v.code)
       });
 
@@ -281,7 +284,8 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
         city: "",
         state: "Bagmati",
         orderSource: "walk-in",
-        internalNotes: ""
+        internalNotes: "",
+        advanceDeposit: 0
       });
     }, 500);
   };
@@ -558,19 +562,34 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
                             </div>
                           )}
 
-                          <div className="space-y-3">
-                             <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">Additional Manual Discount (NPR)</label>
-                             <div className="relative group">
-                                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-description font-bold text-xs opacity-40">Rs.</span>
-                                <input 
-                                  type="number" 
-                                  placeholder="0.00" 
-                                  className="w-full bg-surface border border-soft rounded-2xl pl-14 pr-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action transition-all"
-                                  value={manualDiscount || ""}
-                                  onChange={(e) => setManualDiscount(Number(e.target.value))}
-                                />
-                             </div>
-                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-3">
+                                 <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">Manual Discount (NPR)</label>
+                                 <div className="relative group">
+                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-description font-bold text-xs opacity-40">Rs.</span>
+                                    <input 
+                                      type="number" 
+                                      placeholder="0" 
+                                      className="w-full bg-surface border border-soft rounded-2xl pl-14 pr-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action transition-all"
+                                      value={manualDiscount || ""}
+                                      onChange={(e) => setManualDiscount(Number(e.target.value))}
+                                    />
+                                 </div>
+                              </div>
+                              <div className="space-y-3">
+                                 <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">Advance Deposit (NPR)</label>
+                                 <div className="relative group">
+                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-description font-bold text-xs opacity-40 text-emerald-500">Rs.</span>
+                                    <input 
+                                      type="number" 
+                                      placeholder="0" 
+                                      className="w-full bg-surface border border-soft rounded-2xl pl-14 pr-6 py-4 text-sm font-bold text-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all shadow-sm"
+                                      value={formData.advanceDeposit || ""}
+                                      onChange={(e) => setFormData({...formData, advanceDeposit: Number(e.target.value)})}
+                                    />
+                                 </div>
+                              </div>
+                           </div>
                        </div>
 
                        <div className="space-y-3">
@@ -597,10 +616,16 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
                                   <span>-Rs. {totalDiscount}</span>
                                </div>
                              )}
+                             {formData.advanceDeposit > 0 && (
+                               <div className="flex justify-between text-xs text-emerald-300">
+                                  <span>Advance Deposit Received</span>
+                                  <span>-Rs. {formData.advanceDeposit}</span>
+                               </div>
+                             )}
                           </div>
                           <div className="flex justify-between items-baseline">
-                             <span className="text-[10px] uppercase font-bold tracking-widest text-app/60">Net Payable</span>
-                             <span className="text-3xl font-bold">Rs. {netTotal}</span>
+                             <span className="text-[10px] uppercase font-bold tracking-widest text-app/40">Remaining Balance Due</span>
+                             <span className="text-3xl font-bold">Rs. {balanceDue}</span>
                           </div>
                        </div>
                     </div>

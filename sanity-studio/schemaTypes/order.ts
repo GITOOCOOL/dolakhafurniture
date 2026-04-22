@@ -69,6 +69,7 @@ export default {
     { name: "shippingMethod", title: "Shipping Method", type: "string" },
     { name: "paymentMethod", title: "Payment Method", type: "string" },
     { name: "totalPrice", title: "Total Price (NPR)", type: "number" },
+    { name: "advanceDeposit", title: "Advance Deposit (NPR)", type: "number", initialValue: 0 },
     { name: "discountValue", title: "Discount Amount (NPR)", type: "number", initialValue: 0 },
     {
       name: "status",

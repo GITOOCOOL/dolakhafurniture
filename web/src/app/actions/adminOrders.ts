@@ -44,6 +44,7 @@ export type ManualOrderData = {
   orderSource: string;
   internalNotes?: string;
   discountValue?: number;
+  advanceDeposit?: number;
   voucherCodes?: string[];
 };
 
@@ -81,6 +82,7 @@ export async function createManualOrder(data: ManualOrderData) {
       paymentMethod: "manual",
       status: "pending",
       totalPrice,
+      advanceDeposit: data.advanceDeposit || 0,
       items: data.items.map((item) => ({
         _key: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         product: {
