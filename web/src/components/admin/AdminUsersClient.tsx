@@ -104,6 +104,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
     admin: { color: "bg-red-500/10 text-red-600", icon: ShieldAlert },
     staff: { color: "bg-action/10 text-action", icon: ShieldCheck },
     user: { color: "bg-soft text-label", icon: Shield },
+    incomplete: { color: "bg-amber-500/10 text-amber-600 animate-pulse", icon: X },
   };
 
   return (

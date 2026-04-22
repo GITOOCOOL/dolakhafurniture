@@ -15,20 +15,39 @@ export default async function AdminUsersPage() {
 
   const supabase = await createClient();
   
-  // Fetch all profiles
-  const { data: profiles, error } = await supabase
+  // Initialize Admin Client for the shadow-realm scan
+  const { createClient: createAdminClient } = await import("@supabase/supabase-js");
+  const supabaseAdmin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+  
+  // 1. Fetch all profiles from the DB
+  const { data: profiles, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .order("role", { ascending: true });
 
-  if (error) {
-    console.error("Error fetching profiles:", error);
-    return (
-      <div className="p-12 text-center text-red-500 font-bold bg-red-50/50 rounded-3xl">
-        Error loading user directory: {error.message}
-      </div>
-    );
+  // 2. Fetch the Master List from Auth (using Admin clearance)
+  const { data: { users: authUsers }, error: authError } = await supabaseAdmin.auth.admin.listUsers();
+
+  if (profileError || authError) {
+    console.error("User fetch error:", profileError || authError);
   }
 
-  return <AdminUsersClient initialProfiles={profiles || []} />;
+  // 3. Merge them to ensure everyone is visible
+  const mergedProfiles = authUsers.map(authUser => {
+    const existingProfile = profiles?.find(p => p.id === authUser.id);
+    return {
+      id: authUser.id,
+      email: authUser.email || "no-email",
+      full_name: existingProfile?.full_name || authUser.user_metadata?.full_name || "Auth Orphan",
+      role: existingProfile?.role || "Incomplete",
+      avatar_url: existingProfile?.avatar_url || null,
+      isOrphan: !existingProfile
+    };
+  });
+
+  return <AdminUsersClient initialProfiles={mergedProfiles} />;
 }
