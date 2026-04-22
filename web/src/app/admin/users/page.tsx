@@ -30,7 +30,8 @@ export default async function AdminUsersPage() {
     .order("role", { ascending: true });
 
   // 2. Fetch the Master List from Auth (using Admin clearance)
-  const { data: { users: authUsers }, error: authError } = await supabaseAdmin.auth.admin.listUsers();
+  const { data: authData, error: authError } = await supabaseAdmin.auth.admin.listUsers();
+  const authUsers = authData?.users || [];
 
   if (profileError || authError) {
     console.error("User fetch error:", profileError || authError);

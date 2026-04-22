@@ -353,7 +353,7 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
               <div className="lg:col-span-8">
                  <p className="text-[9px] font-sans font-bold uppercase tracking-widest text-label mb-6">Order Contents</p>
                  <div className="space-y-4">
-                    {order.items.map((item, idx) => (
+                    {(order.items || []).map((item, idx) => (
                       <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-soft/30 p-4 sm:p-6 rounded-2xl border border-soft/50 gap-4">
                            <div className="flex items-center gap-6">
                              <div className="w-12 h-16 bg-white rounded-lg border border-soft flex-shrink-0 relative overflow-hidden shadow-sm">
