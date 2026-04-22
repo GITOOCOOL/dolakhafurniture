@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useUIStore } from "@/store/useUIStore";
 import { Menu } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function AdminHeaderClient() {
   const pathname = usePathname();
@@ -33,6 +34,7 @@ export default function AdminHeaderClient() {
         </h2>
       </div>
       <div className="flex items-center gap-4 md:gap-6">
+        <ThemeToggle />
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-soft border border-divider flex items-center justify-center text-[10px] font-bold text-heading">
             A
