@@ -57,43 +57,54 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     }
   }, [totalQuantity]);
 
-
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single();
-        setRole(profile?.role || "user");
-      } else {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        setUser(user);
+        
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .single();
+          setRole(profile?.role || "user");
+        } else {
+          setRole(null);
+        }
+      } catch (err) {
+        console.warn("Auth check deferred (Lock busy):", err);
+        // Fallback to null user if locked, onAuthStateChange will catch it eventually
+        setUser(null);
         setRole(null);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      
-      if (currentUser) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", currentUser.id)
-          .single();
-        setRole(profile?.role || "user");
-      } else {
-        setRole(null);
+      try {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        
+        if (currentUser) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", currentUser.id)
+            .single();
+          setRole(profile?.role || "user");
+        } else {
+          setRole(null);
+        }
+      } catch (err) {
+        console.error("Auth state change error:", err);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -131,7 +142,6 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     return parts[0][0].toUpperCase();
   };
 
-  if (loading) return <div className="w-20 h-8 bg-app animate-pulse rounded-full border border-divider" />;
 
   return (
     <div className="flex items-center gap-6 md:gap-4 relative z-50 flex-shrink-0">
@@ -215,8 +225,10 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           onClick={() => setIsAccountModalOpen(true)}
            className="w-[38px] h-[38px] flex items-center justify-center bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all text-heading cursor-pointer touch-manipulation group flex-shrink-0"
         >
-          {user ? (
-            user.user_metadata.avatar_url ? (
+          {loading ? (
+            <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider animate-pulse bg-soft" />
+          ) : user ? (
+            user.user_metadata?.avatar_url ? (
               <img
                 src={user.user_metadata.avatar_url}
                  className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider shadow-sm group-hover:border-action transition-all object-cover flex-shrink-0"
@@ -224,7 +236,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
               />
             ) : (
                <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full bg-espresso text-bone flex items-center justify-center text-[9px] md:text-[10px] font-bold tracking-tighter border border-divider shadow-sm group-hover:bg-action transition-all flex-shrink-0">
-                {getInitials(user.user_metadata.full_name)}
+                {getInitials(user.user_metadata?.full_name)}
               </div>
             )
           ) : (
