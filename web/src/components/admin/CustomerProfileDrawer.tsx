@@ -14,7 +14,9 @@ import {
   ShieldCheck,
   CreditCard,
   Loader2,
-  Trash2
+  Trash2,
+  Phone,
+  Mail
 } from "lucide-react";
 import { getCustomerIntelligence } from "@/app/actions/adminCustomer";
 import { format } from "date-fns";
