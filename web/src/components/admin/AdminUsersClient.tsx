@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Mail, Shield, ShieldAlert, ShieldCheck, ChevronDown, UserCircle2, UserPlus, X, Key, Copy, Check, ShieldPlus } from "lucide-react";
-import { addStaffMember } from "@/app/actions/adminUsers";
+import { Users, Mail, Shield, ShieldAlert, ShieldCheck, ChevronDown, UserCircle2, UserPlus, X, Key, Copy, Check, ShieldPlus, Trash2 } from "lucide-react";
+import { addStaffMember, deleteStaffMember } from "@/app/actions/adminUsers";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 
@@ -75,6 +75,28 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
       navigator.clipboard.writeText(successData.pass);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, email: string) => {
+    if (email === "thakurisuraj38@gmail.com") return;
+    
+    if (!confirm(`Are you sure you want to purge ${email}? This action is irreversible and will recycle the email for new recruitment.`)) {
+      return;
+    }
+
+    setUpdatingId(userId);
+    try {
+      const result = await deleteStaffMember(userId);
+      if (result.success) {
+        setProfiles(profiles.filter(p => p.id !== userId));
+      } else {
+        alert(result.message);
+      }
+    } catch (err) {
+      alert("Failed to purge user.");
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -170,6 +192,17 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
                         <div className={`p-2.5 rounded-xl ${Config.color}`}>
                           <Config.icon size={16} strokeWidth={2} />
                         </div>
+                        
+                        {profile.email !== "thakurisuraj38@gmail.com" && (
+                          <button 
+                            onClick={() => handleDeleteUser(profile.id, profile.email)}
+                            disabled={updatingId === profile.id}
+                            className="p-2.5 bg-red-500/10 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm ml-2"
+                            title="Purge Artisan"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

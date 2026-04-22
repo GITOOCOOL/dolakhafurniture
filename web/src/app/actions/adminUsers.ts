@@ -85,3 +85,33 @@ export async function addStaffMember(data: {
     return { success: false, message: error.message || "A system error occurred during recruitment." };
   }
 }
+
+export async function deleteStaffMember(userId: string) {
+  try {
+    // 1. Security Check
+    const isAdmin = await isSuperAdmin();
+    if (!isAdmin) {
+      return { success: false, message: "Unauthorized. Super Admin access required." };
+    }
+
+    // 2. Safety Check: Prevent deletion of primary admin
+    const { data: targetUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+    if (targetUser?.user?.email === "thakurisuraj38@gmail.com") {
+      return { success: false, message: "Safety Lock: The primary admin account cannot be purged." };
+    }
+
+    // 3. Delete from Auth
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (authError) throw authError;
+
+    // 3. Cleanup Profile explicitly
+    await supabaseAdmin.from("profiles").delete().eq("id", userId);
+
+    revalidatePath("/admin/users");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Staff Deletion Error:", error);
+    return { success: false, message: error.message || "Failed to delete staff member." };
+  }
+}
+
