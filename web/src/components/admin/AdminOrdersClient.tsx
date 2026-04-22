@@ -11,24 +11,6 @@ import { useRouter } from "next/navigation";
 import { Order } from "@/types/order";
 import DeleteOrderModal from "./DeleteOrderModal";
 
-interface Order {
-  _id: string;
-  orderNumber?: string;
-  status?: string;
-  orderSource?: string;
-  isPhoneOrder?: boolean;
-  internalNotes?: string;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  totalPrice: number;
-  discountValue?: number;
-  advanceDeposit?: number;
-  voucherCodes?: string[];
-  _createdAt: string;
-  shippingAddress?: any;
-  items: any[];
-}
 
 export default function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] }) {
   const [orders, setOrders] = useState(initialOrders);
