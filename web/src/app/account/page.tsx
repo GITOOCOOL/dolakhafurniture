@@ -3,6 +3,7 @@ import { client as sanityClient } from "@/lib/sanity";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import AccountClient from "../../components/AccountClient";
+import { getUserRole } from "@/lib/auth";
 
 // 1. SEO METADATA - Updated with "home" and "" terminology
 export const metadata: Metadata = {
@@ -35,12 +36,16 @@ export default async function AccountPage({
     { userId: user.id, email: user.email },
     { useCdn: false },
   );
+  
+  // 4. ROLE CHECK
+  const { role } = await getUserRole();
 
   return (
     <div className="bg-app min-h-screen pt-32 pb-20 font-sans text-heading">
       <div className="container mx-auto px-6">
         <AccountClient
           user={user}
+          role={role || "user"}
           lastOrder={lastOrder}
           showSuccess={params.updated === "true"}
         />

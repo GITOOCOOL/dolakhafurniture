@@ -16,7 +16,8 @@ import {
   ChevronRight,
   LogOut,
   Store,
-  Box
+  Box,
+  X
 } from "lucide-react";
 
 const navItems = [
@@ -60,6 +61,17 @@ export default function AdminSidebar() {
       />
 
       <aside className={`bg-app border-r border-soft h-[100dvh] flex flex-col fixed md:sticky top-0 z-[70] overflow-y-auto transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isAdminSidebarOpen ? "w-72 translate-x-0 shadow-2xl md:shadow-none" : "w-0 -translate-x-full shadow-none"}`}>
+        {/* MOBILE CLOSE BUTTON */}
+        {isAdminSidebarOpen && (
+          <button 
+            onClick={() => setIsAdminSidebarOpen(false)}
+            className="absolute top-8 right-8 p-2 text-label hover:text-action transition-colors z-[80]"
+            title="Close Menu"
+          >
+            <X size={22} strokeWidth={1.5} />
+          </button>
+        )}
+
       {/* BRANDING */}
       <div className="p-8 border-b border-soft border-dotted">
         <Link href="/admin" className="block text-2xl font-serif italic font-bold text-heading">

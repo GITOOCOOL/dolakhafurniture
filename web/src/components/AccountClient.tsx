@@ -9,6 +9,8 @@ import {
   MapPin,
   Phone,
   Mail,
+  ShieldAlert,
+  LayoutDashboard
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { Order } from "@/types";
@@ -17,12 +19,14 @@ import InquiryModal from "./InquiryModal";
 
 interface AccountClientProps {
   user: User;
+  role: string;
   lastOrder?: Order;
   showSuccess?: boolean;
 }
 
 export default function AccountClient({
   user,
+  role,
   lastOrder,
   showSuccess,
 }: AccountClientProps) {
@@ -95,6 +99,31 @@ export default function AccountClient({
             <h3 className="text-[10px] font-sans font-bold uppercase tracking-[0.5em] text-label mb-6 ml-2">
               Quick Navigation
             </h3>
+            
+            {(role === "admin" || role === "staff") && (
+              <Link
+                href="/admin"
+                className="group flex flex-col p-8 bg-action-success/5 border border-action-success/20 rounded-[3rem] hover:border-action-success hover:shadow-[0_0_30px_rgba(34,197,94,0.15)] transition-all duration-500 mb-4"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <LayoutDashboard
+                    size={24}
+                    className="text-action-success"
+                    strokeWidth={1.5}
+                  />
+                  <span className="text-action-success group-hover:translate-x-1 transition-all">
+                    →
+                  </span>
+                </div>
+                <p className="text-2xl font-serif italic text-heading">
+                  Admin Dashboard
+                </p>
+                <p className="text-[10px] font-sans font-bold opacity-60 uppercase tracking-widest mt-2 text-action-success">
+                  Command Center Access
+                </p>
+              </Link>
+            )}
+
             <Link
               href="/orders"
               className="group flex flex-col p-8 bg-white border border-soft rounded-[3rem] hover:border-action hover:shadow-xl transition-all duration-500"

@@ -5,6 +5,8 @@ import { Users, Mail, Shield, ShieldAlert, ShieldCheck, ChevronDown, UserCircle2
 import { addStaffMember, deleteStaffMember } from "@/app/actions/adminUsers";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
+import CustomerProfileDrawer from "./CustomerProfileDrawer";
+import { getCustomerIntelligence } from "@/app/actions/adminCustomer";
 
 interface Profile {
   id: string;
@@ -23,6 +25,11 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<{email: string; pass: string} | null>(null);
   const [copied, setCopied] = useState(false);
+  
+  // Detail Drawer State
+  const [selectedIntelEmail, setSelectedIntelEmail] = useState<string | null>(null);
+  const [selectedIntelName, setSelectedIntelName] = useState<string | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     email: "",
@@ -138,79 +145,178 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
         </button>
       </div>
 
-      <div className="bg-app border border-soft rounded-[3rem] overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-soft border-dotted">
-                <th className="px-10 py-8 text-[9px] font-sans font-bold uppercase tracking-widest text-label">Member</th>
-                <th className="px-10 py-8 text-[9px] font-sans font-bold uppercase tracking-widest text-label font-serif italic text-right">Access Level</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-soft divide-dotted">
-              {profiles.map((profile) => {
-                const Config = roleConfigs[profile.role.toLowerCase()] || roleConfigs.user;
-                return (
-                  <tr key={profile.id} className="group hover:bg-soft/20 transition-colors">
-                    <td className="px-10 py-10">
-                      <div className="flex items-center gap-6">
-                        <div className="w-14 h-14 rounded-2xl bg-soft border border-divider flex items-center justify-center overflow-hidden flex-shrink-0">
-                          {profile.avatar_url ? (
-                            <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <UserCircle2 className="text-label opacity-30" size={24} />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-heading mb-1">{profile.full_name || "New Artisan"}</p>
-                          <div className="flex items-center gap-2 text-label">
-                            <Mail size={12} className="opacity-40" />
-                            <span className="text-[10px] font-medium tracking-widest">{profile.email}</span>
+      {/* SECTION 1: THE TEAM REGISTRY */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 px-2">
+          <ShieldAlert size={18} className="text-red-500" />
+          <h2 className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-heading">The Team Registry</h2>
+          <div className="h-px bg-soft flex-1 ml-4" />
+        </div>
+
+        <div className="bg-app border border-soft rounded-[3rem] overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-soft border-dotted">
+                  <th className="px-10 py-8 text-[9px] font-sans font-bold uppercase tracking-widest text-label">Artisan</th>
+                  <th className="px-10 py-8 text-[9px] font-sans font-bold uppercase tracking-widest text-label font-serif italic text-right">Access Level</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-soft divide-dotted">
+                {profiles.filter(p => ["admin", "staff"].includes(p.role.toLowerCase())).map((profile) => {
+                  const Config = roleConfigs[profile.role.toLowerCase()] || roleConfigs.user;
+                  return (
+                    <tr 
+                      key={profile.id} 
+                      onClick={() => {
+                        setSelectedIntelEmail(profile.email);
+                        setSelectedIntelName(profile.full_name || "Artisan Member");
+                        setIsDrawerOpen(true);
+                      }}
+                      className="group hover:bg-soft/20 transition-all cursor-pointer border-l-2 border-transparent hover:border-action"
+                    >
+                      <td className="px-10 py-10">
+                        <div className="flex items-center gap-6">
+                          <div className="w-14 h-14 rounded-2xl bg-soft border border-divider flex items-center justify-center overflow-hidden flex-shrink-0">
+                            {profile.avatar_url ? (
+                              <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <UserCircle2 className="text-label opacity-30" size={24} />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-heading mb-1">{profile.full_name || "Artisan Member"}</p>
+                            <div className="flex items-center gap-2 text-label">
+                              <Mail size={12} className="opacity-40" />
+                              <span className="text-[10px] font-medium tracking-widest">{profile.email}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-10 py-10 text-right">
-                      <div className="inline-flex items-center gap-4">
-                        <div className="relative">
-                          <select 
-                            value={profile.role.toLowerCase()}
-                            disabled={updatingId === profile.id}
-                            onChange={(e) => updateRole(profile.id, e.target.value)}
-                            className={`
-                              appearance-none pl-6 pr-10 py-2.5 rounded-full text-[9px] font-sans font-bold uppercase tracking-widest 
-                              transition-all outline-none cursor-pointer border border-transparent hover:border-action/20
-                              ${Config.color}
-                              ${updatingId === profile.id ? "opacity-50" : ""}
-                            `}
-                          >
-                            <option value="user">User</option>
-                            <option value="staff">Staff</option>
-                            <option value="admin">Admin</option>
-                          </select>
-                          <ChevronDown size={10} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" />
+                      </td>
+                      <td className="px-10 py-10 text-right">
+                        <div className="inline-flex items-center gap-4">
+                          <div className="relative">
+                            <select 
+                              value={profile.role.toLowerCase()}
+                              disabled={updatingId === profile.id}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => updateRole(profile.id, e.target.value)}
+                              className={`
+                                appearance-none pl-6 pr-10 py-2.5 rounded-full text-[9px] font-sans font-bold uppercase tracking-widest 
+                                transition-all outline-none cursor-pointer border border-transparent hover:border-action/20
+                                ${Config.color}
+                                ${updatingId === profile.id ? "opacity-50" : ""}
+                              `}
+                            >
+                              <option value="admin">Admin</option>
+                              <option value="staff">Staff</option>
+                              <option value="user">User</option>
+                            </select>
+                            <ChevronDown size={10} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" />
+                          </div>
+                          <div className={`p-2.5 rounded-xl ${Config.color}`}>
+                            <Config.icon size={16} strokeWidth={2} />
+                          </div>
+                          
+                          {profile.id !== "fc083bb7-742d-4d49-b859-0b0540663270" && profile.email !== "thakurisuraj38@gmail.com" && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteUser(profile.id, profile.email);
+                              }}
+                              disabled={updatingId === profile.id}
+                              className="p-2.5 bg-red-500/10 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm ml-2"
+                              title="Purge Member"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
                         </div>
-                        <div className={`p-2.5 rounded-xl ${Config.color}`}>
-                          <Config.icon size={16} strokeWidth={2} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 2: CUSTOMER DIRECTORY */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 px-2 pt-6">
+          <Users size={18} className="text-label" />
+          <h2 className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-label">Customer Directory</h2>
+          <div className="h-px bg-soft flex-1 ml-4" />
+        </div>
+
+        <div className="bg-app border border-soft rounded-[3rem] overflow-hidden shadow-sm opacity-80 hover:opacity-100 transition-opacity">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-label">
+              <tbody className="divide-y divide-soft divide-dotted">
+                {profiles.filter(p => !["admin", "staff"].includes(p.role.toLowerCase())).map((profile) => {
+                  const Config = roleConfigs[profile.role.toLowerCase()] || roleConfigs.user;
+                  return (
+                    <tr 
+                      key={profile.id} 
+                      onClick={() => {
+                        setSelectedIntelEmail(profile.email);
+                        setSelectedIntelName(profile.full_name || "Guest Customer");
+                        setIsDrawerOpen(true);
+                      }}
+                      className="group hover:bg-soft/10 transition-all cursor-pointer border-l-2 border-transparent hover:border-action"
+                    >
+                      <td className="px-10 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-soft flex items-center justify-center overflow-hidden">
+                            {profile.avatar_url ? (
+                              <img src={profile.avatar_url} alt="" className="w-full h-full object-cover opacity-60" />
+                            ) : (
+                              <UserCircle2 className="text-label opacity-20" size={20} />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-bold text-heading">{profile.full_name || "Guest Customer"}</p>
+                            <p className="text-[9px] opacity-60 tracking-wider">Member ID: {profile.id.slice(0, 8)}</p>
+                          </div>
                         </div>
-                        
-                        {profile.email !== "thakurisuraj38@gmail.com" && (
+                      </td>
+                      <td className="px-10 py-6 text-right">
+                        <div className="inline-flex items-center gap-4">
+                          <div className="relative">
+                            <select 
+                              value={profile.role.toLowerCase()}
+                              disabled={updatingId === profile.id}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => updateRole(profile.id, e.target.value)}
+                              className="appearance-none pl-4 pr-8 py-1.5 rounded-full text-[8px] font-sans font-bold uppercase tracking-widest bg-soft text-label border border-transparent hover:border-action/20 transition-all outline-none cursor-pointer"
+                            >
+                              <option value="user">Customer</option>
+                              <option value="staff">Promote to Staff</option>
+                              <option value="admin">Promote to Admin</option>
+                            </select>
+                            <ChevronDown size={8} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" />
+                          </div>
+                          
                           <button 
-                            onClick={() => handleDeleteUser(profile.id, profile.email)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteUser(profile.id, profile.email);
+                            }}
                             disabled={updatingId === profile.id}
-                            className="p-2.5 bg-red-500/10 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm ml-2"
-                            title="Purge Artisan"
+                            className="p-2 text-label hover:text-red-600 transition-colors"
+                            title="Delete User"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       
@@ -330,6 +436,14 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
           </div>
         )}
       </Modal>
+
+      {/* Intelligence Detail Drawer */}
+      <CustomerProfileDrawer 
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        email={selectedIntelEmail}
+        customerName={selectedIntelName || ""}
+      />
     </div>
   );
 }

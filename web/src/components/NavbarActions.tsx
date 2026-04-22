@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp, Sun, Moon, X } from "lucide-react";
+import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp, Sun, Moon, X, LayoutDashboard } from "lucide-react";
 import AuthForm from "./AuthForm";
 import CheckoutDrawer from "./CheckoutDrawer";
 import { ThemeToggle } from "./ThemeToggle";
@@ -22,6 +22,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   const supabase = createClient();
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { 
     isCheckoutDrawerOpen, 
@@ -61,12 +62,37 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        setRole(profile?.role || "user");
+      } else {
+        setRole(null);
+      }
+      
       setLoading(false);
     };
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      if (currentUser) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", currentUser.id)
+          .single();
+        setRole(profile?.role || "user");
+      } else {
+        setRole(null);
+      }
+      
       setLoading(false);
     });
 
@@ -238,6 +264,19 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
                 </div>
 
                 <div className="flex flex-col gap-3">
+                  {(role === "admin" || role === "staff") && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setIsAccountModalOpen(false)}
+                      className="flex items-center justify-between p-5 bg-action-success/5 border border-action-success/20 rounded-2xl hover:border-action-success transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <LayoutDashboard size={18} className="text-action-success" />
+                        <span className="type-product text-action-success italic">Admin Dashboard</span>
+                      </div>
+                      <span className="text-action-success group-hover:translate-x-1 transition-all">→</span>
+                    </Link>
+                  )}
                   <Link
                     href="/account"
                     onClick={() => setIsAccountModalOpen(false)}
