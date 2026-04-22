@@ -85,7 +85,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     };
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: any, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: any, session: any) => {
       try {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
