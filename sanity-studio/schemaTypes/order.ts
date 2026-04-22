@@ -109,13 +109,14 @@ export default {
               name: "product", 
               title: "Link to Store Product (Optional)", 
               type: "reference", 
-              to: [{ type: "product" }],
-              description: "Select an existing product from the catalog."
+              to: [{ type: "product" }, { type: "customProduct" }],
+              description: "Select an existing catalog product or an artisan custom creation."
             },
             { name: "title", type: "string" },
             { name: "price", type: "number" },
             { name: "quantity", type: "number" },
             { name: "productId", type: 'string' },
+            { name: "isCustom", title: "Is Custom Creation", type: "boolean", initialValue: false },
             { name: "image", title: "Product Image", type: "image", options: { hotspot: true } },
           ],
         },

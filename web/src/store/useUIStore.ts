@@ -26,7 +26,7 @@ export const useUIStore = create<UIStore>((set) => ({
   isCheckoutDrawerOpen: false,
   isAccountModalOpen: false,
   isSearchOpen: false,
-  isAdminSidebarOpen: false,
+  isAdminSidebarOpen: true,
 
   setCampaignModalOpen: (isOpen: boolean) =>
     set({ isCampaignModalOpen: isOpen }),

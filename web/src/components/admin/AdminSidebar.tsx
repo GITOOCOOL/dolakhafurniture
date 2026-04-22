@@ -44,8 +44,12 @@ export default function AdminSidebar() {
     }
   };
 
+  // Toggle behavior: automatically close drawer on mobile after navigation, 
+  // but leave it alone on desktop unless explicitly toggled.
   useEffect(() => {
-    setIsAdminSidebarOpen(false);
+    if (window.innerWidth < 768) {
+      setIsAdminSidebarOpen(false);
+    }
   }, [pathname, setIsAdminSidebarOpen]);
 
   return (
@@ -55,7 +59,7 @@ export default function AdminSidebar() {
         onClick={() => setIsAdminSidebarOpen(false)}
       />
 
-      <aside className={`w-72 bg-app border-r border-soft h-[100dvh] flex flex-col fixed md:sticky top-0 z-[70] overflow-y-auto transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isAdminSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0 md:shadow-none"}`}>
+      <aside className={`bg-app border-r border-soft h-[100dvh] flex flex-col fixed md:sticky top-0 z-[70] overflow-y-auto transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isAdminSidebarOpen ? "w-72 translate-x-0 shadow-2xl md:shadow-none" : "w-0 -translate-x-full shadow-none"}`}>
       {/* BRANDING */}
       <div className="p-8 border-b border-soft border-dotted">
         <Link href="/admin" className="block text-2xl font-serif italic font-bold text-heading">

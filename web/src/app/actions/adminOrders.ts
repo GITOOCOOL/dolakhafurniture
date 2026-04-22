@@ -3,6 +3,35 @@
 import { createClient as createSanity } from "@sanity/client";
 import { revalidatePath } from "next/cache";
 
+/**
+ * SECURE IMAGE UPLOAD BRIDGE
+ * Handles file uploads to Sanity via a secure server-side tunnel
+ * to prevent 'insufficient permissions' on the client.
+ */
+export async function uploadArtisanImage(formData: FormData) {
+  const file = formData.get("file") as File;
+  if (!file) throw new Error("No file provided");
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const asset = await sanityAdmin.assets.upload("image", buffer, {
+      filename: file.name,
+      contentType: file.type,
+    });
+
+    return { 
+      success: true, 
+      assetId: asset._id, 
+      url: asset.url 
+    };
+  } catch (error: any) {
+    console.error("Artisan Upload Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
 // Initialize Sanity Admin Client with Write Permissions
 const sanityAdmin = createSanity({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -27,6 +56,18 @@ export type ManualOrderItem = {
   price: number;
   quantity: number;
   imageUrl?: string;
+  isCustom?: boolean;
+  material?: string;
+  color?: string;
+  dimensions?: {
+    length?: number;
+    breadth?: number;
+    height?: number;
+  };
+  description?: string;
+  imageAssetId?: string;
+  formicaId?: string;
+  fabricId?: string;
 };
 
 export type ManualOrderData = {
@@ -83,27 +124,77 @@ export async function createManualOrder(data: ManualOrderData) {
       status: "pending",
       totalPrice,
       advanceDeposit: data.advanceDeposit || 0,
-      items: data.items.map((item) => ({
-        _key: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        product: {
-          _type: "reference",
-          _ref: item.productId,
-        },
-        title: item.title,
-        price: item.price,
-        quantity: item.quantity,
-      })),
+      items: data.items.map((item) => {
+        const itemKey = `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // If it's a custom item, we'll link it to a new customProduct document
+        // The ID will be generated here so we can create the document in the same transaction
+        const customId = item.isCustom ? `custom-${itemKey}` : undefined;
+
+        return {
+          _key: itemKey,
+          product: {
+            _type: "reference",
+            _ref: customId || item.productId,
+          },
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+          isCustom: item.isCustom || false,
+          image: item.imageAssetId ? {
+            _type: "image",
+            asset: {
+               _type: "reference",
+               _ref: item.imageAssetId
+            }
+          } : undefined
+        };
+      }),
       orderDate: new Date().toISOString(),
     };
 
-    // 2. Start a Transaction to ensure atomic stock decrement and order creation
+    // 2. Start a Transaction
     const transaction = sanityAdmin.transaction();
+
+    // Create Custom Products first if they exist
+    data.items.filter(item => item.isCustom).forEach((item, idx) => {
+       const customDocId = `custom-${orderDocument.items[data.items.indexOf(item)]._key}`;
+       transaction.create({
+          _id: customDocId,
+          _type: "customProduct",
+          title: item.title,
+          price: item.price,
+          material: item.material,
+          color: item.color,
+          length: item.dimensions?.length,
+          breadth: item.dimensions?.breadth,
+          height: item.dimensions?.height,
+          description: item.description,
+          formica: item.formicaId ? {
+            _type: "reference",
+            _ref: item.formicaId
+          } : undefined,
+          fabric: item.fabricId ? {
+            _type: "reference",
+            _ref: item.fabricId
+          } : undefined,
+          status: "production", // Default to production when ordered
+          mainImage: item.imageAssetId ? {
+            _type: "image",
+            asset: {
+               _type: "reference",
+               _ref: item.imageAssetId
+            }
+          } : undefined,
+          createdAt: new Date().toISOString()
+       });
+    });
 
     // Create Order
     transaction.create(orderDocument);
 
-    // Decrement Stock for each product
-    data.items.forEach((item) => {
+    // Decrement Stock for each catalog product (skip custom ones)
+    data.items.filter(item => !item.isCustom).forEach((item) => {
       transaction.patch(item.productId, (p) => p.dec({ stock: item.quantity }));
     });
 

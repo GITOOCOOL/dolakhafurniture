@@ -125,6 +125,10 @@ export const searchProductsQuery = `*[_type == "product" && isActive == true && 
     _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
 
+export const allMaterialsQuery = `*[_type == "material"] | order(title asc) {
+  _id, title, type, brand, colorCode, "swatchUrl": swatch.asset->url
+}`
+
 export const adminOrdersQuery = `*[_type == "order"] | order(_createdAt desc) {
   _id,
   _createdAt,
@@ -144,7 +148,18 @@ export const adminOrdersQuery = `*[_type == "order"] | order(_createdAt desc) {
     "title": coalesce(title, product->title),
     "price": coalesce(price, product->price),
     quantity,
-    "imageUrl": coalesce(image.asset->url, product->mainImage.asset->url)
+    "imageUrl": coalesce(image.asset->url, product->mainImage.asset->url),
+    isCustom,
+    "spec": product-> {
+       material,
+       color,
+       length,
+       breadth,
+       height,
+       description,
+       "formica": formica-> { title, brand, colorCode, "swatchUrl": swatch.asset->url },
+       "fabric": fabric-> { title, brand, colorCode, "swatchUrl": swatch.asset->url }
+    }
   },
   shippingAddress
 }`

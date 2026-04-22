@@ -366,21 +366,31 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                  <div className="space-y-4">
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center bg-soft/30 p-6 rounded-2xl border border-soft/50">
-                        <div className="flex items-center gap-6">
-                           <div className="w-12 h-16 bg-white rounded-lg border border-soft flex-shrink-0 relative overflow-hidden">
-                             {item.imageUrl ? (
-                               <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
-                             ) : (
-                               <div className="w-full h-full bg-soft/50 flex items-center justify-center">
-                                  <Package size={14} className="text-label opacity-40" />
-                               </div>
-                             )}
-                           </div>
-                           <div>
-                              <p className="text-sm font-bold text-heading mb-1">{item.title}</p>
-                              <p className="text-xs text-label font-serif italic">Quantity: {item.quantity}</p>
-                           </div>
-                        </div>
+                           <div className="flex items-center gap-6">
+                             <div className="w-12 h-16 bg-white rounded-lg border border-soft flex-shrink-0 relative overflow-hidden shadow-sm">
+                               {item.imageUrl ? (
+                                 <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
+                               ) : (
+                                 <div className="w-full h-full bg-soft/50 flex items-center justify-center">
+                                    <Package size={14} className="text-label opacity-40" />
+                                 </div>
+                               )}
+                             </div>
+                             <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                   <p className="text-sm font-bold text-heading">{item.title}</p>
+                                   {item.isCustom && (
+                                     <span className="px-2 py-0.5 bg-action/10 text-action rounded-full text-[7px] font-bold uppercase tracking-tighter border border-action/20">Custom Creation</span>
+                                   )}
+                                </div>
+                                <p className="text-xs text-label font-serif italic flex items-center gap-2">
+                                  Quantity: {item.quantity}
+                                  {item.isCustom && item.spec && (
+                                    <span className="text-[10px] opacity-40 not-italic font-sans">— {item.spec.material} {item.spec.length && `(${item.spec.length}x${item.spec.breadth}x${item.spec.height})`}</span>
+                                  )}
+                                </p>
+                             </div>
+                          </div>
                         <p className="text-sm font-bold text-heading">Rs. {item.price * item.quantity}</p>
                       </div>
                     ))}
@@ -498,14 +508,78 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                 </h4>
                 <div className="bg-heading rounded-[2.5rem] p-10 text-app space-y-8 shadow-2xl relative overflow-hidden">
                    <Package className="absolute -right-6 -bottom-6 w-32 h-32 text-app/5 rotate-12" />
-                   <div className="space-y-4">
-                      {selectedOrder.items.map((item, i) => (
-                        <div key={i} className="flex justify-between items-center text-xs opacity-70">
-                           <span>{item.quantity}x {item.title}</span>
-                           <span className="font-bold">Rs. {item.price * item.quantity}</span>
-                        </div>
-                      ))}
-                   </div>
+                    <div className="space-y-6">
+                       {selectedOrder.items.map((item, i) => (
+                         <div key={i} className="space-y-4">
+                            <div className="flex justify-between items-center text-xs opacity-70">
+                               <div className="flex items-center gap-3">
+                                  <span className="w-6 h-6 bg-app rounded-md flex items-center justify-center font-bold text-[10px] border border-app/10">{item.quantity}x</span>
+                                  <span className="font-medium">{item.title}</span>
+                                  {item.isCustom && <Sparkles size={10} className="text-action animate-pulse" />}
+                               </div>
+                               <span className="font-bold">Rs. {item.price * item.quantity}</span>
+                            </div>
+                            {item.isCustom && item.spec && (
+                               <div className="ml-9 p-4 bg-app/10 rounded-2xl border border-app/10 space-y-3 animate-in slide-in-from-left-2 duration-700">
+                                  <div className="grid grid-cols-2 gap-4">
+                                     <div className="space-y-1">
+                                        <p className="text-[8px] uppercase font-bold text-app/40 tracking-widest">Material & Color</p>
+                                        <p className="text-[10px] font-bold">{item.spec.material} {item.spec.color && `— ${item.spec.color}`}</p>
+                                     </div>
+                                     <div className="space-y-1">
+                                        <p className="text-[8px] uppercase font-bold text-app/40 tracking-widest">Dimensions (in)</p>
+                                        <p className="text-[10px] font-bold">{item.spec.length || '?'} x {item.spec.breadth || '?'} x {item.spec.height || '?'}</p>
+                                     </div>
+                                  </div>
+
+                                  {(item.spec.formica || item.spec.fabric) && (
+                                    <div className="grid grid-cols-2 gap-4 py-2 border-t border-app/5">
+                                       {item.spec.formica && (
+                                         <div className="space-y-2">
+                                            <p className="text-[8px] uppercase font-bold text-app/40 tracking-widest">Formica Choice</p>
+                                            <div className="flex items-center gap-2">
+                                               {item.spec.formica.swatchUrl && (
+                                                  <div className="w-8 h-8 rounded-lg overflow-hidden border border-app/10 relative flex-shrink-0">
+                                                     <Image src={item.spec.formica.swatchUrl} alt="Swatch" fill className="object-cover" />
+                                                  </div>
+                                               )}
+                                               <div>
+                                                  <p className="text-[10px] font-bold leading-tight">{item.spec.formica.title}</p>
+                                                  <p className="text-[8px] opacity-40">{item.spec.formica.brand} {item.spec.formica.colorCode && `— ${item.spec.colorCode}`}</p>
+                                               </div>
+                                            </div>
+                                         </div>
+                                       )}
+                                       {item.spec.fabric && (
+                                         <div className="space-y-2">
+                                            <p className="text-[8px] uppercase font-bold text-app/40 tracking-widest">Fabric Choice</p>
+                                            <div className="flex items-center gap-2">
+                                               {item.spec.fabric.swatchUrl && (
+                                                  <div className="w-8 h-8 rounded-lg overflow-hidden border border-app/10 relative flex-shrink-0">
+                                                     <Image src={item.spec.fabric.swatchUrl} alt="Swatch" fill className="object-cover" />
+                                                  </div>
+                                               )}
+                                               <div>
+                                                  <p className="text-[10px] font-bold leading-tight">{item.spec.fabric.title}</p>
+                                                  <p className="text-[8px] opacity-40">{item.spec.fabric.brand} {item.spec.fabric.colorCode && `— ${item.spec.colorCode}`}</p>
+                                               </div>
+                                            </div>
+                                         </div>
+                                       )}
+                                    </div>
+                                  )}
+
+                                  {item.spec.description && (
+                                    <div className="pt-2 border-t border-app/5">
+                                       <p className="text-[8px] uppercase font-bold text-app/40 tracking-widest mb-1">Artisan Notes</p>
+                                       <p className="text-[10px] italic font-serif opacity-80">{item.spec.description}</p>
+                                    </div>
+                                  )}
+                               </div>
+                            )}
+                         </div>
+                       ))}
+                    </div>
                    
                    <div className="pt-6 border-t border-app/10 space-y-4">
                       <div className="flex justify-between items-center text-xs opacity-50">

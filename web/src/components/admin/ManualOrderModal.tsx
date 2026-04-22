@@ -20,12 +20,12 @@ import {
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { client } from "@/lib/sanity";
-import { createManualOrder, ManualOrderItem } from "@/app/actions/adminOrders";
+import { createManualOrder, ManualOrderItem, uploadArtisanImage } from "@/app/actions/adminOrders";
 import { validateVoucher } from "@/app/actions/vouchers";
-import { activeVouchersQuery } from "@/lib/queries";
+import { activeVouchersQuery, allMaterialsQuery } from "@/lib/queries";
+import { client } from "@/lib/sanity";
 import Image from "next/image";
-import { Tag, Ticket, Sparkles } from "lucide-react";
+import { Tag, Ticket, Sparkles, Sliders } from "lucide-react";
 
 interface ManualOrderModalProps {
   isOpen: boolean;
@@ -66,18 +66,41 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
   const [manualDiscount, setManualDiscount] = useState<number>(0);
   const [isValidatingVoucher, setIsValidatingVoucher] = useState(false);
 
+  // Custom Product Studio State
+  const [isCustomStudioOpen, setIsCustomStudioOpen] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [customProduct, setCustomProduct] = useState({
+    title: "",
+    price: "",
+    material: "Solid Wood",
+    color: "",
+    length: "",
+    breadth: "",
+    height: "",
+    description: "",
+    imageAssetId: "",
+    imageUrl: "",
+    formicaId: "",
+    fabricId: ""
+  });
+
   // Fetch available vouchers on open
   useEffect(() => {
     if (isOpen) {
-      const fetchVouchers = async () => {
+      const fetchData = async () => {
         try {
-          const vouchers = await client.fetch(activeVouchersQuery);
+          const [vouchers, mats] = await Promise.all([
+            client.fetch(activeVouchersQuery),
+            client.fetch(allMaterialsQuery)
+          ]);
           setAvailableVouchers(vouchers);
+          setMaterials(mats);
         } catch (err) {
-          console.error("Voucher fetch error:", err);
+          console.error("Data fetch error:", err);
         }
       };
-      fetchVouchers();
+      fetchData();
     }
   }, [isOpen]);
 
@@ -98,18 +121,14 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
       setIsSearching(true);
       try {
         const results = await client.fetch(
-          `*[_type == "product" && (title match $q || description match $q) && isActive == true][0...10] {
-            _id,
-            title,
-            price,
-            stock,
-            "imageUrl": mainImage.asset->url
-          }`,
-          { q: `${searchQuery}*` }
+          `*[_type == "product" && isActive == true && (title match $searchTerm || description match $searchTerm || category->title match $searchTerm)] {
+            _id, title, price, "imageUrl": mainImage.asset->url, stock
+          }`, 
+          { searchTerm: `*${searchQuery}*` }
         );
         setSearchResults(results);
       } catch (err) {
-        console.error("Search error:", err);
+        console.error("Manual order search error:", err);
       } finally {
         setIsSearching(false);
       }
@@ -150,6 +169,80 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
 
   const removeItem = (productId: string) => {
     setSelectedItems(selectedItems.filter(item => item.productId !== productId));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const result = await uploadArtisanImage(formData);
+      
+      if (result.success && result.assetId) {
+        setCustomProduct({
+          ...customProduct,
+          imageAssetId: result.assetId,
+          imageUrl: result.url || ""
+        });
+      } else {
+        throw new Error(result.error || "Upload failed");
+      }
+    } catch (err: any) {
+      console.error("Image upload failed:", err);
+      alert(`Failed to upload image: ${err.message}`);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const addCustomItem = () => {
+    if (!customProduct.title || !customProduct.price) {
+      alert("Title and Price are required for custom creations.");
+      return;
+    }
+
+    const newItem: ManualOrderItem = {
+      productId: `temp-${Date.now()}`,
+      title: customProduct.title,
+      price: Number(customProduct.price),
+      quantity: 1,
+      imageUrl: customProduct.imageUrl,
+      isCustom: true,
+      material: customProduct.material,
+      color: customProduct.color,
+      dimensions: {
+        length: Number(customProduct.length) || undefined,
+        breadth: Number(customProduct.breadth) || undefined,
+        height: Number(customProduct.height) || undefined
+      },
+      description: customProduct.description,
+      imageAssetId: customProduct.imageAssetId,
+      formicaId: customProduct.formicaId || undefined,
+      fabricId: customProduct.fabricId || undefined
+    };
+
+    setSelectedItems([...selectedItems, newItem]);
+    
+    // Reset Studio
+    setCustomProduct({
+      title: "",
+      price: "",
+      material: "Solid Wood",
+      color: "",
+      length: "",
+      breadth: "",
+      height: "",
+      description: "",
+      imageAssetId: "",
+      imageUrl: "",
+      formicaId: "",
+      fabricId: ""
+    });
+    setIsCustomStudioOpen(false);
   };
 
   const handleApplyVoucher = async () => {
@@ -335,12 +428,158 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        {isSearching && (
-                          <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                             <div className="w-4 h-4 border-2 border-action border-t-transparent rounded-full animate-spin" />
-                          </div>
-                        )}
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
+                            {isSearching && (
+                              <div className="w-4 h-4 border-2 border-action border-t-transparent rounded-full animate-spin" />
+                            )}
+                            <button 
+                              onClick={() => setIsCustomStudioOpen(!isCustomStudioOpen)}
+                              className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${isCustomStudioOpen ? 'bg-heading text-app' : 'bg-action text-white hover:bg-heading'}`}
+                            >
+                               {isCustomStudioOpen ? <X size={12} /> : <Plus size={12} />}
+                               {isCustomStudioOpen ? "Cancel Studio" : "Custom Product"}
+                            </button>
+                         </div>
                       </div>
+
+                      {/* ARTISAN CUSTOM PRODUCT STUDIO FORM */}
+                      {isCustomStudioOpen && (
+                         <div className="bg-surface border border-action/20 rounded-[2.5rem] p-8 space-y-6 shadow-xl animate-in slide-in-from-top-4 duration-500 overflow-hidden relative">
+                            <div className="absolute -right-4 -top-4 w-24 h-24 bg-action/5 rounded-full blur-2xl" />
+                            <div className="flex items-center gap-3 mb-2">
+                               <Sparkles size={16} className="text-action animate-pulse" />
+                               <h5 className="text-[10px] font-bold uppercase tracking-widest text-action">Artisan Custom Studio</h5>
+                            </div>
+ 
+                            <div className="grid grid-cols-2 gap-6">
+                               <div className="space-y-4">
+                                  <Input 
+                                    placeholder="e.g. Custom Walnut Mirror" 
+                                    value={customProduct.title}
+                                    onChange={(e) => setCustomProduct({...customProduct, title: e.target.value})}
+                                  />
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">Agreed Price (NPR)</label>
+                                     <div className="relative">
+                                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-xs font-bold text-label opacity-40">Rs.</span>
+                                        <input 
+                                          type="number" 
+                                          className="w-full bg-app border border-soft rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:outline-none"
+                                          placeholder="0"
+                                          value={customProduct.price}
+                                          onChange={(e) => setCustomProduct({...customProduct, price: e.target.value})}
+                                        />
+                                     </div>
+                                  </div>
+                               </div>
+ 
+                               <div className="space-y-4">
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">Reference Blueprint / Photo</label>
+                                     <div className="relative h-[112px] group">
+                                        {customProduct.imageUrl ? (
+                                          <div className="w-full h-full rounded-2xl overflow-hidden border-2 border-action/30 relative">
+                                             <Image src={customProduct.imageUrl} alt="Custom" fill className="object-cover" />
+                                             <button 
+                                               onClick={() => setCustomProduct({...customProduct, imageUrl: "", imageAssetId: ""})}
+                                               className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow-lg"
+                                             >
+                                                <X size={12} />
+                                             </button>
+                                          </div>
+                                        ) : (
+                                          <div className="w-full h-full border-2 border-dashed border-soft rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-soft/10 transition-all cursor-pointer relative overflow-hidden">
+                                             {isUploadingImage ? (
+                                                <div className="w-6 h-6 border-2 border-action border-t-transparent rounded-full animate-spin" />
+                                             ) : (
+                                               <>
+                                                 <Package size={24} className="text-label opacity-20" />
+                                                 <span className="text-[9px] font-bold text-label opacity-40 uppercase">Upload Reference</span>
+                                               </>
+                                             )}
+                                             <input 
+                                               type="file" 
+                                               accept="image/*"
+                                               className="absolute inset-0 opacity-0 cursor-pointer"
+                                               onChange={handleImageUpload}
+                                               disabled={isUploadingImage}
+                                             />
+                                          </div>
+                                        )}
+                                     </div>
+                                  </div>
+                               </div>
+                            </div>
+ 
+                            <div className="grid grid-cols-3 gap-4 border-t border-soft/50 pt-6">
+                               <Input label="Material" value={customProduct.material} onChange={(e) => setCustomProduct({...customProduct, material: e.target.value})} />
+                               <Input label="Color / Finish" placeholder="e.g. Dark Matte" value={customProduct.color} onChange={(e) => setCustomProduct({...customProduct, color: e.target.value})} />
+                               <div className="grid grid-cols-3 gap-2">
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] uppercase font-bold text-label opacity-40 flex justify-center">L (in)</label>
+                                     <input type="number" className="w-full bg-app border border-soft rounded-xl py-2 text-center text-xs font-bold" value={customProduct.length} onChange={(e) => setCustomProduct({...customProduct, length: e.target.value})} />
+                                  </div>
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] uppercase font-bold text-label opacity-40 flex justify-center">B (in)</label>
+                                     <input type="number" className="w-full bg-app border border-soft rounded-xl py-2 text-center text-xs font-bold" value={customProduct.breadth} onChange={(e) => setCustomProduct({...customProduct, breadth: e.target.value})} />
+                                  </div>
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] uppercase font-bold text-label opacity-40 flex justify-center">H (in)</label>
+                                     <input type="number" className="w-full bg-app border border-soft rounded-xl py-2 text-center text-xs font-bold" value={customProduct.height} onChange={(e) => setCustomProduct({...customProduct, height: e.target.value})} />
+                                  </div>
+                               </div>
+                            </div>
+ 
+                            <div className="grid grid-cols-2 gap-6 p-6 bg-app/5 rounded-3xl border border-soft/30">
+                               <div className="space-y-3">
+                                  <div className="flex items-center gap-2 mb-1">
+                                     <Sliders size={12} className="text-action" />
+                                     <label className="text-[10px] font-bold uppercase tracking-widest text-label">Formica Choice</label>
+                                  </div>
+                                  <select 
+                                    className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-xs font-bold focus:outline-none"
+                                    value={customProduct.formicaId}
+                                    onChange={(e) => setCustomProduct({...customProduct, formicaId: e.target.value})}
+                                  >
+                                     <option value="">No Formica</option>
+                                     {materials.filter(m => m.type === 'formica').map(m => (
+                                       <option key={m._id} value={m._id}>{m.title} {m.brand ? `(${m.brand})` : ''}</option>
+                                     ))}
+                                  </select>
+                               </div>
+                               <div className="space-y-3">
+                                  <div className="flex items-center gap-2 mb-1">
+                                     <Sliders size={12} className="text-action" />
+                                     <label className="text-[10px] font-bold uppercase tracking-widest text-label">Fabric Choice</label>
+                                  </div>
+                                  <select 
+                                    className="w-full bg-surface border border-soft rounded-xl px-4 py-3 text-xs font-bold focus:outline-none"
+                                    value={customProduct.fabricId}
+                                    onChange={(e) => setCustomProduct({...customProduct, fabricId: e.target.value})}
+                                  >
+                                     <option value="">No Fabric</option>
+                                     {materials.filter(m => m.type === 'fabric').map(m => (
+                                       <option key={m._id} value={m._id}>{m.title} {m.brand ? `(${m.brand})` : ''}</option>
+                                     ))}
+                                  </select>
+                               </div>
+                            </div>
+ 
+                            <div className="flex gap-4 pt-4">
+                               <textarea 
+                                 className="flex-1 bg-app border border-soft rounded-2xl p-4 text-xs italic font-serif focus:ring-1 focus:ring-action outline-none min-h-[80px]"
+                                 placeholder="Special artisan notes or client specifications..."
+                                 value={customProduct.description}
+                                 onChange={(e) => setCustomProduct({...customProduct, description: e.target.value})}
+                               />
+                               <div className="flex flex-col gap-2">
+                                  <Button fullWidth onClick={addCustomItem} className="h-full bg-heading hover:bg-action">
+                                     Add to Ledger
+                                  </Button>
+                               </div>
+                            </div>
+                         </div>
+                       )}
 
                       {/* SEARCH RESULTS DROPDOWN */}
                       {searchResults.length > 0 && searchQuery.length > 1 && (
