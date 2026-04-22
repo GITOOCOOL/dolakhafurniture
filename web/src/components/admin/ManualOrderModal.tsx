@@ -25,7 +25,7 @@ import { validateVoucher } from "@/app/actions/vouchers";
 import { activeVouchersQuery, allMaterialsQuery } from "@/lib/queries";
 import { client } from "@/lib/sanity";
 import Image from "next/image";
-import { Tag, Ticket, Sparkles, Sliders } from "lucide-react";
+import { Tag, Ticket, Sparkles, Sliders, ChevronDown } from "lucide-react";
 
 interface ManualOrderModalProps {
   isOpen: boolean;
@@ -41,8 +41,10 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
 
   // Step 1: Product Selection State
   const [searchQuery, setSearchQuery] = useState("");
+  const [allProducts, setAllProducts] = useState<any[]>([]);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ManualOrderItem[]>([]);
 
   // Step 2 & 3: Customer Data
@@ -90,12 +92,16 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
     if (isOpen) {
       const fetchData = async () => {
         try {
-          const [vouchers, mats] = await Promise.all([
+          const [vouchers, mats, prods] = await Promise.all([
             client.fetch(activeVouchersQuery),
-            client.fetch(allMaterialsQuery)
+            client.fetch(allMaterialsQuery),
+            client.fetch(`*[_type == "product" && isActive == true] {
+              _id, title, price, "imageUrl": mainImage.asset->url, stock, category->{title}
+            }`)
           ]);
           setAvailableVouchers(vouchers);
           setMaterials(mats);
+          setAllProducts(prods);
         } catch (err) {
           console.error("Data fetch error:", err);
         }
@@ -112,31 +118,20 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
   const balanceDue = Math.max(0, netTotal - formData.advanceDeposit);
 
   // Search Logic
+  // Hybrid Dropdown-Search Logic
   useEffect(() => {
-    const searchProducts = async () => {
-      if (!searchQuery.trim() || searchQuery.length < 2) {
-        setSearchResults([]);
-        return;
-      }
-      setIsSearching(true);
-      try {
-        const results = await client.fetch(
-          `*[_type == "product" && isActive == true && (title match $searchTerm || description match $searchTerm || category->title match $searchTerm)] {
-            _id, title, price, "imageUrl": mainImage.asset->url, stock
-          }`, 
-          { searchTerm: `*${searchQuery}*` }
-        );
-        setSearchResults(results);
-      } catch (err) {
-        console.error("Manual order search error:", err);
-      } finally {
-        setIsSearching(false);
-      }
-    };
+    if (!searchQuery.trim()) {
+      setSearchResults(allProducts);
+      return;
+    }
 
-    const timer = setTimeout(searchProducts, 400);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    const filtered = allProducts.filter(p => 
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.category?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setSearchResults(filtered);
+    setIsDropdownOpen(true);
+  }, [searchQuery, allProducts]);
 
   const addItem = (product: any) => {
     const existing = selectedItems.find(item => item.productId === product._id);
@@ -417,27 +412,42 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
               {/* STEP 1: PRODUCTS */}
               {step === 1 && (
                 <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-                   <div className="space-y-4">
-                      <h4 className="text-[10px] uppercase font-bold tracking-widest text-label">1. Select Products</h4>
-                      <div className="relative">
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between">
+                         <h4 className="text-[10px] uppercase font-bold tracking-widest text-label">1. Select Products</h4>
+                         <button 
+                            onClick={() => setIsCustomStudioOpen(!isCustomStudioOpen)}
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${isCustomStudioOpen ? 'bg-heading text-app' : 'bg-action text-white hover:bg-heading'}`}
+                          >
+                             {isCustomStudioOpen ? <X size={12} /> : <Plus size={12} />}
+                             {isCustomStudioOpen ? "Cancel Studio" : "Custom Product Studio"}
+                          </button>
+                       </div>
+
+                       <div className="relative">
                         <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-description opacity-40" size={18} />
                         <input 
                           type="text" 
-                          placeholder="Search items by name..." 
-                          className="w-full bg-surface border border-soft rounded-3xl pl-16 pr-8 py-5 text-sm type-body focus:outline-none focus:ring-1 focus:ring-action transition-all"
+                          placeholder="Search or browse items..." 
+                          className="w-full bg-surface border border-soft rounded-3xl pl-16 pr-24 py-5 text-sm type-body focus:outline-none focus:ring-1 focus:ring-action transition-all"
                           value={searchQuery}
+                          onFocus={() => setIsDropdownOpen(true)}
                           onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
-                            {isSearching && (
-                              <div className="w-4 h-4 border-2 border-action border-t-transparent rounded-full animate-spin" />
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 border-l border-soft pl-4">
+                            {searchQuery && (
+                              <button 
+                                onClick={() => setSearchQuery("")}
+                                className="p-1 hover:bg-soft rounded-full text-label opacity-40 hover:opacity-100 transition-all"
+                              >
+                                <X size={14} />
+                              </button>
                             )}
                             <button 
-                              onClick={() => setIsCustomStudioOpen(!isCustomStudioOpen)}
-                              className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${isCustomStudioOpen ? 'bg-heading text-app' : 'bg-action text-white hover:bg-heading'}`}
+                              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                              className={`p-1 hover:bg-soft rounded-full transition-all ${isDropdownOpen ? 'rotate-180 text-action' : 'text-label opacity-40'}`}
                             >
-                               {isCustomStudioOpen ? <X size={12} /> : <Plus size={12} />}
-                               {isCustomStudioOpen ? "Cancel Studio" : "Custom Product"}
+                               <ChevronDown size={20} />
                             </button>
                          </div>
                       </div>
@@ -581,9 +591,9 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
                          </div>
                        )}
 
-                      {/* SEARCH RESULTS DROPDOWN */}
-                      {searchResults.length > 0 && searchQuery.length > 1 && (
-                        <div className="bg-surface border border-soft rounded-[2rem] shadow-xl overflow-hidden max-h-80 overflow-y-auto divide-y divide-soft border-dotted">
+                      {/* SEARCH RESULTS DROPDOWN (ARTI-COMBOBOX) */}
+                      {isDropdownOpen && searchResults.length > 0 && (
+                        <div className="bg-surface border border-soft rounded-[2rem] shadow-xl overflow-hidden max-h-80 overflow-y-auto divide-y divide-soft border-dotted z-10 relative mt-2 animate-in slide-in-from-top-2 duration-300">
                            {searchResults.map((product) => (
                              <button 
                                key={product._id} 

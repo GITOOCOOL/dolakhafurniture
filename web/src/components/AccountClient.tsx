@@ -73,7 +73,7 @@ export default function AccountClient({
         {/* LEFT COLUMN: HUB NAVIGATION */}
         <div className="lg:col-span-5 space-y-10">
           <div className="flex items-center gap-6 mb-12">
-            <div className="relative w-24 h-24 rounded-full overflow-hidden border border-soft shadow-inner bg-white flex items-center justify-center">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden border border-soft shadow-inner bg-surface flex items-center justify-center">
               {user.user_metadata.avatar_url ? (
                 <Image
                   src={user.user_metadata.avatar_url}
@@ -126,7 +126,7 @@ export default function AccountClient({
 
             <Link
               href="/orders"
-              className="group flex flex-col p-8 bg-white border border-soft rounded-[3rem] hover:border-action hover:shadow-xl transition-all duration-500"
+              className="group flex flex-col p-8 bg-surface border border-soft rounded-[3rem] hover:border-action hover:shadow-xl transition-all duration-500"
             >
               <div className="flex justify-between items-center mb-4">
                 <Package
@@ -148,7 +148,7 @@ export default function AccountClient({
 
             <button
               onClick={() => setShowInquiryModal(true)}
-              className="group flex flex-col p-8 bg-white border border-soft rounded-[3rem] hover:border-action hover:shadow-xl transition-all duration-500 text-left w-full"
+              className="group flex flex-col p-8 bg-surface border border-soft rounded-[3rem] hover:border-action hover:shadow-xl transition-all duration-500 text-left w-full"
             >
               <div className="flex justify-between items-center mb-4">
                 <MessageCircle

@@ -14,6 +14,7 @@ export async function getCustomerIntelligence(email: string) {
         orderNumber,
         status,
         totalPrice,
+        customerPhone,
         items[] {
           "title": coalesce(title, product->title),
           quantity

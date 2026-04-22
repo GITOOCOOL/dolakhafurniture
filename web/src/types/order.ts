@@ -4,9 +4,17 @@ export type Order = {
   _id: string;
   _createdAt: string;
   orderNumber?: string;
-  voucherCode?: string;
   status?: string;
+  orderSource?: string;
+  isPhoneOrder?: boolean;
+  internalNotes?: string;
+  customerName?: string;
+  customerEmail?: string;
   customerPhone?: string;
+  totalPrice: number;
+  discountValue?: number;
+  advanceDeposit?: number;
+  voucherCodes?: string[];
   shippingAddress?: {
     firstName: string;
     lastName: string;
@@ -14,14 +22,17 @@ export type Order = {
     apartment?: string;
     city: string;
     state: string;
-    postcode: string;
+    postcode?: string;
     country?: string;
   };
-  totalPrice: number;
   items: {
+    productId: string;
     title: string;
     price: number;
     quantity: number;
+    imageUrl?: string;
     image?: SanityImageSource;
+    isCustom?: boolean;
+    spec?: any;
   }[];
 }

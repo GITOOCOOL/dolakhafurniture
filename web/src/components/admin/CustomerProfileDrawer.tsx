@@ -13,10 +13,13 @@ import {
   History,
   ShieldCheck,
   CreditCard,
-  Loader2
+  Loader2,
+  Trash2
 } from "lucide-react";
 import { getCustomerIntelligence } from "@/app/actions/adminCustomer";
 import { format } from "date-fns";
+import { Order } from "@/types/order";
+import DeleteOrderModal from "./DeleteOrderModal";
 
 interface CustomerProfileDrawerProps {
   email: string | null;
@@ -34,6 +37,7 @@ export default function CustomerProfileDrawer({
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
 
   useEffect(() => {
     if (isOpen && email) {
@@ -57,6 +61,15 @@ export default function CustomerProfileDrawer({
       currency: "NPR",
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const handleDeleteSuccess = (orderId: string) => {
+    if (data) {
+      setData({
+        ...data,
+        orders: data.orders.filter((o: any) => o._id !== orderId)
+      });
+    }
   };
 
   return (
@@ -88,7 +101,30 @@ export default function CustomerProfileDrawer({
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-heading mb-1">{customerName || "Customer Profile"}</h2>
-                  <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-label">{email}</p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {email && (
+                      <a 
+                        href={`mailto:${email}`}
+                        className="text-[10px] font-sans font-bold uppercase tracking-widest text-indigo-500 hover:text-indigo-600 transition-colors"
+                        title="Draft Quick Email"
+                      >
+                        {email}
+                      </a>
+                    )}
+                    {data?.orders?.[0]?.customerPhone && (
+                      <>
+                        <div className="w-1 h-1 rounded-full bg-soft" />
+                        <a 
+                          href={`tel:${data.orders[0].customerPhone}`}
+                          className="flex items-center gap-1.5 text-emerald-500 hover:text-emerald-600 transition-colors"
+                          title="Call Artisan Lead"
+                        >
+                          <Phone size={10} strokeWidth={3} className="fill-emerald-500/10" />
+                          <span className="text-[10px] font-bold tracking-widest">{data.orders[0].customerPhone}</span>
+                        </a>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <button 
@@ -164,12 +200,21 @@ export default function CustomerProfileDrawer({
                            </div>
                            <div className="flex justify-between items-end border-t border-soft border-dotted pt-4">
                               <p className="text-lg font-serif italic text-heading">{formatPrice(order.totalPrice)}</p>
-                              <a 
-                                href={`/admin/orders?order=${order.orderNumber}`} 
-                                className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-action opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                View Details <ExternalLink size={12} />
-                              </a>
+                              <div className="flex items-center gap-4">
+                                <button 
+                                  onClick={() => setOrderToDelete(order)}
+                                  className="p-2 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                  title="Delete Order"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                                <a 
+                                  href={`/admin/orders?order=${order.orderNumber}`} 
+                                  className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-action opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  View Details <ExternalLink size={12} />
+                                </a>
+                              </div>
                            </div>
                         </div>
                       )) : (
@@ -227,6 +272,13 @@ export default function CustomerProfileDrawer({
           </motion.div>
         </>
       )}
+
+      {/* SHARED DELETE MODAL INTEGRATION */}
+      <DeleteOrderModal 
+        order={orderToDelete}
+        onClose={() => setOrderToDelete(null)}
+        onSuccess={handleDeleteSuccess}
+      />
     </AnimatePresence>
   );
 }

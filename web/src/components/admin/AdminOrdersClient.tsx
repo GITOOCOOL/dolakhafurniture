@@ -8,6 +8,8 @@ import { deleteOrder } from "@/app/actions/adminOrders";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
+import { Order } from "@/types/order";
+import DeleteOrderModal from "./DeleteOrderModal";
 
 interface Order {
   _id: string;
@@ -34,9 +36,6 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
-  const [shouldRestoreStock, setShouldRestoreStock] = useState(true);
-  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   // Filter State
@@ -109,24 +108,8 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
     }
   };
 
-  const handleDeleteOrder = async () => {
-    if (!orderToDelete) return;
-    setIsDeleting(true);
-    try {
-      const result = await deleteOrder(orderToDelete._id, shouldRestoreStock);
-      if (result.success) {
-        setOrderToDelete(null);
-        setDeleteConfirmText("");
-        setOrders(orders.filter(o => o._id !== orderToDelete._id));
-        router.refresh();
-      } else {
-        alert(result.message);
-      }
-    } catch (err) {
-      alert("Failed to delete order.");
-    } finally {
-      setIsDeleting(false);
-    }
+  const handleDeleteOrderSuccess = (orderId: string) => {
+    setOrders(orders.filter(o => o._id !== orderId));
   };
 
   const statusColors: Record<string, string> = {
@@ -268,7 +251,7 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
         {filteredOrders.length > 0 ? filteredOrders.map((order) => (
           <div key={order._id} className="bg-app border border-soft rounded-[3rem] p-6 md:p-10 shadow-sm hover:border-action/20 transition-all duration-500 overflow-hidden relative group">
             {/* STATUS BADGE */}
-            <div className="relative sm:absolute sm:top-10 sm:right-10 flex flex-wrap items-center gap-3 mb-6 sm:mb-0">
+             <div className="relative sm:absolute sm:top-10 sm:right-10 flex items-center gap-3 mb-6 sm:mb-0">
                <div className="relative">
                 <select 
                   value={order.status?.toLowerCase() || "pending"}
@@ -276,7 +259,7 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                   onChange={(e) => updateStatus(order._id, e.target.value)}
                   className={`
                     appearance-none pl-6 pr-10 py-2.5 rounded-full text-[9px] font-sans font-bold uppercase tracking-widest 
-                    transition-all outline-none cursor-pointer border border-transparent hover:border-action/20
+                    transition-all outline-none cursor-pointer border border-soft hover:border-action/20
                     ${statusColors[order.status?.toLowerCase() || "pending"]}
                     ${updatingId === order._id ? "opacity-50" : ""}
                   `}
@@ -289,6 +272,18 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                 </select>
                 <ChevronDown size={10} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40" />
                </div>
+
+               {/* REPOSITIONED ARTISAN PURGE */}
+               <button 
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   setOrderToDelete(order);
+                 }}
+                 className="w-10 h-10 flex items-center justify-center bg-red-500/5 text-red-500/40 rounded-xl hover:bg-red-500 hover:text-white hover:opacity-100 transition-all border border-transparent hover:border-red-500 shadow-sm"
+                 title="Delete Order"
+               >
+                 <Trash2 size={14} />
+               </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -327,13 +322,25 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                       {new Date(order._createdAt).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 text-label">
-                    <Mail size={14} className="opacity-40" />
-                    <span className="text-[10px] font-bold lowercase tracking-widest">{order.customerEmail || "No Email"}</span>
+                  <div className="flex items-center gap-3">
+                    <a 
+                      href={`mailto:${order.customerEmail}`}
+                      className="flex items-center gap-2.5 px-4 py-2 bg-indigo-500 text-white rounded-full text-[9px] font-bold uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:bg-indigo-600 hover:scale-105 active:scale-95 transition-all w-fit"
+                      title="Draft Artisan Email"
+                    >
+                      <Mail size={12} strokeWidth={3} />
+                      <span className="lowercase">{order.customerEmail || "Unlisted Email"}</span>
+                    </a>
                   </div>
-                  <div className="flex items-center gap-3 text-label">
-                    <Phone size={14} className="opacity-40" />
-                    <span className="text-[10px] font-bold tracking-widest">{order.customerPhone || "No Phone"}</span>
+                  <div className="flex items-center gap-3">
+                    <a 
+                      href={`tel:${order.customerPhone}`}
+                      className="flex items-center gap-2.5 px-4 py-2 bg-emerald-500 text-white rounded-full text-[9px] font-bold uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 hover:scale-105 active:scale-95 transition-all w-fit"
+                      title="Initiate Artisan Call"
+                    >
+                      <Phone size={12} strokeWidth={3} />
+                      <span>{order.customerPhone || "Unlisted Number"}</span>
+                    </a>
                   </div>
                 </div>
 
@@ -418,20 +425,9 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
                     <div className="flex gap-3 w-full sm:w-auto">
                        <button 
                          onClick={() => setSelectedOrder(order)}
-                         className="flex items-center gap-2 flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-3 bg-invert text-app rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-action transition-all shadow-lg"
+                         className="flex items-center gap-2 flex-1 sm:flex-none justify-center px-6 sm:px-8 py-3.5 sm:py-3 bg-invert text-app rounded-full text-[9px] font-sans font-bold uppercase tracking-widest hover:bg-action transition-all shadow-lg"
                        >
                           <Plus size={14} /> Full Breakdown
-                       </button>
-                       <button 
-                         onClick={() => {
-                           setOrderToDelete(order);
-                           setDeleteConfirmText("");
-                           setShouldRestoreStock(true);
-                         }}
-                         className="w-12 h-12 flex items-center justify-center bg-red-500/10 text-red-600 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                         title="Delete Order"
-                       >
-                          <Trash2 size={16} />
                        </button>
                     </div>
                  </div>
@@ -626,76 +622,12 @@ export default function AdminOrdersClient({ initialOrders }: { initialOrders: Or
         )}
       </Modal>
 
-      {/* DELETE CONFIRMATION MODAL */}
-      <Modal
-        isOpen={!!orderToDelete}
-        onClose={() => !isDeleting && setOrderToDelete(null)}
-        title="Security Confirmation"
-      >
-        {orderToDelete && (
-          <div className="space-y-8 py-4">
-             <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-red-500/10 text-red-600 rounded-full flex items-center justify-center border border-red-500/20">
-                   <AlertOctagon size={32} />
-                </div>
-                <div>
-                   <h3 className="type-section text-lg">Permanent Order Deletion</h3>
-                   <p className="type-label text-label normal-case max-w-[250px] mx-auto mt-2 italic font-serif">
-                     This action cannot be undone. All data for 
-                     <span className="text-heading font-bold not-italic"> #{orderToDelete.orderNumber}</span> will be purged.
-                   </p>
-                </div>
-             </div>
-
-             <div className="space-y-6">
-                {/* Restore Stock Option */}
-                <button 
-                  onClick={() => setShouldRestoreStock(!shouldRestoreStock)}
-                  className={`w-full flex flex-wrap items-center gap-3 p-5 rounded-[2rem] border transition-all ${shouldRestoreStock ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-700" : "bg-surface border-soft text-label"}`}
-                >
-                   <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${shouldRestoreStock ? "bg-emerald-500 text-white" : "border-2 border-soft"}`}>
-                      {shouldRestoreStock && <CheckCircle2 size={14} />}
-                   </div>
-                   <div className="text-left">
-                      <p className="text-[10px] font-bold uppercase tracking-widest">Restore Stock Level</p>
-                      <p className="text-[9px] opacity-60">
-                        Add items back to inventory. 
-                        <span className="block mt-1 text-action font-serif italic">Note: Skip this if the order used external partner stock.</span>
-                      </p>
-                   </div>
-                   <RotateCcw className={`ml-auto opacity-40 ${shouldRestoreStock ? "animate-spin-slow" : ""}`} size={16} />
-                </button>
-
-                {/* ID Confirmation */}
-                <div className="space-y-3">
-                   <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">
-                      Type <span className="text-heading">#{orderToDelete.orderNumber}</span> to confirm
-                   </label>
-                   <input 
-                     type="text" 
-                     placeholder={`#${orderToDelete.orderNumber}`}
-                     className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-red-500 transition-all text-center tracking-widest"
-                     value={deleteConfirmText}
-                     onChange={(e) => setDeleteConfirmText(e.target.value)}
-                   />
-                </div>
-             </div>
-
-             <div className="flex gap-4">
-                <Button variant="ghost" fullWidth onClick={() => setOrderToDelete(null)} disabled={isDeleting}>Cancel</Button>
-                <Button 
-                   variant="danger" 
-                   fullWidth 
-                   onClick={handleDeleteOrder}
-                   isLoading={isDeleting}
-                   disabled={deleteConfirmText !== `#${orderToDelete.orderNumber}`}
-                >
-                   Delete Order
-                </Button>
-             </div>
-          </div>
-        )}
-      </Modal>
+      {/* SHARED DELETE MODAL */}
+      <DeleteOrderModal 
+        order={orderToDelete}
+        onClose={() => setOrderToDelete(null)}
+        onSuccess={handleDeleteOrderSuccess}
+      />
     </div>
   );
 }
