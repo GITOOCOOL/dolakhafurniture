@@ -3,6 +3,8 @@ import AdminHeaderClient from "@/components/admin/AdminHeaderClient";
 import { getUserRole } from "@/lib/auth";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+ 
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({
   children,
