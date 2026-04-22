@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Package, MapPin, Phone, Mail, Calendar, ChevronDown, Plus, Tag, Info, User, CheckCircle2, Search, Filter, X, Trash2, AlertOctagon, RotateCcw } from "lucide-react";
+import { Package, MapPin, Phone, Mail, Calendar, ChevronDown, Plus, Tag, Info, User, CheckCircle2, Search, Filter, X, Trash2, AlertOctagon, RotateCcw, Sparkles } from "lucide-react";
 import Image from "next/image";
 import ManualOrderModal from "./ManualOrderModal";
 import { deleteOrder } from "@/app/actions/adminOrders";
