@@ -83,6 +83,7 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 - **React Native Mobile App**: Leveraging the same Sanity GROQ queries for a native shopping experience.
 - **Customer Account Portal**: Personalized dashboards for order tracking and voucher management.
 - **B2B Quote Generator**: Allowing bulk buyers to generate custom priced PDFs directly from the dashboard.
+- **In-App Browser Intelligence (Shadowed)**: A rhythmic triple-bounce alert for Messenger/Facebook users to guide them to external browsers. Currently deactivated for "Atelier Polish" (Requires timing refinement).
 
 - **Meta Business Assets**:
   - **Active Dataset (Pixel)**: `1192490926171504` (Primary tracking for website)
