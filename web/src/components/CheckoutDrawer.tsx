@@ -389,10 +389,15 @@ export default function CheckoutDrawer({
         ) : items.length === 0 ? (
           "Empty Cart"
         ) : (
-          <div className="flex items-center gap-3">
-            <span>Checkout</span>
-            <span className="type-label text-description/40 text-[9px] translate-y-[1px]">
-              Step {activeStep} of 4
+          <div className="flex flex-col">
+            <span className="text-sm font-serif italic text-heading leading-tight">Checkout</span>
+            <span className="type-label text-description/60 text-[9px] translate-y-[1px] font-bold uppercase tracking-widest whitespace-nowrap">
+              Step {activeStep} of 4: {
+                activeStep === 1 ? "Review / Vouchers" :
+                activeStep === 2 ? "Customer Details" :
+                activeStep === 3 ? "Delivery Info" :
+                "Finalize Payment"
+              }
             </span>
           </div>
         )
@@ -1250,18 +1255,19 @@ export default function CheckoutDrawer({
 
         {/* Footer Actions */}
         {!isSuccess && items.length > 0 && (
-          <div className="flex-shrink-0 pt-0 pb-0 border-t border-soft/10 flex items-center justify-center gap-6 px-6 relative">
-            {activeStep > 1 && (
-              <button
-                onClick={handleBack}
-                className="absolute left-6 flex items-center gap-2 type-action text-description hover:text-heading transition-all group"
-              >
-                <div className="p-2 group-hover:bg-soft/10 rounded-full transition-all">
-                  <ArrowLeft size={16} />
-                </div>
-                <span>Back</span>
-              </button>
-            )}
+          <div className="flex-shrink-0 py-4 border-t border-soft/10 flex items-center justify-between px-8 relative bg-app/80 backdrop-blur-md gap-4">
+            <div className="w-[100px] flex-shrink-0">
+              {activeStep > 1 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="flex items-center gap-2 type-action text-description/60 hover:text-heading transition-all group py-2"
+                >
+                  <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                  <span className="text-[9px] uppercase font-bold tracking-[0.2em] hidden sm:inline">Back</span>
+                </button>
+              )}
+            </div>
 
             <Button
               form="checkout-form"
@@ -1273,7 +1279,7 @@ export default function CheckoutDrawer({
               disabled={
                 activeStep === 1 && items.length > 0 && isInitialLoading
               }
-              className="flex-1 max-w-[280px] !py-5 rounded-b-none"
+              className="flex-1 max-w-[280px] !py-3.5 shadow-2xl shadow-action/10"
               rightIcon={
                 activeStep < 4 ? (
                   <ChevronRight size={18} />
@@ -1282,8 +1288,13 @@ export default function CheckoutDrawer({
                 )
               }
             >
-              {activeStep < 4 ? "Continue" : "Process Secure Order"}
+              {activeStep === 1 ? "Next: Contact Info" : 
+               activeStep === 2 ? "Next: Delivery" : 
+               activeStep === 3 ? "Next: Payment" : 
+               "Secure Order"}
             </Button>
+
+            <div className="w-[100px] flex-shrink-0" />
           </div>
         )}
       </div>
