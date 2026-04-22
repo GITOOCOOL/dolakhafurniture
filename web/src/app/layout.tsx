@@ -51,6 +51,11 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__name = window.__name || ((f, n) => f);`,
+          }}
+        />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"

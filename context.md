@@ -11,7 +11,7 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 - **Frontend (`/web`)**: Next.js 16 (App Router), React 19, Tailwind CSS v4, Lucide Icons, Framer Motion.
 - **CMS (`/sanity-studio`)**: Sanity v3 (Headless), GROQ Queries, Hotspot Image Support.
 - **Database & Auth**: Supabase (PostgreSQL + Google OAuth + Facebook Login).
-- **Deployment**: Cloudflare Pages (Monorepo setup with OpenNext).
+- **Deployment**: Cloudflare Pages (Monorepo setup with OpenNext). **CRITICAL**: @opennextjs/cloudflare MUST be pinned to exact versions (no caret) to prevent build-time regressions like the `__name` ReferenceError.
 
 ---
 
@@ -77,6 +77,10 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
   - **Facebook Data Feed**: Automated RSS 2.0 XML feed for Meta Commerce Manager (NPR Currency).
   - **Content Centralization**: Expanding Sanity to hold square/vertical social media graphics and marketing briefs.
 - **Campaign Tracking**: Integrating platform-specific traffic monitoring for Instagram, Facebook, and TikTok.
+- **Artisan Dashboard Registry Stabilization**:
+  - Implemented defensive null-checks for malformed legacy order records.
+  - Hardened user management server components with `try/catch` and environment guards.
+  - Resolved `__name` build-time ReferenceError by pinning build tooling.
 
 ### **💡 Future Concepts**
 
