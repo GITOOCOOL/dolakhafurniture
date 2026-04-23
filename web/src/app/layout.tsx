@@ -15,6 +15,12 @@ import FooterClient from "@/components/FooterClient";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dolakha Furniture | Heritage Atelier",
+  description: "Experience the finest furniture crafted with heritage and modern aesthetics.",
+};
 
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
