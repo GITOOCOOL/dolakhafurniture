@@ -40,5 +40,6 @@ This file tracks the operational history of the AI assistant for Projekt-Dolakha
         - Implemented an intelligent **Soft-Gate Nudge** for vouchers that respects user input.
         - Refined Step 3 (Delivery) with better field ordering, mandatory "Tole/Area", and aligned label/input styling.
     - **Authentication Refinement**: Updated redirect logic in `AuthForm.tsx` and `AuthPage.tsx` to land users on the home page (`/`) instead of the account page (`/account`) after signup and login.
+    - **Documentation Refactor**: Created `FutureUpdates.md` to centralize long-term concepts and features, keeping `context.md` lean. Added the **Home Page Remaster** (Funnel Machine) initiative to the roadmap.
     - **Performance**: Cleaned up `.next` cache, freeing over 1GB of disk space.
     - **Deployment**: Successfully merged all refinements into `master`.

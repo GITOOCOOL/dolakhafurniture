@@ -14,5 +14,6 @@ import faq from './faq'
 import lead from './lead'
 import customProduct from './customProduct'
 import material from './material'
+import socialMedia from './socialMedia'
 
-export const schemaTypes = [product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry, lead, customProduct, material, campaign, faq]
+export const schemaTypes = [socialMedia, product, order, category, bulletin, heroImage, promotion, paymentAccount, discountVoucher, inquiry, lead, customProduct, material, campaign, faq]

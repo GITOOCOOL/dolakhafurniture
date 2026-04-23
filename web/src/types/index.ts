@@ -8,3 +8,4 @@ export * from './customer';
 export * from './cart';
 export * from './campaign';
 export * from './voucher';
+export * from './social';

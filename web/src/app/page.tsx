@@ -2,9 +2,12 @@ import { client } from "@/lib/sanity";
 import CategoryRow from "@/components/CategoryRow"; 
 import { Product, Category } from '@/types';
 import Hero from "@/components/Hero";
-import { categoriesQuery, allProductsQuery, featuredProductsQuery, activeCampaignHomeQuery } from "@/lib/queries";
+import { categoriesQuery, allProductsQuery, featuredProductsQuery, activeCampaignHomeQuery, socialMediaQuery } from "@/lib/queries";
 import Carousel from "@/components/Carousel";
 import ProductCard from "@/components/ProductCard";
+import SocialStories from "@/components/SocialStories";
+import ReelsSection from "@/components/ReelsSection";
+import { SocialContent } from "@/types";
 
 export const dynamic = 'force-dynamic';
 
@@ -27,8 +30,15 @@ export default async function Home() {
     return acc;
   }, {} as Record<string, Product[]>);
 
+  const socialContent = (await client.fetch<SocialContent[]>(socialMediaQuery)) || [];
+  const stories = socialContent.filter(item => item.type === 'story');
+  const reels = socialContent.filter(item => item.type === 'reel');
+
   return (
     <div className="w-full bg-app">
+      
+      {/* 0. SOCIAL STORIES (High-intent discovery) */}
+      <SocialStories stories={stories} />
 
       {/* 0. TOPMOST: ACTIVE CAMPAIGN (High visibility) */}
       {activeCampaign?.products?.length > 0 && (
@@ -91,7 +101,10 @@ export default async function Home() {
         })}
       </div>
 
-      {/* 3. BOTTOM: BRAND STORY / MISSION (Moved from middle for better product-first flow) */}
+      {/* 3. SOCIAL REELS (Lifestyle & Proof) */}
+      <ReelsSection reels={reels} />
+
+      {/* 4. BOTTOM: BRAND STORY / MISSION (Moved from middle for better product-first flow) */}
       <div className="border-t border-soft border-dotted">
         <Hero />
       </div>

@@ -35,6 +35,17 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Scroll listener for search bar visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) setIsScrolled(true);
+      else setIsScrolled(false);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Debounced search logic
   useEffect(() => {
@@ -155,27 +166,40 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
         </div>
 
         {/* --- FULL-WIDTH SEARCH TRIGGER --- */}
-        <div className="container mx-auto px-6 pt-4 pointer-events-none">
-          <button
-            onClick={() => setIsSearchOpen(true)}
-            className="pointer-events-auto w-full bg-app/50 backdrop-blur-md border border-soft/50 shadow-sm px-6 py-4 rounded-2xl text-label hover:border-action transition-all duration-500 group flex items-center justify-between"
-            aria-label="Search Collection"
-          >
-            <div className="flex items-center gap-4">
-              <Search
-                size={18}
-                className="text-action opacity-50 group-hover:opacity-100 transition-opacity"
-                strokeWidth={1.5}
-              />
-              <span className="text-[11px] font-sans font-medium lowercase tracking-wide text-description group-hover:text-heading transition-colors">
-                Search by name, material, or style...
-              </span>
-            </div>
-            <div className="hidden md:flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.2em] text-label opacity-40 group-hover:opacity-100">
-              <span>Quick Search</span>
-              <span className="text-action">→</span>
-            </div>
-          </button>
+        {/* Layout-stable wrapper to prevent "bouncing" page jumps */}
+        <div className="h-[82px] md:h-[86px]">
+          <AnimatePresence>
+            {!isScrolled && (
+              <motion.div
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="container mx-auto px-6 pt-4 pointer-events-none"
+              >
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="pointer-events-auto w-full bg-app/50 backdrop-blur-md border border-soft/50 shadow-sm px-6 py-4 rounded-2xl text-label hover:border-action transition-all duration-500 group flex items-center justify-between"
+                  aria-label="Search Collection"
+                >
+                  <div className="flex items-center gap-4">
+                    <Search
+                      size={18}
+                      className="text-action opacity-50 group-hover:opacity-100 transition-opacity"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-[11px] font-sans font-medium lowercase tracking-wide text-description group-hover:text-heading transition-colors">
+                      Search by name, material, or style...
+                    </span>
+                  </div>
+                  <div className="hidden md:flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.2em] text-label opacity-40 group-hover:opacity-100">
+                    <span>Quick Search</span>
+                    <span className="text-action">→</span>
+                  </div>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <CampaignModal campaign={latestCampaign || null} />

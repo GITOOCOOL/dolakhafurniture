@@ -199,3 +199,17 @@ export const adminLeadsQuery = `*[_type == "lead"] | order(_createdAt desc) {
     message
   }
 }`
+
+export const socialMediaQuery = `*[_type == "socialMedia" && isActive == true] | order(isFeatured desc, publishDate desc) {
+    _id,
+    title,
+    type,
+    "videoUrl": videoFile.asset->url,
+    "thumbnailUrl": thumbnail.asset->url,
+    caption,
+    externalUrl,
+    isFeatured,
+    "linkedProducts": linkedProducts[]-> {
+        _id, title, price, "slug": slug.current, mainImage
+    }
+}`

@@ -60,6 +60,10 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 
 ## 📈 Implementation Registry
 
+### **🛡️ Critical Focus: Hardening & Stabilization**
+
+Current priority is stabilizing the live environment. All active bugs, security audit findings, and optimization tasks are tracked in **[NowWorking.md](file:///Users/suraj/Developer/dolakha-mac/dolakhafurniture/NowWorking.md)**. This takes precedence over new feature development.
+
 ### **✅ Features Implemented**
 
 - **Advanced Product Catalog**:
@@ -95,15 +99,22 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
   - **Auth Conflict Resolution**: Decoupled CheckoutDrawer from direct auth locks, centralizing state in Navbar to prevent UI freezes during Google Login.
   - **High-End UX**: Implemented "Voucher Inspector" (hover/tap for details), "Soft-Gate Nudge" for conversion, and localized field ordering (Tole/Area priority).
   - **Sanity Query Optimization**: Enhanced GROQ projections to include granular discount data for all active campaigns.
+- **Sanity-Managed Social Hub**:
+  - Implementation of `SocialStories` (top-bar bubbles) and `ReelsSection` (vertical video gallery) on the storefront.
+  - Integrated full-screen story viewer with product tagging support ("Shop the Look").
+  - **Social Command Center (Automated Broadcasting)**: 
+    - One-click publishing from Sanity Studio to the "Dolakha Furniture" Facebook Page.
+    - Integrated a permanent **System User Page Access Token** for "set and forget" operation.
+    - Custom Next.js API handling the multi-step Meta Reels upload and publishing pipeline.
 
-### **💡 Future Concepts**
+### **💡 Future Concepts & Roadmap**
 
-- **React Native Mobile App**: Leveraging the same Sanity GROQ queries for a native shopping experience.
-- **Customer Account Portal**: Personalized dashboards for order tracking and voucher management.
-- **B2B Quote Generator**: Allowing bulk buyers to generate custom priced PDFs directly from the dashboard.
-- **In-App Browser Intelligence (Shadowed)**: A rhythmic triple-bounce alert for Messenger/Facebook users to guide them to external browsers. Currently deactivated for "System Polish" (Requires timing refinement).
+- **Home Page Remaster**: Re-engineering the home page into a high-conversion "Funnel Machine" and editorial landing page.
+- All other future ideas, concepts, and upcoming features are centralized in **[FutureUpdates.md](file:///Users/suraj/Developer/dolakha-mac/dolakhafurniture/FutureUpdates.md)**. Use that file for long-term planning and architectural vision.
 
-- **Meta Business Assets**:
+---
+
+## 🛡️ Meta Business Assets
   - **Active Dataset (Pixel)**: `1192490926171504` (Primary tracking for website)
   - **Active Ad Account**: `385134134880141`
   - **Auth Dataset (Legacy)**: `1259206078984085` (Automatically created for FB Login)
@@ -123,13 +134,6 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 
 ---
 
-## 🚀 Important Future Features
-
-- **Offline Conversions Sync (Meta CAPI)**:
-  - **Goal**: Perfect attribution for Cash-on-Delivery (COD) orders.
-  - **Logic**: A script or webhook that triggers when an order is marked as "Paid/Delivered" in Sanity, sending a final "Purchase" signal to Meta via the Conversions API. This ensures Meta only optimizes for customers who actually handed over the cash.
-
----
 
 ## 📜 Governance & Workflows
 
@@ -145,6 +149,7 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 - **AgentLogs.md**: Solely maintained by the **AI Agent**.
    - Every prompt/response cycle must be logged under the **`[prompt/response]`** tag.
    - Significant code changes or features must be logged under the **`[Codebase/Feature Updates]`** tag.
+- **NowWorking.md**: Tracks active hardening tasks, bug fixes, and security audits. Must be updated as stabilization work progresses.
 3. **Feature Documentation**: Complex features (like **Admin Dashboard**) have dedicated `.md` files for deep-dive logs and designs.
 
 ### **Critical Rules**

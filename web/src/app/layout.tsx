@@ -11,6 +11,7 @@ import FloatingContact from "@/components/FloatingContact";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import BrowserBanner from "@/components/BrowserBanner";
 import CampaignModal from "@/components/CampaignModal";
+import FloatingSearch from "@/components/FloatingSearch";
 import FooterClient from "@/components/FooterClient";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
@@ -148,6 +149,7 @@ export default async function RootLayout({
             <main className="w-full relative flex-1">{children}</main>
           </ToastProvider>
           <FloatingContact />
+          <FloatingSearch />
 
           {/* FOOTER */}
           <FooterClient />
