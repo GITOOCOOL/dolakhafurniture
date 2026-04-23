@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : "/logo.png"; // Fallback image
 
   return {
-    title: `${product.title} | Handcrafted at Dolakha Furniture`,
+    title: `${product.title} | Dolakha Furniture`,
     description: product.description || defaultDescription,
     openGraph: {
-      title: `${product.title} | Dolakha Furniture Home Collection`,
+      title: `${product.title} | Dolakha Furniture`,
       description: product.description || defaultDescription,
       images: [
         {
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.title} | Handcrafted at Dolakha Furniture`,
+      title: `${product.title} | Dolakha Furniture`,
       description: product.description || defaultDescription,
       images: [imageUrl],
     },
@@ -61,16 +61,38 @@ export default async function ProductPage({ params }: Props) {
     notFound();
   }
 
+  const imageUrl = product.mainImage
+    ? urlFor(product.mainImage).width(1200).height(630).url()
+    : "/logo.png";
+  
+  const defaultDescription = "A unique, handcrafted addition to your home, created in Kathmandu.";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.title,
+    "image": imageUrl,
+    "description": product.description || defaultDescription,
+    "brand": {
+      "@type": "Brand",
+      "name": "Dolakha Furniture"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://dolakhafurniture.com/product/${slug}`,
+      "priceCurrency": "NPR",
+      "price": product.price,
+      "availability": (product.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  };
+
   return (
-    /* Changed bg-stone-50 to your new Boho Cream (bone) */
     <div className="bg-app min-h-screen text-heading selection:bg-action/20">
-      {/* 
-          IMPORTANT: The real UI shift happens inside <ProductDetail />.
-          Ensure that component uses:
-          - Serif Garamond for titles
-          - Terracotta (accent) for "Add to Cart" 
-          - Organic, rounded corners (rounded-[3rem])
-      */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ProductDetail product={product} />
     </div>
   );

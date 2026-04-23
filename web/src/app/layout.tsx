@@ -32,8 +32,43 @@ const sans = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Dolakha Furniture | Heritage Atelier",
-  description: "Experience the finest furniture crafted with heritage and modern aesthetics.",
+  title: {
+    default: "Dolakha Furniture | Quality Handcrafted Furniture in Kathmandu",
+    template: "%s | Dolakha Furniture"
+  },
+  description: "High-quality handcrafted furniture in Nepal. We offer a wide range of sofas, beds, tables, and home decor made with durable materials and professional craftsmanship.",
+  keywords: ["handcrafted furniture", "Nepal furniture", "Kathmandu furniture store", "quality sofas Nepal", "beds Kathmandu", "Dolakha Furniture"],
+  authors: [{ name: "Dolakha Furniture" }],
+  creator: "Dolakha Furniture",
+  publisher: "Dolakha Furniture",
+  formatDetection: {
+    email: false,
+    address: true,
+    telephone: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://dolakhafurniture.com",
+    siteName: "Dolakha Furniture",
+    title: "Dolakha Furniture | Quality Handcrafted Furniture",
+    description: "Quality handcrafted furniture for your home. Built to last and delivered across Kathmandu.",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Dolakha Furniture",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dolakha Furniture | Quality Handcrafted Furniture",
+    description: "Quality handcrafted furniture for your home. Built to last and delivered across Kathmandu.",
+    images: ["/logo.png"],
+  },
+  metadataBase: new URL("https://dolakhafurniture.com"),
   verification: {
     google: "3dc7dc77d6b4bafe",
   },

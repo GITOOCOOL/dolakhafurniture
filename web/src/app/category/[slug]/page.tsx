@@ -15,8 +15,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `*[_type == "category" && slug.current == $slug][0]`,
     { slug },
   );
+
   if (!category) return { title: "Collection Not Found" };
-  return { title: `${category.title} | Dolakha ` };
+
+  const description = category.description || 
+    `Explore our ${category.title} collection.`;
+
+  return {
+    title: `${category.title}`,
+    description: description,
+    openGraph: {
+      title: `${category.title} | Dolakha`,
+      description: description,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${category.title} Collection | Dolakha`,
+      description: description,
+    },
+  };
 }
 
 export default async function CategoryPage({ params }: Props) {

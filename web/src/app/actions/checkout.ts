@@ -47,12 +47,17 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
 
     for (const code of voucherCodes) {
        const voucherResult = await validateVoucher(code);
-       if (voucherResult.success) {
-          if (voucherResult.discountType === 'percentage') {
-             serverDiscount += Math.floor((serverSubtotal * (voucherResult.discountValue || 0)) / 100);
-          } else {
-             serverDiscount += voucherResult.discountValue || 0;
+       if (!voucherResult.success) {
+          return {
+            success: false,
+            message: `Voucher Error (${code}): ${voucherResult.message}`
           }
+       }
+       
+       if (voucherResult.discountType === 'percentage') {
+          serverDiscount += Math.floor((serverSubtotal * (voucherResult.discountValue || 0)) / 100);
+       } else {
+          serverDiscount += voucherResult.discountValue || 0;
        }
     }
 

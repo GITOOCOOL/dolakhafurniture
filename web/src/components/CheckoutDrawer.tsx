@@ -49,18 +49,20 @@ import { Voucher } from "@/types";
 interface CheckoutDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onSignUp?: () => void;
+  onSignUp: () => void;
+  user?: any;
 }
 
 export default function CheckoutDrawer({
   isOpen,
   onClose,
   onSignUp,
+  user: propsUser,
 }: CheckoutDrawerProps) {
   const supabase = createClient();
   const { items, addItem, removeSingleItem, removeItem, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(propsUser || null);
   const [paymentAccounts, setPaymentAccounts] = useState<any[]>([]);
   const [activeStep, setActiveStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -91,6 +93,7 @@ export default function CheckoutDrawer({
   const [voucherError, setVoucherError] = useState("");
   const [isApplyingVoucher, setIsApplyingVoucher] = useState(false);
   const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [hoveredVoucher, setHoveredVoucher] = useState<any>(null);
 
   // RESET LOGIC: Ensure drawer resets on close
   useEffect(() => {
@@ -103,6 +106,8 @@ export default function CheckoutDrawer({
         setDiscount(0);
         setVoucherInput("");
         setVoucherError("");
+        setHasPromptedVoucherReminder(false);
+        setShowVoucherReminder(false);
       }, 500); // Wait for slide-out animation
       return () => clearTimeout(timer);
     }
@@ -168,20 +173,25 @@ export default function CheckoutDrawer({
         setPaymentAccounts(accounts);
         setWelcomeVoucher(welcome);
 
-        // Pre-apply signup incentive if applicable
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          setUser(user);
+        // Sync with prop user
+        setUser(propsUser);
+        
+        if (propsUser) {
+          // Pre-fill form data once
+          setFormData((prev) => ({
+            ...prev,
+            email: propsUser.email || "",
+            firstName: propsUser.user_metadata.full_name?.split(" ")[0] || "",
+            lastName: propsUser.user_metadata.full_name?.split(" ").slice(1).join(" ") || "",
+          }));
 
-          // Check if user has already used the welcome voucher
+          // Verify welcome voucher eligibility
           if (welcome) {
             const usedVoucher = await client.fetch(
-              `*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email) && $code in voucherCodes][0]`,
+              `*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email) && count(voucherCodes[lower(@) == lower($code)]) > 0][0]`,
               {
-                userId: user.id,
-                email: user.email,
+                userId: propsUser.id,
+                email: propsUser.email,
                 code: welcome.code.toLowerCase(),
               },
             );
@@ -189,17 +199,10 @@ export default function CheckoutDrawer({
               setHasUsedWelcome(true);
             }
           }
-          setFormData((prev) => ({
-            ...prev,
-            email: user.email || "",
-            firstName: user.user_metadata.full_name?.split(" ")[0] || "",
-            lastName:
-              user.user_metadata.full_name?.split(" ").slice(1).join(" ") || "",
-          }));
           setInquiryData((prev) => ({
             ...prev,
-            name: user.user_metadata.full_name || "",
-            email: user.email || "",
+            name: propsUser.user_metadata.full_name || "",
+            email: propsUser.email || "",
           }));
 
           // Apply dynamic welcome voucher if it exists, hasn't been used, and hasn't been applied yet
@@ -284,19 +287,19 @@ export default function CheckoutDrawer({
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Step 1 -> 2: Review (With Smart Voucher Validation)
+    // Step 1 -> 2: Review (Soft Gate for Vouchers - Skip if they already typed something)
     if (activeStep === 1) {
-      if (voucherInput.trim()) {
-        alert("Please apply your voucher before proceeding!");
-        return;
-      }
-
-      if (appliedVouchers.length === 0 && !hasPromptedVoucherReminder) {
+      if (
+        appliedVouchers.length === 0 && 
+        voucherInput.trim() === "" && 
+        !hasPromptedVoucherReminder
+      ) {
         setShowVoucherReminder(true);
+        setHasPromptedVoucherReminder(true);
         return;
       }
-
       setActiveStep(2);
+      setShowVoucherReminder(false); // Hide nudge if moving forward
       return;
     }
 
@@ -390,14 +393,18 @@ export default function CheckoutDrawer({
           "Empty Cart"
         ) : (
           <div className="flex flex-col">
-            <span className="text-sm font-serif italic text-heading leading-tight">Checkout</span>
+            <span className="text-sm font-serif italic text-heading leading-tight">
+              Checkout
+            </span>
             <span className="type-label text-description/60 text-[9px] translate-y-[1px] font-bold uppercase tracking-widest whitespace-nowrap">
-              Step {activeStep} of 4: {
-                activeStep === 1 ? "Review / Vouchers" :
-                activeStep === 2 ? "Customer Details" :
-                activeStep === 3 ? "Delivery Info" :
-                "Finalize Payment"
-              }
+              Step {activeStep} of 4:{" "}
+              {activeStep === 1
+                ? "Review / Vouchers"
+                : activeStep === 2
+                  ? "Customer Details"
+                  : activeStep === 3
+                    ? "Delivery Info"
+                    : "Finalize Payment"}
             </span>
           </div>
         )
@@ -817,15 +824,34 @@ export default function CheckoutDrawer({
                       )}
                     </div>
 
-                    {/* Voucher Input */}
-                    <div className="pt-4 border-t border-divider border-dashed">
+                     {/* Voucher Input */}
+                    <div className="pt-4 border-t border-divider border-dashed relative">
+                      {/* Do you have a voucher hint - Triggered by 'Next' button if empty */}
+                      {showVoucherReminder && appliedVouchers.length === 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="mb-4 overflow-hidden"
+                        >
+                          <div className="p-3 bg-action/5 border border-action/10 rounded-xl flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center text-action">
+                              <Tag size={14} />
+                            </div>
+                            <div>
+                              <p className="type-action text-[10px] leading-tight font-bold">Wait! Do you have a voucher code?</p>
+                              <p className="type-label text-[9px] opacity-60 normal-case">Enter it below to unlock your special furniture offer.</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+
                       <div className="flex flex-col mb-2 ml-1 gap-0.5">
                         <p className="type-label text-description">
                           Discount Voucher
                         </p>
 
                         {/* DYNAMIC VOUCHER RIBBON */}
-                        {((welcomeVoucher && !hasUsedWelcome) ||
+                        {((welcomeVoucher && !hasUsedWelcome && user?.id) ||
                           campaigns.some((c) => c.vouchers?.length)) && (
                           <div className="space-y-3 pt-2">
                             <div className="flex items-center gap-2">
@@ -835,56 +861,113 @@ export default function CheckoutDrawer({
                               </p>
                             </div>
                             <div className="flex flex-wrap gap-2 items-center pt-1">
+                              {/* Welcome Voucher - ONLY for logged in users */}
                               {welcomeVoucher &&
+                                user?.id &&
                                 !hasUsedWelcome &&
                                 !appliedVouchers.some(
                                   (v) => v.code === welcomeVoucher.code,
                                 ) && (
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setVoucherInput(welcomeVoucher.code)
-                                    }
-                                    className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
-                                  >
-                                    <Sparkles
-                                      size={10}
-                                      className="text-app fill-app/20"
-                                    />
-                                    <span className="type-action text-app text-[9px]">
-                                      {welcomeVoucher.code}
-                                    </span>
-                                  </button>
+                                    <button
+                                      type="button"
+                                      onMouseEnter={() => setHoveredVoucher(welcomeVoucher)}
+                                      onMouseLeave={() => setHoveredVoucher(null)}
+                                      onClick={() => {
+                                        setVoucherInput(welcomeVoucher.code);
+                                        setVoucherError("");
+                                      }}
+                                      className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
+                                    >
+                                      <Sparkles
+                                        size={10}
+                                        className="text-app fill-app/20"
+                                      />
+                                      <span className="type-action text-app text-[9px]">
+                                        {welcomeVoucher.code} • {welcomeVoucher.discountValue}{welcomeVoucher.discountType === 'percentage' ? '%' : ' OFF'}
+                                      </span>
+                                    </button>
                                 )}
-                              {campaigns
-                                .flatMap((c) => c.vouchers || [])
-                                .filter(
-                                  (v) =>
-                                    v.code !== welcomeVoucher?.code &&
-                                    !appliedVouchers.some(
-                                      (av) => av.code === v.code,
-                                    ),
-                                )
-                                .map((v, i) => (
-                                  <button
-                                    key={i}
-                                    type="button"
-                                    onClick={() => setVoucherInput(v.code)}
-                                    className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
-                                  >
-                                    <Tag
-                                      size={10}
-                                      className="text-app fill-app/20"
-                                    />
-                                    <span className="type-action text-app text-[9px]">
-                                      {v.code}
-                                    </span>
-                                  </button>
-                                ))}
+
+                              {/* Campaign Vouchers - Case-insensitive deduplication */}
+                              {(() => {
+                                const displayedCodes = new Set();
+                                const welcomeCodeUpper = welcomeVoucher?.code?.toUpperCase();
+                                if (welcomeCodeUpper) displayedCodes.add(welcomeCodeUpper);
+
+                                return campaigns
+                                  .flatMap((c) => c.vouchers || [])
+                                  .filter((v) => {
+                                    const codeUpper = v.code.toUpperCase();
+
+                                    // UNIVERSAL BLOCK: Hide 'WELCOME' vouchers for guests OR those who have already used them
+                                    if (
+                                      (!user?.id || hasUsedWelcome) &&
+                                      codeUpper.includes("WELCOME")
+                                    )
+                                      return false;
+
+                                    // Deduplication: Skip if already shown or already applied
+                                    if (displayedCodes.has(codeUpper)) return false;
+                                    if (
+                                      appliedVouchers.some(
+                                        (av) => av.code.toUpperCase() === codeUpper,
+                                      )
+                                    )
+                                      return false;
+
+                                    displayedCodes.add(codeUpper);
+                                    return true;
+                                  })
+                                  .map((v, i) => (
+                                    <button
+                                      key={i}
+                                      type="button"
+                                      onMouseEnter={() => setHoveredVoucher(v)}
+                                      onMouseLeave={() => setHoveredVoucher(null)}
+                                      onClick={() => {
+                                        setVoucherInput(v.code);
+                                        setVoucherError("");
+                                      }}
+                                      className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
+                                    >
+                                      <Tag
+                                        size={10}
+                                        className="text-app fill-app/20"
+                                      />
+                                      <span className="type-action text-app text-[9px]">
+                                        {v.code} • {v.discountValue}
+                                        {v.discountType === "percentage"
+                                          ? "%"
+                                          : " OFF"}
+                                      </span>
+                                    </button>
+                                  ));
+                              })()}
                             </div>
-                            <p className="type-label opacity-40 normal-case italic">
-                              *TAP or CLICK the voucher to select it, then press
-                              Apply
+
+                            {/* HOVER DESCRIPTION ROW */}
+                            <AnimatePresence mode="wait">
+                              {hoveredVoucher && (
+                                <motion.div
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: 10 }}
+                                  className="py-1 px-2 border-l-2 border-action bg-action/5 rounded-r-md mt-2"
+                                >
+                                  <p className="type-label text-action font-bold uppercase tracking-widest text-[9px]">
+                                    {hoveredVoucher.code}:{" "}
+                                    {hoveredVoucher.discountValue}
+                                    {hoveredVoucher.discountType === "percentage"
+                                      ? "%"
+                                      : " OFF"}{" "}
+                                    on your total pieces
+                                  </p>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                            <p className="type-label opacity-40 normal-case italic mt-2">
+                              *TAP or CLICK the voucher to select it, OR type it
+                              manually and then press APPLY
                             </p>
                           </div>
                         )}
@@ -1263,8 +1346,13 @@ export default function CheckoutDrawer({
                   onClick={handleBack}
                   className="flex items-center gap-2 type-action text-description/60 hover:text-heading transition-all group py-2"
                 >
-                  <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                  <span className="text-[9px] uppercase font-bold tracking-[0.2em] hidden sm:inline">Back</span>
+                  <ArrowLeft
+                    size={16}
+                    className="group-hover:-translate-x-1 transition-transform"
+                  />
+                  <span className="text-[9px] uppercase font-bold tracking-[0.2em] hidden sm:inline">
+                    Back
+                  </span>
                 </button>
               )}
             </div>
@@ -1288,10 +1376,13 @@ export default function CheckoutDrawer({
                 )
               }
             >
-              {activeStep === 1 ? "Next: Contact Info" : 
-               activeStep === 2 ? "Next: Delivery" : 
-               activeStep === 3 ? "Next: Payment" : 
-               "Secure Order"}
+              {activeStep === 1
+                ? "Next: Contact Info"
+                : activeStep === 2
+                  ? "Next: Delivery"
+                  : activeStep === 3
+                    ? "Next: Payment"
+                    : "Secure Order"}
             </Button>
 
             <div className="w-[100px] flex-shrink-0" />
@@ -1308,43 +1399,6 @@ export default function CheckoutDrawer({
         subtitle="How can we help with your order?"
       />
 
-      {/* VOUCHER REMINDER MODAL (Internal nested modal - will be handled by the z-index layers) */}
-      <Modal
-        isOpen={showVoucherReminder}
-        onClose={() => setShowVoucherReminder(false)}
-        title="Discount Voucher"
-      >
-        <div className="text-center space-y-8">
-          <div className="w-20 h-20 bg-action/10 rounded-[1.5rem] flex items-center justify-center mx-auto text-action">
-            <Ticket size={32} />
-          </div>
-
-          <div className="space-y-4">
-            <p className="type-product text-heading leading-relaxed">
-              Do you have a discount voucher you'd like to apply?
-            </p>
-            <p className="type-label text-description uppercase tracking-[0.2em] text-[10px] font-bold">
-              Check your email or active campaigns
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-4 pt-4">
-            <Button fullWidth onClick={() => setShowVoucherReminder(false)}>
-              I have a voucher
-            </Button>
-            <button
-              onClick={() => {
-                setShowVoucherReminder(false);
-                setHasPromptedVoucherReminder(true);
-                setActiveStep(2);
-              }}
-              className="type-action text-description hover:text-heading transition-all uppercase tracking-widest text-[10px] py-4"
-            >
-              No, skip for now
-            </button>
-          </div>
-        </div>
-      </Modal>
     </Modal>
   );
 }

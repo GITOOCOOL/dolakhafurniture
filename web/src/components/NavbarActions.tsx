@@ -59,34 +59,8 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   }, [totalQuantity]);
 
   useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error) throw error;
-        setUser(user);
-        
-        if (user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", user.id)
-            .single();
-          setRole(profile?.role || "user");
-        } else {
-          setRole(null);
-        }
-      } catch (err) {
-        console.warn("Auth check deferred (Lock busy):", err);
-        // Fallback to null user if locked, onAuthStateChange will catch it eventually
-        setUser(null);
-        setRole(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: any, session: any) => {
+    // 1. Single source of truth for auth
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: string, session: any) => {
       try {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
@@ -102,14 +76,26 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           setRole(null);
         }
       } catch (err) {
-        console.error("Auth state change error:", err);
+        console.warn("Profile check deferred:", err);
       } finally {
         setLoading(false);
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+    // 2. Initial fast check to set loading state
+    const syncSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setUser(session.user);
+      }
+      setLoading(false);
+    };
+    syncSession();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   // Deep linking to checkout
   useEffect(() => {
@@ -361,6 +347,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
       <CheckoutDrawer 
         isOpen={isCheckoutDrawerOpen} 
         onClose={() => setIsCheckoutDrawerOpen(false)} 
+        user={user}
         onSignUp={() => {
           setIsCheckoutDrawerOpen(false);
           setIsAccountModalOpen(true);

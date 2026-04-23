@@ -1,5 +1,11 @@
 import React from "react";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Our Story",
+  description: "Learn about Dolakha Furniture, a leading furniture designer and supplier in Kathmandu dedicated to quality craftsmanship.",
+};
 
 export default function OurStory() {
   return (

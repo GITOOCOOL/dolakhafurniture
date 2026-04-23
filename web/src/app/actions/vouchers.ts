@@ -7,13 +7,14 @@ export async function validateVoucher(code: string) {
   try {
     const normalizedCode = code.trim().toLowerCase();
     
-    // 1. Fetch Voucher and its referring Campaign
+    // 1. Fetch Voucher and its referring Campaign - Bypass CDN for real-time validation
     const voucher = await client.fetch(
       `*[_type == "discountVoucher" && lower(code) == $code && isActive == true][0]{
         ...,
         "campaign": *[_type == "campaign" && references(^._id)][0]
       }`,
-      { code: normalizedCode }
+      { code: normalizedCode },
+      { useCdn: false } // Force fresh data
     );
 
     if (!voucher) {
@@ -31,14 +32,19 @@ export async function validateVoucher(code: string) {
         return { success: false, message: "Please log in or sign up to use the WELCOME5 voucher." };
       }
 
-      // Check if user has already used it (One-time use check)
+      // Check if user has already used it (Robust One-time use check)
+      // We check for any variation of welcome in the voucherCodes array
       const usageCount = await client.fetch(
-        `count(*[_type == "order" && supabaseUserId == $userId && lower(voucherCode) == "welcome5"])`,
-        { userId: user.id }
+        `count(*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email) && count(voucherCodes[lower(@) match "welcome*"]) > 0])`,
+        { 
+          userId: user.id,
+          email: user.email 
+        },
+        { useCdn: false } // Crucial for session stability
       );
 
       if (usageCount > 0) {
-        return { success: false, message: "The WELCOME5 voucher can only be used once per customer." };
+        return { success: false, message: "The WELCOME5 voucher has already been used on this account." };
       }
     }
 

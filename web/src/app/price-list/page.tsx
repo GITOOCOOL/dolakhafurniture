@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import { client } from "@/lib/sanity";
+
+export const metadata: Metadata = {
+  title: "Master Price List & Catalog",
+  description: "View our current furniture collections and official price list for Kathmandu and beyond.",
+};
 import { allProductsQuery } from "@/lib/queries";
 import { Product } from "@/types";
 import DownloadButton from "@/components/DownloadButton";
