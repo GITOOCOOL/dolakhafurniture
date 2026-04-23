@@ -15,6 +15,15 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 
 ---
 
+## 🛡️ Git & Deployment Governance
+
+- **VOICE-ONLY PERMISSION**: Never execute ANY git command (`add`, `commit`, `push`, `merge`, `branch`, `checkout`) without an explicit, verbal prompt or confirmation from the user for that specific action.
+- **MASTER = LIVE**: The `master` branch is linked to the live production server. Every push consumes a deployment credit and updates the live site.
+- **NO TRIVIAL PUSHES**: Documentation updates or "trivial" edits must NEVER be pushed to `master` unless specifically requested. Group changes into meaningful feature branches before merging.
+- **NO AUTO-PUSH**: Never assume a "merge" or "fix" implies a permission to `push`.
+
+---
+
 ## 🔗 Resource Map & Endpoints
 
 ### **Production Environments**
@@ -37,7 +46,7 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
 - **Hybrid Data Flow**:
   - **Dynamic Pages**: Critical pages (Campaigns, Price Lists) use `force-dynamic` and `no-store` to ensure real-time inventory and pricing accuracy.
   - **Static Content**: Marketing landing pages and category lists are served via Cloudflare's edge for maximum performance.(Dont know about this, if its still the case, gotta check and verify and understand)
-- **Theme Design System: Heritage Atelier (Literal Semantic)**
+- **Theme Design System: Heritage Design System (Literal Semantic)**
   - **Philosophy**: "Warm Minimalism" & "Tactile Craftsmanship". A sturdy, grounded aesthetic that mirrors the durability of physical furniture.
   - **Naming**: Literal Intent-based tokens (`bg-app`, `text-heading`, `border-divider`) for robust themeability.
   - **Aesthetic**: Rejection of glassmorphism and transparency in favor of solid surfaces, defined borders, and high-contrast typography.
@@ -81,13 +90,18 @@ This document serves as the "Source of Truth" for the Dolakha Furniture ecosyste
   - Implemented defensive null-checks for malformed legacy order records.
   - Hardened user management server components with `try/catch` and environment guards.
   - Resolved `__name` build-time ReferenceError by pinning build tooling.
+- **Hardened Checkout Engine**:
+  - **Voucher Security v2**: Identity-aware (User ID/Email) real-time validation bypassing CDN caches. "Fail-hard" order processing to prevent discount exploitation.
+  - **Auth Conflict Resolution**: Decoupled CheckoutDrawer from direct auth locks, centralizing state in Navbar to prevent UI freezes during Google Login.
+  - **High-End UX**: Implemented "Voucher Inspector" (hover/tap for details), "Soft-Gate Nudge" for conversion, and localized field ordering (Tole/Area priority).
+  - **Sanity Query Optimization**: Enhanced GROQ projections to include granular discount data for all active campaigns.
 
 ### **💡 Future Concepts**
 
 - **React Native Mobile App**: Leveraging the same Sanity GROQ queries for a native shopping experience.
 - **Customer Account Portal**: Personalized dashboards for order tracking and voucher management.
 - **B2B Quote Generator**: Allowing bulk buyers to generate custom priced PDFs directly from the dashboard.
-- **In-App Browser Intelligence (Shadowed)**: A rhythmic triple-bounce alert for Messenger/Facebook users to guide them to external browsers. Currently deactivated for "Atelier Polish" (Requires timing refinement).
+- **In-App Browser Intelligence (Shadowed)**: A rhythmic triple-bounce alert for Messenger/Facebook users to guide them to external browsers. Currently deactivated for "System Polish" (Requires timing refinement).
 
 - **Meta Business Assets**:
   - **Active Dataset (Pixel)**: `1192490926171504` (Primary tracking for website)

@@ -17,7 +17,7 @@ export default function AuthPage() {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        router.push("/account");
+        router.push("/");
       } else {
         setLoading(false);
       }
@@ -61,7 +61,7 @@ export default function AuthPage() {
               </div>
 
               {/* REUSABLE AUTH FORM */}
-              <AuthForm onSuccess={() => router.push("/account")} />
+              <AuthForm onSuccess={() => router.push("/")} />
 
               <div className="mt-10 pt-8 border-t border-soft flex items-center justify-center gap-6 opacity-30 w-full">
                  <ShieldCheck size={20} />

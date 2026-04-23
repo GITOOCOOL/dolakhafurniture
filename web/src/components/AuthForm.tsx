@@ -40,7 +40,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
 
   const handleGoogleLogin = () => {
     trackEvent("Contact", { method: "social_login_google", goal: "signup_intent" });
-    const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
+    const redirectTo = `${window.location.origin}/auth/callback?next=/`;
     supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -51,7 +51,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
 
   const handleFacebookLogin = () => {
     trackEvent("Contact", { method: "social_login_facebook", goal: "signup_intent" });
-    const redirectTo = `${window.location.origin}/auth/callback?next=/account`;
+    const redirectTo = `${window.location.origin}/auth/callback?next=/`;
     supabase.auth.signInWithOAuth({
       provider: "facebook",
       options: {
@@ -73,7 +73,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
         });
         if (error) throw error;
         if (onSuccess) onSuccess();
-        router.push("/account");
+        router.push("/");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
