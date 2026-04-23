@@ -8,10 +8,9 @@
  * 2. Run with: node exchange_fb_token.js
  */
 
-const APP_ID = "1307397651538469";
-const APP_SECRET = "5915848b6390dbab11557304958c6e64";
-const USER_TOKEN =
-  "EAASlEjyZAoiUBRcFY06of4rEAciuCFukOgnPxUkE0ZBMcaDp8gGJrZBJahvhVG9g8nSAC4zJuxGkFjZCz9QEZCnZCEc6ZBHIEprbpBj9WtYA4fj905u1ZCy3Ntm7h9xN6dmlaHOi5QBCvsOZC1SPvZB87BPKsNcIZCteZBZBQcpcHEJPzCds2bAmRZATbQ2RJTSabHZCSa0gAZDZD"; // From Graph API Explorer
+const APP_ID = "YOUR_APP_ID";
+const APP_SECRET = "YOUR_APP_SECRET";
+const USER_TOKEN = "YOUR_USER_TOKEN"; // From Graph API Explorer
 
 async function exchangeTokens() {
   if (APP_ID === "YOUR_APP_ID") {

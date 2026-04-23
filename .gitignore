@@ -2,4 +2,7 @@ node_modules/
 .env*
 .vercel/
 *.log
+exchange_fb_token.js
+*.local.js
+# Keep bot_watch.js tracked as it is a safe utility
 
