@@ -29,6 +29,14 @@ const sans = Montserrat({
   weight: ["300", "400", "500"],
 });
 
+export const metadata: Metadata = {
+  title: "Dolakha Furniture | Heritage Atelier",
+  description: "Experience the finest furniture crafted with heritage and modern aesthetics.",
+  verification: {
+    google: "3dc7dc77d6b4bafe",
+  },
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({
