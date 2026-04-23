@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     // Instagram needs time to process the video before it can be published.
     let status = 'IN_PROGRESS';
     let attempts = 0;
-    const maxAttempts = 20; // 20 * 3s = 60 seconds max wait
+    const maxAttempts = 40; // 40 * 3s = 120 seconds max wait
 
     while (status === 'IN_PROGRESS' && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 3000)); // Wait 3s

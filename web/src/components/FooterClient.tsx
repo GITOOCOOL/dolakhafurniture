@@ -45,6 +45,12 @@ export default function FooterClient() {
               >
                 TikTok
               </a>
+              <a
+                href="/stories"
+                className="text-label hover:text-action transition-colors font-medium border-l border-divider pl-8 ml-2"
+              >
+                Live Stories 🤳
+              </a>
             </div>
           </div>
           <div className="md:ml-auto w-full max-w-sm">

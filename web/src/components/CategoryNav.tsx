@@ -53,6 +53,7 @@ export default function CategoryNav({
 
   const endLinks = [
     { name: 'Our Story', href: '/our-story' },
+    { name: 'Live Stories', href: '/stories' },
   ];
 
   const allLinks = [...baseLinks, ...categoryLinks, ...endLinks];
@@ -81,9 +82,15 @@ export default function CategoryNav({
             key={link.name}
             href={link.href}
             onClick={onItemClick}
-            className="text-2xl md:text-3xl font-serif italic tracking-tight text-heading hover:text-action flex-shrink-0"
+            className="text-2xl md:text-3xl font-serif italic tracking-tight text-heading hover:text-action flex-shrink-0 flex items-center gap-3"
           >
             {link.name}
+            {link.href === '/stories' && (
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
+            )}
           </Link>
         ))}
       </nav>
@@ -96,9 +103,15 @@ export default function CategoryNav({
         <Link
           key={link.name}
           href={link.href}
-          className="text-heading whitespace-nowrap hover:text-action transition-colors relative group py-1"
+          className="text-heading whitespace-nowrap hover:text-action transition-colors relative group py-1 flex items-center gap-2"
         >
           {link.name}
+          {link.href === '/stories' && (
+            <span className="flex h-1.5 w-1.5 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+            </span>
+          )}
           <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-action transition-all duration-300 group-hover:w-full rounded-full"></span>
         </Link>
       ))}

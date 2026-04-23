@@ -43,11 +43,13 @@ export function ShareOnInstagramStoryAction(props: any) {
 
         const result = await response.json()
 
+        // Handle 202 Accepted (Still processing) separately
+        if (response.status === 202) {
+           alert(`Instagram is still processing your Story. It should appear live in a few minutes! ID: ${result.creation_id}`);
+           return;
+        }
+
         if (!response.ok) {
-          if (response.status === 202) {
-             alert(`Instagram is still processing your Story. It should appear live in a few minutes! ID: ${result.creation_id}`);
-             return;
-          }
           throw new Error(result.error || 'Failed to publish IG Story')
         }
 
