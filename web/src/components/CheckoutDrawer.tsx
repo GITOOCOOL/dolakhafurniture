@@ -175,14 +175,18 @@ export default function CheckoutDrawer({
 
         // Sync with prop user
         setUser(propsUser);
-        
+
         if (propsUser) {
           // Pre-fill form data once
           setFormData((prev) => ({
             ...prev,
             email: propsUser.email || "",
             firstName: propsUser.user_metadata.full_name?.split(" ")[0] || "",
-            lastName: propsUser.user_metadata.full_name?.split(" ").slice(1).join(" ") || "",
+            lastName:
+              propsUser.user_metadata.full_name
+                ?.split(" ")
+                .slice(1)
+                .join(" ") || "",
           }));
 
           // Verify welcome voucher eligibility
@@ -290,8 +294,8 @@ export default function CheckoutDrawer({
     // Step 1 -> 2: Review (Soft Gate for Vouchers - Skip if they already typed something)
     if (activeStep === 1) {
       if (
-        appliedVouchers.length === 0 && 
-        voucherInput.trim() === "" && 
+        appliedVouchers.length === 0 &&
+        voucherInput.trim() === "" &&
         !hasPromptedVoucherReminder
       ) {
         setShowVoucherReminder(true);
@@ -327,8 +331,8 @@ export default function CheckoutDrawer({
 
     // Step 3 -> 4: Address Validation
     if (activeStep === 3) {
-      if (!formData.address || !formData.city) {
-        alert("Please provide the delivery address and city.");
+      if (!formData.city || !formData.apartment) {
+        alert("Please provide the delivery city and tole/area.");
         return;
       }
       setActiveStep(4);
@@ -824,11 +828,11 @@ export default function CheckoutDrawer({
                       )}
                     </div>
 
-                     {/* Voucher Input */}
+                    {/* Voucher Input */}
                     <div className="pt-4 border-t border-divider border-dashed relative">
                       {/* Do you have a voucher hint - Triggered by 'Next' button if empty */}
                       {showVoucherReminder && appliedVouchers.length === 0 && (
-                        <motion.div 
+                        <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           className="mb-4 overflow-hidden"
@@ -838,8 +842,13 @@ export default function CheckoutDrawer({
                               <Tag size={14} />
                             </div>
                             <div>
-                              <p className="type-action text-[10px] leading-tight font-bold">Wait! Do you have a voucher code?</p>
-                              <p className="type-label text-[9px] opacity-60 normal-case">Enter it below to unlock your special furniture offer.</p>
+                              <p className="type-action text-[10px] leading-tight font-bold">
+                                Wait! Do you have a voucher code?
+                              </p>
+                              <p className="type-label text-[9px] opacity-60 normal-case">
+                                Enter it below to unlock your special furniture
+                                offer.
+                              </p>
                             </div>
                           </div>
                         </motion.div>
@@ -868,31 +877,40 @@ export default function CheckoutDrawer({
                                 !appliedVouchers.some(
                                   (v) => v.code === welcomeVoucher.code,
                                 ) && (
-                                    <button
-                                      type="button"
-                                      onMouseEnter={() => setHoveredVoucher(welcomeVoucher)}
-                                      onMouseLeave={() => setHoveredVoucher(null)}
-                                      onClick={() => {
-                                        setVoucherInput(welcomeVoucher.code);
-                                        setVoucherError("");
-                                      }}
-                                      className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
-                                    >
-                                      <Sparkles
-                                        size={10}
-                                        className="text-app fill-app/20"
-                                      />
-                                      <span className="type-action text-app text-[9px]">
-                                        {welcomeVoucher.code} • {welcomeVoucher.discountValue}{welcomeVoucher.discountType === 'percentage' ? '%' : ' OFF'}
-                                      </span>
-                                    </button>
+                                  <button
+                                    type="button"
+                                    onMouseEnter={() =>
+                                      setHoveredVoucher(welcomeVoucher)
+                                    }
+                                    onMouseLeave={() => setHoveredVoucher(null)}
+                                    onClick={() => {
+                                      setVoucherInput(welcomeVoucher.code);
+                                      setVoucherError("");
+                                    }}
+                                    className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
+                                  >
+                                    <Sparkles
+                                      size={10}
+                                      className="text-app fill-app/20"
+                                    />
+                                    <span className="type-action text-app text-[9px]">
+                                      {welcomeVoucher.code} •{" "}
+                                      {welcomeVoucher.discountValue}
+                                      {welcomeVoucher.discountType ===
+                                      "percentage"
+                                        ? "%"
+                                        : " OFF"}
+                                    </span>
+                                  </button>
                                 )}
 
                               {/* Campaign Vouchers - Case-insensitive deduplication */}
                               {(() => {
                                 const displayedCodes = new Set();
-                                const welcomeCodeUpper = welcomeVoucher?.code?.toUpperCase();
-                                if (welcomeCodeUpper) displayedCodes.add(welcomeCodeUpper);
+                                const welcomeCodeUpper =
+                                  welcomeVoucher?.code?.toUpperCase();
+                                if (welcomeCodeUpper)
+                                  displayedCodes.add(welcomeCodeUpper);
 
                                 return campaigns
                                   .flatMap((c) => c.vouchers || [])
@@ -907,10 +925,12 @@ export default function CheckoutDrawer({
                                       return false;
 
                                     // Deduplication: Skip if already shown or already applied
-                                    if (displayedCodes.has(codeUpper)) return false;
+                                    if (displayedCodes.has(codeUpper))
+                                      return false;
                                     if (
                                       appliedVouchers.some(
-                                        (av) => av.code.toUpperCase() === codeUpper,
+                                        (av) =>
+                                          av.code.toUpperCase() === codeUpper,
                                       )
                                     )
                                       return false;
@@ -923,7 +943,9 @@ export default function CheckoutDrawer({
                                       key={i}
                                       type="button"
                                       onMouseEnter={() => setHoveredVoucher(v)}
-                                      onMouseLeave={() => setHoveredVoucher(null)}
+                                      onMouseLeave={() =>
+                                        setHoveredVoucher(null)
+                                      }
                                       onClick={() => {
                                         setVoucherInput(v.code);
                                         setVoucherError("");
@@ -957,10 +979,11 @@ export default function CheckoutDrawer({
                                   <p className="type-label text-action font-bold uppercase tracking-widest text-[9px]">
                                     {hoveredVoucher.code}:{" "}
                                     {hoveredVoucher.discountValue}
-                                    {hoveredVoucher.discountType === "percentage"
-                                      ? "%"
+                                    {hoveredVoucher.discountType ===
+                                    "percentage"
+                                      ? "% OFF"
                                       : " OFF"}{" "}
-                                    on your total pieces
+                                    on your total cart value
                                   </p>
                                 </motion.div>
                               )}
@@ -1106,23 +1129,24 @@ export default function CheckoutDrawer({
                 >
                   <h4 className="type-section mb-6">Delivery Details</h4>
                   <Input
+                    label="Tole / Area"
+                    required
+                    name="apartment"
+                    value={formData.apartment}
+                    onChange={handleInputChange}
+                    placeholder="e.g. Samakhusi"
+                    icon={MapPin}
+                  />
+                  <Input
                     label="Town / City"
                     required
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
                     placeholder="e.g. Kathmandu"
-                    icon={MapPin}
                   />
-                  <Input
-                    label="Tole / Area (Optional)"
-                    name="apartment"
-                    value={formData.apartment}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Near Ganesh Mandir"
-                  />
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-description ml-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">
                       Additional Notes (Optional)
                     </label>
                     <textarea
@@ -1130,7 +1154,7 @@ export default function CheckoutDrawer({
                       placeholder="Specific delivery instructions or location reminders..."
                       value={formData.address}
                       onChange={(e: any) => handleInputChange(e)}
-                      className="w-full bg-app border border-soft/20 rounded-[1.5rem] p-6 text-sm focus:ring-1 focus:ring-action outline-none min-h-[120px] transition-all"
+                      className="w-full bg-surface border border-soft rounded-2xl p-6 text-sm focus:ring-1 focus:ring-action outline-none min-h-[120px] transition-all"
                     />
                   </div>
 
@@ -1291,7 +1315,7 @@ export default function CheckoutDrawer({
                   </div>
 
                   {/* Final Summary Bar */}
-                  <div className="p-8 bg-espresso rounded-[40px] mt-12 flex flex-col gap-4 shadow-2xl relative overflow-hidden">
+                  <div className="p-8 bg-espresso rounded-3xl mt-12 flex flex-col gap-4 shadow-2xl relative overflow-hidden">
                     <div className="flex justify-between items-center relative z-10">
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-label">
@@ -1301,7 +1325,7 @@ export default function CheckoutDrawer({
                           {totalPieces} Handcrafted Items
                         </p>
                       </div>
-                      <p className="text-3xl font-sans font-bold text-action tracking-tight">
+                      <p className="text-3xl font-sans font-bold text-white tracking-tight">
                         Rs. {finalTotal.toLocaleString()}
                       </p>
                     </div>
@@ -1326,9 +1350,6 @@ export default function CheckoutDrawer({
                         ))}
                       </div>
                     )}
-
-                    {/* Subtle Background Pattern */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-app rounded-full -mr-16 -mt-16  pointer-events-none" />
                   </div>
                 </motion.section>
               )}
@@ -1398,7 +1419,6 @@ export default function CheckoutDrawer({
         title="Order Inquiry"
         subtitle="How can we help with your order?"
       />
-
     </Modal>
   );
 }

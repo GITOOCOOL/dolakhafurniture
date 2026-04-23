@@ -59,7 +59,7 @@ export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"
     buttonLink,
     startDate,
     endDate,
-    "vouchers": vouchers[]->{code, details}
+    "vouchers": vouchers[]->{code, details, discountValue, discountType}
 }`
 
 export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $slug][0] {
@@ -74,7 +74,7 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     banner,
     startDate,
     endDate,
-    "vouchers": vouchers[]->{code, details},
+    "vouchers": vouchers[]->{code, details, discountValue, discountType},
     "products": promotedProducts[@->isActive == true]-> {
         _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
     }
