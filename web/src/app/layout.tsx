@@ -15,6 +15,8 @@ import FooterClient from "@/components/FooterClient";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Metadata } from "next";
+
 
 const serif = Cormorant_Garamond({
   variable: "--font-serif",
