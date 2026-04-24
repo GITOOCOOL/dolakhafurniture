@@ -11,7 +11,14 @@ export const metadata = {
 };
 
 export default async function StoriesPage() {
-  const socialContent = (await client.fetch<SocialContent[]>(socialMediaQuery)) || [];
+  let socialContent: SocialContent[] = [];
+
+  try {
+    socialContent = await client.fetch<SocialContent[]>(socialMediaQuery, {}, { next: { revalidate: 60 } });
+  } catch (error) {
+    console.error("Failed to fetch stories:", error);
+  }
+
   const stories = socialContent.filter(item => item.type === 'story');
   const reels = socialContent.filter(item => item.type === 'reel');
 

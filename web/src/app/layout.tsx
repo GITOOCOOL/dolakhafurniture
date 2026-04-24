@@ -82,19 +82,34 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [bulletins, activeCampaigns] = await Promise.all([
-    client.fetch<Bulletin[]>(bulletinQuery),
-    client.fetch<Campaign[]>(activeCampaignsQuery),
-  ]);
+  let bulletins: Bulletin[] = [];
+  let activeCampaigns: Campaign[] = [];
+
+  try {
+    const [fetchedBulletins, fetchedCampaigns] = await Promise.all([
+      client.fetch<Bulletin[]>(bulletinQuery),
+      client.fetch<Campaign[]>(activeCampaignsQuery),
+    ]);
+    bulletins = fetchedBulletins || [];
+    activeCampaigns = fetchedCampaigns || [];
+  } catch (error) {
+    console.error("Layout data fetch failed:", error);
+  }
 
   // Combine bulletins with active campaigns for the ticker
   const combinedBulletins = [
-    ...bulletins,
-    ...(activeCampaigns?.map((campaign) => ({
-      _id: campaign._id,
-      title: "Active Campaign",
-      content: campaign.tagline || campaign.title,
-    })) || []),
+    ...(bulletins.length > 0 
+      ? bulletins.map(b => ({ ...b, type: "default" }))
+      : [{ _id: 'fallback', title: 'Dolakha Furniture', content: 'Crafting Heritage since 1998.', type: 'default' }]),
+    ...(activeCampaigns?.map((campaign) => {
+      return {
+        _id: campaign._id,
+        title: campaign.title,
+        content: campaign.tagline || "Explore our latest collection",
+        voucherCode: campaign.vouchers?.[0]?.code?.toUpperCase(),
+        type: "campaign"
+      };
+    }) || []),
   ];
 
   const latestCampaign = activeCampaigns?.[0] || null;

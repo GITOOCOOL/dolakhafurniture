@@ -76,7 +76,7 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
           onMouseDown={() => {
               setHasUserScrolled(true);
           }}
-          className="flex gap-4 md:gap-8 lg:gap-12 overflow-x-auto pb-6 no-scrollbar w-full touch-pan-x touch-pan-y scroll-smooth"
+          className={`flex gap-4 md:gap-8 lg:gap-12 overflow-x-auto pb-6 no-scrollbar w-full touch-pan-x touch-pan-y scroll-smooth ${maxScroll <= 0 ? 'justify-center' : 'justify-start'}`}
         >
           {infiniteChildren.map((child, index) => {
             const safeKey = (child as React.ReactElement)?.key || `carousel-item-${index}`;
@@ -96,38 +96,40 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
         </div>
 
       {/* REPOSITIONED FOOTER CONTROLS AREA */}
-      <div className="flex flex-col items-center gap-1 w-full px-4 mb-4 mt-2">
-        
-        {/* UNIFIED NAV DECK: [‹] [---SCRUBBER---] [›] */}
-        <div className="flex items-center justify-between w-full max-w-[320px] gap-4 pt-2">
-          <button 
-            onClick={() => scrollByAmount('left')}
-            className="hidden md:flex text-action hover:opacity-70 active:scale-90 transition-all"
-            aria-label="Scroll Left"
-          >
-            <ChevronLeft size={28} />
-          </button>
-
-          <div className="flex-1 flex items-center h-4">
-             <input 
-                type="range"
-                min="0"
-                max={maxScroll}
-                value={currentScrollLeft}
-                onChange={handleScrub}
-                className="boho-scrubber"
-             />
+      {maxScroll > 0 && (
+        <div className="flex flex-col items-center gap-1 w-full px-4 mb-4 mt-2">
+          
+          {/* UNIFIED NAV DECK: [‹] [---SCRUBBER---] [›] */}
+          <div className="flex items-center justify-between w-full max-w-[320px] gap-4 pt-2">
+            <button 
+              onClick={() => scrollByAmount('left')}
+              className="hidden md:flex text-action hover:opacity-70 active:scale-90 transition-all"
+              aria-label="Scroll Left"
+            >
+              <ChevronLeft size={28} />
+            </button>
+  
+            <div className="flex-1 flex items-center h-4">
+               <input 
+                  type="range"
+                  min="0"
+                  max={maxScroll}
+                  value={currentScrollLeft}
+                  onChange={handleScrub}
+                  className="boho-scrubber"
+               />
+            </div>
+  
+            <button 
+              onClick={() => scrollByAmount('right')}
+              className="hidden md:flex text-action hover:opacity-70 active:scale-90 transition-all"
+              aria-label="Scroll Right"
+            >
+              <ChevronRight size={28} />
+            </button>
           </div>
-
-          <button 
-            onClick={() => scrollByAmount('right')}
-            className="hidden md:flex text-action hover:opacity-70 active:scale-90 transition-all"
-            aria-label="Scroll Right"
-          >
-            <ChevronRight size={28} />
-          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 };
