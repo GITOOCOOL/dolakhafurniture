@@ -3,11 +3,11 @@ import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { webhooksTrigger } from 'sanity-plugin-webhooks-trigger'
 import { schemaTypes } from './schemaTypes'
-import { ShareOnFacebookAction } from './actions/ShareOnFacebookAction'
-import { ShareOnFacebookStoryAction } from './actions/ShareOnFacebookStoryAction'
-import { ShareOnInstagramAction } from './actions/ShareOnInstagramAction'
-import { ShareOnInstagramStoryAction } from './actions/ShareOnInstagramStoryAction'
-import { ShareOnTikTokAction } from './actions/ShareOnTikTokAction'
+import { DeleteSocialContentAction } from './actions/DeleteSocialContentAction'
+import { BroadcastFleetAction } from './actions/BroadcastFleetAction'
+import { EditorialWorkflowAction } from './actions/EditorialWorkflowAction'
+
+import { table } from '@sanity/table'
 
 export default defineConfig({
   name: 'default',
@@ -16,7 +16,7 @@ export default defineConfig({
   projectId: 'b6iov2to',
   dataset: 'production',
 
-  plugins: [structureTool(), visionTool(), webhooksTrigger()],
+  plugins: [structureTool(), visionTool(), webhooksTrigger(), table()],
 
   schema: {
     types: schemaTypes,
@@ -24,9 +24,6 @@ export default defineConfig({
 
   document: {
     actions: (prev, context) => {
-      if (context.schemaType === 'socialMedia') {
-        return [...prev, ShareOnFacebookAction, ShareOnFacebookStoryAction, ShareOnInstagramAction, ShareOnInstagramStoryAction, ShareOnTikTokAction]
-      }
       return prev
     }
   }

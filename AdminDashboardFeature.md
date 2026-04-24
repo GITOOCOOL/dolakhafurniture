@@ -13,7 +13,8 @@ A centralized, high-performance portal for managing business operations: Orders,
 3. **Service Inquiries**: Handling general support, order tracking, and FAQs.
 4. **Sales Leads CRM**: High-intent sales pipeline with deal lifecycle tracking and sales notes.
 5. **Inventory Center**: Quick restocking tool and visibility control.
-5. **Meta Attribution Hub**: Real-time performance tracking from Meta Pixel and Ads Manager.
+6. **Meta Attribution Hub**: Real-time performance tracking from Meta Pixel and Ads Manager.
+7. **Content Broadcast Hub (v4.1)**: Multimodal distribution factory for Web, IG, and FB with cloud-based automation. 🛰️
 
 ---
 
@@ -32,12 +33,13 @@ A centralized, high-performance portal for managing business operations: Orders,
 - [x] **Sales Leads CRM**: Sales intelligence pipeline with 'Elevation' workflow, deal status tracking, and priority management.
 - [x] **Manual Order Portal**: Step-by-step creation with voucher overrides.
 - [x] **Quick Restock Tool**: Single-click stock increments with automated timestamps.
+- [x] **Content Broadcast Engine (v4.1)**: Hardened multimodal distribution with Cloud Heartbeat (GitHub Actions) and FB Story Circle precision. 🛰️🏁
 - [x] Inquiry Management with direct WhatsApp/Email triggers.
 - [x] User Role Management (Super Admin only).
 - [x] Sanity Admin Write Client integration.
+- [x] **Live Stats Dashboard**: Real-time Total Revenue and Active Order counts from Sanity.
 
 ### **🚧 In Development**
-- [x] **Live Stats Dashboard**: Real-time Total Revenue and Active Order counts from Sanity.
 - [ ] **Meta Messaging Integration**: Unified Inbox for Facebook/Instagram DMs.
 - [ ] **Meta Stats Integration**: Fetching event data (Conversions, WhatsApp hits) from Meta API.
 
@@ -51,3 +53,4 @@ A centralized, high-performance portal for managing business operations: Orders,
 ## 📜 Agent logs for this Feature
 - **2026-04-21**: Established Feature blueprint and identified core management hubs. Proposed schema updates for `orderSource` and `lastRestocked`. Integrated Meta Pixel attribution tracking into the dashboard vision.
 - **2026-04-22**: Massive upgrade to Order and Inquiry systems. Implemented Manual Order creation and Secure Order Deletion. Restructured the entire CRM architecture: split Inquiries into **Service Inquiries** (Support) and **Artisan Leads** (CRM). Built the **Lead Elevation API** to bridge the two. Dedicated CRM dashboard live for high-value sales tracking.
+- **2026-04-24/25**: **Content Hub Transformation**. Completed the v4.1 hardening of the Content Engine. Implemented multimodal (Photo/Video) intelligence, cloud-based GitHub Actions heartbeat automation, and the Two-Step Shadow Upload protocol for direct Facebook Story Circle landing. 🛰️🏙️✅

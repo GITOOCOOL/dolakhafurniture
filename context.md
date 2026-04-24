@@ -154,11 +154,19 @@ Current priority is stabilizing the live environment. All active bugs, security 
 
 ### **Critical Rules**
 
+0. **NO_DUCT_TAPE_POLICY**: Temporary fixes that compromise system integrity or leave security holes are strictly forbidden. All architectural bridges (like CORS headers) must be explicitly scoped (e.g., locked to specific origins) and built for production-grade security from day one.
 1. **Never commit `.env` files.**
 2. **Query Management**: All GROQ queries MUST live in `web/src/lib/queries.ts`.
 3. **Component Reusability**: Extract logic (like `PriceListTable`) into standalone components to maintain consistency across PDF and Web views.
 4. **Copywriting & UI Tone**: Avoid over-the-top buzzwords (e.g., "artisanal", "meticulous", "investment"). Use simple, direct, and helpful language.
-5. **Styling Governance**: For any UI or layout changes, developers MUST review and adhere to **[StylingGuide.md](file:///Users/suraj/Developer/dolakha-mac/dolakhafurniture/StylingGuide.md)**. Any new colors or roles must be added there first.
+### **7. 📜 AGENT_AUDIT_PROTOCOL**
+
+This protocol defines how an AI agent must handle a request to "Audit & Log" the system:
+1.  **Reconnaissance**: Scan codebase, package.json, and .env for Security, Architecture, and Design pillars.
+2.  **Synthesis**: Create high-fidelity technical manuals (Manual v4.1+) for every pillar detected.
+3.  **Categorization**: Map results to the `adminLog` schema (Implementation 🟢, Security 🔴, etc.).
+4.  **Injection**: Pulse intelligence directly into Sanity using the Master API Write Token.
+5.  **Stabilization**: Ensure zero build errors and verify Admin Dashboard rendering.
 
 ---
 
@@ -185,4 +193,13 @@ This project is a monorepo containing a Next.js frontend and a Sanity CMS backen
 - **Database & Auth:** Supabase (Auth + Redirects), Google OAuth.
 - **Deployment:** Cloudflare Pages (Monorepo setup with separate Projects using OpenNext).
 
-[... Rest of old content preserved ...]
+## 🚀 Social Engine Expansion (v4.1 - Hardened)
+
+The Dolakha Content Engine has evolved into a production-grade **Multimodal Distribution Factory.**
+
+- **Omni-Channel Mastery**: Unified control over **Web Stories**, **Instagram Reels/Stories**, and **Facebook Feed/Story Circles**.
+- **Multimodal Intelligence**: Autonomous detection logic that optimizes payloads for both **Photo (Shadow Upload)** and **Video (High-Precision)** across platforms.
+- **Story Circle Protocol**: Implements the specialized **Two-Step Shadow Upload** (published: false -> photo_stories) to bypass Facebook Feed limitations and land directly in the Page Story Circle.
+- **Cloud Sovereignty (Bot v6.1)**: The heartbeat engine has been migrated to **GitHub Actions** (`*/5 * * * *` schedule), ensuring 24/7 automated broadcasting without the need for a local host.
+- **Target Injected Credentials**: Bypasses legacy `.env` constraints by pulling **Platform IDs** and **Access Tokens** directly from the Sanity Channel documents.
+- **Mission Result Integration**: Unique mission keys generated via `nanoid` ensure data integrity in the global result logs.

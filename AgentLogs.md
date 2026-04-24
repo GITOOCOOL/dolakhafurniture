@@ -29,17 +29,14 @@ This file tracks the operational history of the AI assistant for Projekt-Dolakha
     - **Build Regression Fix**: Identified a critical `ReferenceError: __name is not defined` on the storefront caused by a recent `@opennextjs/cloudflare` patch update. Resolved by **pinning** the version to `1.19.1` strictly in `package.json`.
     - **Documentation**: Created `__nameBug.md` to archive the details of the OpenNext build pipeline failure and established version pinning as a project mandate.
 
-## 📅 2026-04-23 / 04-24
-
-- **[prompt/response]**: Collaborated with user to solve critical voucher security flaws and UI stability issues.
+## 📅 2026-04-24 / 04-25
+- **[prompt/response]**: Hardened the Multimodal Content Engine and automated the global 24/7 broadcast heartbeat. Resolved critical Meta API 403 authorization blockers and Story Circle placement issues.
 - **[Codebase/Feature Updates]**: 
-    - **Voucher Security**: Implemented server-side, real-time validation for vouchers (pinning to User ID/Email) to prevent multi-use exploitation. Hardened `processOrder` with a fail-hard validation check.
-    - **Auth Stability**: Fixed a "frozen UI" bug caused by Supabase lock contention between `Navbar` and `CheckoutDrawer`. Centralized auth state in `NavbarActions`.
-    - **UX Advancements**: 
-        - Created an **Interactive Voucher Inspector** showing real-time discount details on hover/tap.
-        - Implemented an intelligent **Soft-Gate Nudge** for vouchers that respects user input.
-        - Refined Step 3 (Delivery) with better field ordering, mandatory "Tole/Area", and aligned label/input styling.
-    - **Authentication Refinement**: Updated redirect logic in `AuthForm.tsx` and `AuthPage.tsx` to land users on the home page (`/`) instead of the account page (`/account`) after signup and login.
-    - **Documentation Refactor**: Created `FutureUpdates.md` to centralize long-term concepts and features, keeping `context.md` lean. Added the **Home Page Remaster** (Funnel Machine) initiative to the roadmap.
-    - **Performance**: Cleaned up `.next` cache, freeing over 1GB of disk space.
-    - **Deployment**: Successfully merged all refinements into `master`.
+    - **Multimodal Engine (v4.1)**: Rewrote the Facebook and Instagram engines to autonomously detect and handle **Photo** and **Video** assets. 📸🎞️
+    - **Story Circle Protocol**: Implemented a specialized **Two-Step Shadow Upload** (Invisible Upload -> Story Publish) to bypass Facebook Feed limitations and land direct hits on the 24-hour Story Circle. ⭕🚀
+    - **Cloud Sovereignty (Bot v6.1)**: Migrated the Heartbeat Bot from local Node.js to **GitHub Actions** (`cron: '*/5 * * * *'`), achieving total 24/7 technical independence from local hardware. 🛰️🏙️
+    - **Sanity UI Hardening**: 
+        - Integrated a `mediaType` selector for contextual asset switching.
+        - Synchronized **Target Injected Credentials** to bypass `.env` constraints.
+        - Generated comprehensive documentation: `CONTENT_ENGINE.md` and `MISSION_CONTROL.md`.
+    - **Stability**: Refactored the Manual Router with diagnostic layers and deep asset resolution. Finalized the deployment with a master branch merge. 🏁✅

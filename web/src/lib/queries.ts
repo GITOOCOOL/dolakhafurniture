@@ -217,3 +217,14 @@ export const socialMediaQuery = `*[_type == "socialMedia" && isActive == true] |
         _id, title, price, "slug": slug.current, mainImage
     }
 }`
+
+export const adminLogsQuery = `*[_type == "adminLog"] | order(timestamp desc) {
+  _id,
+  title,
+  timestamp,
+  type,
+  nature,
+  status,
+  content,
+  metadata
+}`
