@@ -28,7 +28,6 @@ const Hero = ({
   reels?: SocialContent[] 
 }) => {
   const [selectedReel, setSelectedReel] = useState<number | null>(null);
-  const reelsSlice = reels.slice(0, 8);
 
   return (
     <section className="relative w-full py-24 flex flex-col justify-center bg-app overflow-hidden">
@@ -99,7 +98,7 @@ const Hero = ({
               )}
 
               {/* TRACK 2: Reels Horizontal Track */}
-              {reelsSlice.length > 0 && (
+              {reels.length > 0 && (
                 <div className="mt-8">
                   <div className="flex items-center gap-3 mb-6 px-2">
                     <h3 className="text-xl font-serif italic text-heading">Studio Reels</h3>
@@ -108,7 +107,7 @@ const Hero = ({
                   
                   <div className="-mx-6">
                     <Carousel>
-                      {reelsSlice.map((reel, idx) => (
+                      {reels.map((reel, idx) => (
                         <div 
                           key={reel._id} 
                           onClick={() => setSelectedReel(idx)}
@@ -218,7 +217,7 @@ const Hero = ({
       <StoryViewer 
         isOpen={selectedReel !== null}
         onClose={() => setSelectedReel(null)}
-        items={reelsSlice}
+        items={reels}
         activeIndex={selectedReel ?? 0}
         onNavigate={(idx) => setSelectedReel(idx)}
       />

@@ -28,8 +28,8 @@ export default async function Home() {
     console.error("Home: Failed to fetch social content:", error);
   }
 
-  const homepageStories = socialContent.filter(item => item.type === 'story');
-  const homepageReels = socialContent.filter(item => item.type === 'reel');
+  const homepageStories = socialContent.filter(item => item.type === 'story').slice(0, 3);
+  const homepageReels = socialContent.filter(item => item.type === 'reel').slice(0, 3);
 
   const productsByCategory = allProducts.reduce((acc, product) => {
     const key = product.category?.slug || 'other';
