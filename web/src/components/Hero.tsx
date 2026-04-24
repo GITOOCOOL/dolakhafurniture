@@ -44,7 +44,7 @@ const Hero = () => {
                     <span>Call Us</span>
                   </div>
                 </a>
-                <a href="https://wa.me" target="_blank" className="w-full flex-1">
+                <a href="https://wa.me/9779808005210" target="_blank" className="w-full flex-1">
                   <div className="group flex items-center justify-center gap-3 py-4 px-8 rounded-lg bg-invert border border-divider transition-all duration-300 hover:shadow-xl hover:border-action h-14">
                     <MessageCircle size={18} className="text-app stroke-[2]" />
                     <span className="type-action text-app">WhatsApp</span>
@@ -64,7 +64,7 @@ const Hero = () => {
 
             <div className="grid grid-cols-2 gap-8 justify-center items-center">
               {/* Facebook */}
-              <a href="https://facebook.com/dolakhafurniture" target="_blank" className="flex flex-col items-center gap-3 group">
+              <a href="https://www.facebook.com/dolakhafurniture/" target="_blank" className="flex flex-col items-center gap-3 group">
                 <div className="w-14 h-14 bg-invert border border-divider rounded-xl flex items-center justify-center text-app group-hover:bg-action transition-all duration-500 shadow-sm transform group-hover:rotate-12">
                   <Facebook strokeWidth={1.5} size={28} />
                 </div>
@@ -72,7 +72,7 @@ const Hero = () => {
               </a>
 
               {/* Instagram */}
-              <a href="https://instagram.com/dolakhafurnituredesign" target="_blank" className="flex flex-col items-center gap-3 group">
+              <a href="https://www.instagram.com/dolakhafurnituredesign/" target="_blank" className="flex flex-col items-center gap-3 group">
                 <div className="h-14 w-14 rounded-full bg-invert border border-divider flex items-center justify-center text-app group-hover:bg-action transition-all duration-500 shadow-sm active:translate-y-[1px]">
                   <Instagram strokeWidth={1.5} size={28} />
                 </div>
@@ -80,10 +80,10 @@ const Hero = () => {
               </a>
 
               {/* TikTok */}
-              <a href="https://tiktok.com/@dolakhafurniture" target="_blank" className="flex flex-col items-center gap-3 group">
+              <a href="https://www.tiktok.com/@dolakhafurniture/" target="_blank" className="flex flex-col items-center gap-3 group">
                 <div className="h-14 w-14 rounded-full bg-invert border border-divider flex items-center justify-center text-app group-hover:bg-action transition-all duration-500 shadow-sm active:translate-y-[1px]">
                   <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
                   </svg>
                 </div>
                 <span className="type-label text-description text-[8px]">TikTok</span>

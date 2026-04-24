@@ -22,7 +22,7 @@ export default function FooterClient() {
             <br />
             <div className="flex justify-center md:justify-start gap-10 type-action">
               <a
-                href="https://facebook.com/dolakhafurniture"
+                href="https://www.facebook.com/dolakhafurniture/"
                 target="_blank"
                 className="text-label hover:text-action transition-colors"
                 rel="noreferrer"
@@ -30,7 +30,7 @@ export default function FooterClient() {
                 Facebook
               </a>
               <a
-                href="https://instagram.com/dolakhafurnituredesign"
+                href="https://www.instagram.com/dolakhafurnituredesign/"
                 target="_blank"
                 className="text-label hover:text-action transition-colors"
                 rel="noreferrer"
@@ -38,7 +38,7 @@ export default function FooterClient() {
                 Instagram
               </a>
               <a
-                href="https://tiktok.com/@dolakhafurniture"
+                href="https://www.tiktok.com/@dolakhafurniture/"
                 target="_blank"
                 className="text-label hover:text-action transition-colors"
                 rel="noreferrer"

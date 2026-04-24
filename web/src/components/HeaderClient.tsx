@@ -362,19 +362,19 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
           <div className="flex-shrink-0 w-full border-t border-soft/20 pt-10 pb-6 mt-10">
             <div className="flex gap-8 mb-6">
               <a
-                href="https://facebook.com/dolakhafurniture"
+                href="https://www.facebook.com/dolakhafurniture/"
                 className="text-heading/40 hover:text-action transition-all"
               >
                 <Facebook size={22} strokeWidth={1.5} />
               </a>
               <a
-                href="https://instagram.com/dolakhafurnituredesign"
+                href="https://www.instagram.com/dolakhafurnituredesign/"
                 className="text-heading/40 hover:text-action transition-all"
               >
                 <Instagram size={22} strokeWidth={1.5} />
               </a>
               <a
-                href="https://tiktok.com/@dolakhafurniture"
+                href="https://www.tiktok.com/@dolakhafurniture/"
                 className="text-heading/40 hover:text-action transition-all"
               >
                 <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">

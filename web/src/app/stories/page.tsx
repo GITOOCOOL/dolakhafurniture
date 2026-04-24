@@ -64,7 +64,7 @@ export default async function StoriesPage() {
             Follow us on Instagram for daily updates and exclusive behind-the-scenes content.
           </p>
           <a 
-            href="https://www.instagram.com/dolakhafurniture/" 
+            href="https://www.instagram.com/dolakhafurnituredesign/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-block px-8 py-4 bg-action text-white hover:bg-action-hover transition-all duration-300 rounded-sm font-medium tracking-wide shadow-custom"

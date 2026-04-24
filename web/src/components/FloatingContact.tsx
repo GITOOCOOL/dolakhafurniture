@@ -28,7 +28,7 @@ const FloatingContact = () => {
   }, []);
 
   // Pre-filled WhatsApp link
-  const whatsappNumber = "61410765748";
+  const whatsappNumber = "9779808005210";
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
 
   // Messenger link

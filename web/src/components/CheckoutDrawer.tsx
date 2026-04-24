@@ -654,14 +654,14 @@ export default function CheckoutDrawer({
 
               <div className="flex items-center justify-center gap-8 pt-4 opacity-50 hover:opacity-100 transition-opacity">
                 <a
-                  href="https://facebook.com/dolakhafurniture"
+                  href="https://www.facebook.com/dolakhafurniture/"
                   target="_blank"
                   className="text-app hover:text-[#1877F2] transition-all hover:scale-110"
                 >
                   <Facebook size={22} strokeWidth={1.5} />
                 </a>
                 <a
-                  href="https://instagram.com/dolakhafurnituredesign"
+                  href="https://www.instagram.com/dolakhafurnituredesign/"
                   target="_blank"
                   className="text-app hover:text-[#e1306c] transition-all hover:scale-110"
                 >
