@@ -1,138 +1,185 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity';
+import { client, writeClient } from '@/lib/sanity';
+import { nanoid } from 'nanoid';
 
 /**
- * SOCIAL HUB CRON HEARTBEAT
- * This route is intended to be called by a cron job (e.g., Vercel Cron, GitHub Actions, or a local interval).
- * It scans for documents that are scheduled for automation and triggers their broadcast.
+ * OMNI-CHANNEL BOT HEARTBEAT (V6.1 - RESULTS POLISHED)
+ * This route manages multi-continent tactical missions by context-switching timezones.
  */
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    // 1. Get current time and day in local context (or UTC depending on preference)
-    const now = new Date();
-    const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const currentHour = now.getHours().toString().padStart(2, '0');
-    const currentMinute = now.getMinutes().toString().padStart(2, '0');
-    const currentTimeStr = `${currentHour}:${currentMinute}`;
-    const todayISO = now.toISOString().split('T')[0];
+    const rawNow = new Date();
+    console.log(`[📡 PULSE] Universal UTC Scan starting at ${rawNow.toISOString()}`);
 
-    console.log(`[BOT HEARTBEAT] ${currentDay.toUpperCase()} at ${currentTimeStr}. Scanning...`);
+    // 1. Fetch ALL Missions in Autopilot
+    const missions = await client.fetch(`
+      *[_type == "broadcast" && automation.isEnabled == true] {
+        _id,
+        title,
+        targets,
+        automation,
+        "payload": content-> {
+          _id,
+          title,
+          caption,
+          "videoUrl": coalesce(masterMedia.asset->url, imageMedia.asset->url),
+          hashtags
+        }
+      }
+    `);
 
-    // 2. Query Sanity for documents that need publishing today
-    // We look for:
-    // - Automation enabled
-    // - scheduledDays contains current day
-    // - endDate is not passed
-    // - lastRun is NOT today (prevents double firing)
-    const query = `*[_type == "socialMedia" && 
-      automation.enabled == true && 
-      $currentDay in automation.scheduledDays && 
-      (automation.endDate == null || automation.endDate >= $todayISO) &&
-      (automation.lastRun == null || !(automation.lastRun match $todayISO + "*"))
-    ] {
-      _id,
-      title,
-      type,
-      caption,
-      hashtags,
-      "videoUrl": videoFile.asset._ref,
-      automation
-    }`;
-
-    const scheduledDocs = await client.fetch(query, { 
-      currentDay, 
-      todayISO 
-    });
-
-    if (scheduledDocs.length === 0) {
-      return NextResponse.json({ message: 'No content scheduled for this window.' });
+    if (!missions || missions.length === 0) {
+       console.log('🤖 BOT STATUS: 0 active missions currently armed.');
+       return NextResponse.json({ message: 'Fleet is dormant.' });
     }
 
-    console.log(`[BOT] Found ${scheduledDocs.length} items to broadcast!`);
+    const channels = await client.fetch(`*[_type == "socialChannel" && isActive == true]`);
+    const report = [];
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    const results = [];
+    // 2. TACTICAL LOOP: Process each mission in its OWN local context
+    for (const mission of missions) {
+      const { 
+        timezone = 'UTC', 
+        scheduledTime, 
+        frequency, 
+        recurringDays, 
+        dayOfMonth, 
+        lastRun, 
+        startDate, 
+        endDate, 
+        isFastTrack 
+      } = mission.automation || {};
 
-    // 3. Process each document
-    for (const doc of scheduledDocs) {
-      const { scheduledTime } = doc.automation;
+      // --- CALCULATE LOCAL MISSION CONTEXT ---
+      const tzOptions: any = { timeZone: timezone };
+      const localNowStr = rawNow.toLocaleDateString('en-CA', tzOptions); 
+      const localDay = rawNow.toLocaleDateString('en-US', { weekday: 'long', ...tzOptions }).toLowerCase();
+      const localDate = parseInt(rawNow.toLocaleDateString('en-US', { day: 'numeric', ...tzOptions }));
+      const localHour = rawNow.toLocaleTimeString('en-US', { hour: '2-digit', hour12: false, ...tzOptions }).padStart(2, '0');
+      const localMin = rawNow.toLocaleTimeString('en-US', { minute: '2-digit', ...tzOptions }).padStart(2, '0');
+      const localTimeShort = `${localHour}:${localMin}`;
+
+      console.log(`🛰️ [${mission.title}] Context: ${timezone} | Local: ${localDay} ${localNowStr} ${localTimeShort}`);
+
+      // --- GATING LOGIC ---
       
-      // Basic time window check (within 20 mins of scheduled time to account for cron intervals)
-      // Implementation: Convert both to minutes from midnight
-      const [sHour, sMin] = scheduledTime.split(':').map(Number);
-      const scheduledMinutes = (sHour * 60) + sMin;
-      const currentMinutes = (parseInt(currentHour) * 60) + parseInt(currentMinute);
-      
-      // If we are within the window (e.g., scheduled time was 10:00 and now is 10:05)
-      // Or if you want it to fire as soon as it's passed.
-      if (currentMinutes >= scheduledMinutes) {
-        console.log(`[BOT] Firing broadcast for: "${doc.title}"...`);
-        
-        try {
-          // Determine type for FB (Story vs Reel)
-          const isStory = doc.type === 'story';
-          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      // A. Window Gates
+      if (startDate && localNowStr < startDate) {
+        console.log(`   ⏭️ Blocked: Awaiting start date (${startDate})`);
+        continue;
+      }
+      if (endDate && localNowStr > endDate) {
+        console.log(`   ⏭️ Blocked: Mission expired (${endDate})`);
+        continue;
+      }
 
-          // Trigger Facebook / Instagram (we'll call the internal APIs we built)
-          // Note: In a real serverless env, you might want to call these directly as functions 
-          // but for this architecture, we HIT the endpoints.
-          
-          // FB Broadcast
-          const fbRes = await fetch(`${baseUrl}/api/social/publish/facebook`, {
-            method: 'POST',
-            body: JSON.stringify({
-              videoUrl: doc.videoUrl,
-              caption: doc.caption,
-              hashtags: doc.hashtags,
-              type: doc.type
-            })
-          });
-          const fbData = await fbRes.json();
-
-          // IG Broadcast
-          const igRes = await fetch(`${baseUrl}/api/social/publish/instagram`, {
-            method: 'POST',
-            body: JSON.stringify({
-              videoUrl: doc.videoUrl,
-              caption: doc.caption,
-              hashtags: doc.hashtags,
-              type: doc.type
-            })
-          });
-          const igData = await igRes.json();
-
-          // Update Sanity with Success and Last Run timestamp
-          await client.patch(doc._id)
-            .set({ 
-              'automation.lastRun': new Date().toISOString(),
-              'distribution.facebook.status': 'published',
-              'distribution.facebook.publishedAt': new Date().toISOString(),
-              'distribution.instagram.status': 'published',
-              'distribution.instagram.publishedAt': new Date().toISOString()
-            })
-            .commit();
-
-          results.push({ 
-            doc: doc.title, 
-            facebook: fbData.success ? 'Success' : 'Failed',
-            instagram: igData.success ? 'Success' : 'Failed'
-          });
-
-        } catch (postError: any) {
-          console.error(`[BOT] Error processing "${doc.title}":`, postError);
-          results.push({ doc: doc.title, error: postError.message });
+      // B. Fast-Track Bypass
+      let shouldFire = false;
+      if (isFastTrack) {
+        const lastRunDate = lastRun ? new Date(lastRun) : null;
+        if (!lastRunDate) {
+          shouldFire = true;
+        } else {
+          const diffMs = rawNow.getTime() - lastRunDate.getTime();
+          shouldFire = Math.floor(diffMs / 60000) >= 1; 
         }
       } else {
-         console.log(`[BOT] "${doc.title}" is scheduled for ${scheduledTime}, too early to fire.`);
+        // C. Standard Recurrence Check
+        const missionTimeShort = (scheduledTime || '').substring(0, 5);
+        
+        if (missionTimeShort === localTimeShort) {
+          // Check Frequency
+          if (frequency === 'daily') {
+            shouldFire = true;
+          } else if (frequency === 'weekly') {
+            if (recurringDays?.includes(localDay)) shouldFire = true;
+          } else if (frequency === 'monthly') {
+            if (localDate === dayOfMonth) shouldFire = true;
+          }
+
+          // Once-per-day safety gate
+          const lastRunDate = lastRun ? new Date(lastRun) : null;
+          const lastRunLocalStr = lastRunDate ? lastRunDate.toLocaleDateString('en-CA', tzOptions) : null;
+          if (lastRunLocalStr === localNowStr) {
+            console.log(`   ⏭️ Skip: Already executed in this local day window.`);
+            shouldFire = false;
+          }
+        }
+      }
+
+      // --- EXECUTION ---
+      if (shouldFire) {
+        console.log(`🚀 [${mission.title}] TRIGGERING TACTICAL LAUNCH...`);
+        
+        const loadout = mission.targets || [];
+        const payload = mission.payload;
+        if (!payload) {
+          console.log(`   ❌ Aborted: Source content missing.`);
+          continue;
+        }
+
+        const missionResults = [];
+        for (const target of loadout) {
+          const platformKey = target.platform; // 'instagram', 'facebook', etc.
+          const placement = target.placement || 'feed';
+          const channel = channels.find((c: any) => c.platform === platformKey || (platformKey === 'website' && c.platform === 'website'));
+          
+          if (!channel) continue;
+
+          try {
+            // ROUTING FIX: 
+            // Placements (story/feed/reel) should use the Platform engine (instagram/video/etc.)
+            let enginePath = platformKey; 
+            if (platformKey === 'website') enginePath = 'stories'; // Internal website stories
+            
+            console.log(`   📡 Launching ${platformKey} (${placement}) via /api/social/publish/${enginePath}...`);
+            
+            const res = await fetch(`${baseUrl}/api/social/publish/${enginePath}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                videoUrl: payload.videoUrl,
+                caption: payload.caption,
+                hashtags: payload.hashtags,
+                type: placement, // 'story', 'reel', etc.
+                documentId: payload._id,
+                targets: [`${placement}||${channel._id}`]
+              })
+            });
+
+            missionResults.push({ 
+              _key: nanoid(),
+              platform: platformKey, 
+              placement: placement, 
+              status: res.ok ? 'success' : 'failed', 
+              timestamp: new Date().toISOString() 
+            });
+          } catch (err: any) {
+            missionResults.push({ 
+              _key: nanoid(),
+              platform: platformKey, 
+              placement: placement, 
+              status: 'failed', 
+              error: err.message, 
+              timestamp: new Date().toISOString() 
+            });
+          }
+        }
+
+        await writeClient.patch(mission._id)
+          .set({ 'automation.lastRun': new Date().toISOString(), status: 'success' })
+          .setIfMissing({ results: [] }) 
+          .insert('after', 'results[-1]', missionResults)
+          .commit();
+
+        report.push({ mission: mission.title, results: missionResults });
       }
     }
 
-    return NextResponse.json({ 
-      timestamp: new Date().toISOString(),
-      processed: results 
-    });
-
+    return NextResponse.json({ processedCount: report.length, report });
   } catch (error: any) {
-    console.error('[BOT CRITICAL ERROR]:', error);
+    console.error('[🤖 BOT CRITICAL ERROR]:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

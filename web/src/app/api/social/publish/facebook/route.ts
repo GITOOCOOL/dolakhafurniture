@@ -1,159 +1,125 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity';
 
 /**
- * API Route to publish content to Facebook Page Reels
- * Expected Body: { videoUrl: string, caption: string, hashtags: string[] }
+ * FACEBOOK TACTICAL ENGINE (V4.1 - PHOTO STORY PRECISION)
+ * Implements the Two-Step 'Shadow Upload' protocol to target the Story Circle specifically.
  */
 export async function POST(request: Request) {
   try {
-    const { videoUrl: videoAssetRef, caption, hashtags, type } = await request.json();
-
-    const PAGE_ID = process.env.FACEBOOK_PAGE_ID;
-    const SYSTEM_USER_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const { videoUrl: mediaUrl, caption, hashtags, type, targetId, targetToken } = await request.json();
+    
+    let PAGE_ID = targetId || process.env.FACEBOOK_PAGE_ID;
+    let SYSTEM_USER_TOKEN = targetToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
     if (!PAGE_ID || !SYSTEM_USER_TOKEN) {
-      const res = NextResponse.json(
-        { error: 'Facebook configuration missing (PAGE_ID or ACCESS_TOKEN)' },
-        { status: 500 }
-      );
-      res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-      return res;
+      return NextResponse.json({ error: 'Facebook configuration missing' }, { status: 500 });
     }
 
-    // 0. FETCH PAGE ACCESS TOKEN (The "Page Mask")
-    // Meta sometimes requires a Page-specific token for Stories even if System User has permissions.
-    console.log(`Exchanging System User token for Page token for ${PAGE_ID}...`);
-    const tokenUrl = `https://graph.facebook.com/v21.0/${PAGE_ID}?fields=access_token&access_token=${SYSTEM_USER_TOKEN}`;
+    // --- STEP 0: TACTICAL TOKEN EXCHANGE (Required for Stories) ---
+    const tokenUrl = `https://graph.facebook.com/${PAGE_ID}?fields=access_token&access_token=${SYSTEM_USER_TOKEN}`;
     const tokenRes = await fetch(tokenUrl);
     const tokenData = await tokenRes.json();
-
-    if (!tokenRes.ok || !tokenData.access_token) {
-        console.error('Token Exchange Error:', tokenData);
-        const res = NextResponse.json({ error: 'Failed to obtain Page Access Token', details: tokenData }, { status: 500 });
-        res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-        return res;
-    }
-
     const PAGE_ACCESS_TOKEN = tokenData.access_token;
-    console.log("Page Access Token obtained successfully.");
 
-    // 1. Resolve Sanity Video URL from Asset Reference
-    let directVideoUrl = '';
-    if (videoAssetRef) {
-      const asset = await client.fetch(`*[_id == $id][0]`, { id: videoAssetRef });
-      if (asset?.url) {
-        directVideoUrl = asset.url;
-      } else if (videoAssetRef.startsWith('http')) {
-        directVideoUrl = videoAssetRef;
-      } else {
-        const res = NextResponse.json({ error: 'Could not resolve video asset URL' }, { status: 400 });
-        res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-        return res;
-      }
-    }
+    if (!PAGE_ACCESS_TOKEN) return NextResponse.json({ error: 'Failed to obtain Page Identity', details: tokenData }, { status: 500 });
 
+    const isVideo = mediaUrl?.match(/\.(mp4|mov|m4v)$/i) !== null;
+    const isStory = type === 'story' || type === 'facebook-story';
     const fullCaption = `${caption || ''}\n\n${(hashtags || []).map((t: string) => `#${t}`).join(' ')}`.trim();
-    const isStory = type === 'story';
-    const fbEndpoint = isStory ? 'video_stories' : 'video_reels';
 
-    console.log(`Starting Facebook ${isStory ? 'Story' : 'Reel'} publish for Page ${PAGE_ID}...`);
+    // --- STEP 1: MULTIMODAL STORY GATE ---
+    let resultData;
+    let response;
 
-    // --- FACEBOOK PUBLISHING FLOW ---
-    
-    // Step 1: Initialize Upload Session
-    const initResponse = await fetch(
-      `https://graph.facebook.com/v21.0/${PAGE_ID}/${fbEndpoint}`,
-      {
+    if (isVideo) {
+      // VIDEO STORY BRANCH
+      const fbEndpoint = isStory ? 'video_stories' : 'video_reels';
+      console.log(`📡 [FB ENGINE] Launching Video Story via /${fbEndpoint}...`);
+      
+      const initRes = await fetch(`https://graph.facebook.com/${PAGE_ID}/${fbEndpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ upload_phase: 'start', access_token: PAGE_ACCESS_TOKEN })
+      });
+      const initData = await initRes.json();
+      
+      if (!initRes.ok) return NextResponse.json({ error: 'Video Init Failed', details: initData }, { status: 500 });
+
+      await fetch(initData.upload_url, {
+        method: 'POST',
+        headers: { 'Authorization': `OAuth ${PAGE_ACCESS_TOKEN}`, 'file_url': mediaUrl }
+      });
+      
+      const finishBody: any = { upload_phase: 'finish', access_token: PAGE_ACCESS_TOKEN, video_id: initData.video_id, video_state: 'PUBLISHED' };
+      if (!isStory) finishBody.description = fullCaption;
+
+      response = await fetch(`https://graph.facebook.com/${PAGE_ID}/${fbEndpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finishBody)
+      });
+      resultData = await response.json();
+    } 
+    else if (isStory) {
+      // --- PHOTO STORY CIRCLE BRANCH (THE TWO-STEP DANCE) ---
+      console.log(`📡 [FB ENGINE] Launching Photo Story via /photo_stories...`);
+      
+      // Step A: Shadow Upload (published: false)
+      const uploadRes = await fetch(`https://graph.facebook.com/${PAGE_ID}/photos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          upload_phase: 'start',
-          access_token: PAGE_ACCESS_TOKEN,
-        }),
-      }
-    );
+          url: mediaUrl,
+          published: false,
+          access_token: PAGE_ACCESS_TOKEN
+        })
+      });
+      const uploadData = await uploadRes.json();
+      
+      if (!uploadRes.ok) return NextResponse.json({ error: 'Photo Shadow Upload Failed', details: uploadData }, { status: 500 });
 
-    const initData = await initResponse.json();
-    if (!initResponse.ok) {
-      console.error('FB Init Error:', initData);
-      const res = NextResponse.json({ error: 'FB Initialization failed', details: initData }, { status: 500 });
-      res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-      return res;
-    }
-
-    const { video_id, upload_url } = initData;
-
-    // Step 2: Upload Video via URL
-    const uploadResponse = await fetch(upload_url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `OAuth ${PAGE_ACCESS_TOKEN}`,
-        'file_url': directVideoUrl,
-      }
-    });
-
-    const uploadData = await uploadResponse.json();
-    if (!uploadResponse.ok) {
-      console.error('FB Upload Error:', uploadData);
-      const res = NextResponse.json({ error: 'FB Upload failed', details: uploadData }, { status: 500 });
-      res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-      return res;
-    }
-
-    // Step 3: Finalize and Publish
-    const finishBody: any = {
-      upload_phase: 'finish',
-      access_token: PAGE_ACCESS_TOKEN,
-      video_id: video_id,
-      video_state: 'PUBLISHED',
-    };
-
-    // Stories usually don't support the 'description' field like Reels do
-    if (!isStory) {
-      finishBody.description = fullCaption;
-    }
-
-    const finishResponse = await fetch(
-      `https://graph.facebook.com/v21.0/${PAGE_ID}/${fbEndpoint}`,
-      {
+      // Step B: Final Story Launch
+      response = await fetch(`https://graph.facebook.com/${PAGE_ID}/photo_stories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(finishBody),
-      }
-    );
-
-    const finishData = await finishResponse.json();
-    if (!finishResponse.ok) {
-        console.error('FB Finish Error:', finishData);
-        const res = NextResponse.json({ error: 'FB Finalization failed', details: finishData }, { status: 500 });
-        res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-        return res;
+        body: JSON.stringify({
+          photo_id: uploadData.id,
+          access_token: PAGE_ACCESS_TOKEN
+        })
+      });
+      resultData = await response.json();
+    }
+    else {
+      // STANDARD FEED POST BRANCH
+      console.log(`📡 [FB ENGINE] Launching Photo Feed Post via /photos...`);
+      response = await fetch(`https://graph.facebook.com/${PAGE_ID}/photos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: mediaUrl, message: fullCaption, access_token: PAGE_ACCESS_TOKEN })
+      });
+      resultData = await response.json();
     }
 
-    const res = NextResponse.json({ 
-      success: true, 
-      postId: video_id, 
-      type: isStory ? 'story' : 'reel',
-      data: finishData 
-    });
-    res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-    res.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return res;
+    if (!response.ok) {
+      console.error('🔥 [FB ENGINE] Final Dispatch Error:', resultData);
+      return NextResponse.json({ error: 'Facebook Story Handshake Failed', details: resultData }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, postId: resultData.id || resultData.post_id, data: resultData });
 
   } catch (error: any) {
-    console.error('Server error in Facebook publish:', error);
-    const res = NextResponse.json({ error: error.message }, { status: 500 });
-    res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-    return res;
+    console.error('🔥 [FB ENGINE] System Crash:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
 export async function OPTIONS() {
-  const res = new NextResponse(null, { status: 204 });
-  res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3333');
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  return res;
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': 'http://localhost:3333',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

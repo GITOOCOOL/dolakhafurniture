@@ -200,13 +200,17 @@ export const adminLeadsQuery = `*[_type == "lead"] | order(_createdAt desc) {
   }
 }`
 
-export const socialMediaQuery = `*[_type == "socialMedia" && isActive == true] | order(isFeatured desc, publishDate desc) {
+export const socialMediaQuery = `*[_type == "socialMedia" && isActive == true] | order(isFeatured desc, _createdAt desc) {
     _id,
     title,
     type,
+    articleTheme,
+    tagline,
+    body,
     "videoUrl": videoFile.asset->url,
     "thumbnailUrl": thumbnail.asset->url,
     caption,
+    logDate,
     externalUrl,
     isFeatured,
     "linkedProducts": linkedProducts[]-> {

@@ -49,7 +49,7 @@ export default function FooterClient() {
                 href="/stories"
                 className="text-label hover:text-action transition-colors font-medium border-l border-divider pl-8 ml-2"
               >
-                Live Stories 🤳
+                Stories 🤳
               </a>
             </div>
           </div>

@@ -52,8 +52,8 @@ export default function CategoryNav({
   }));
 
   const endLinks = [
-    { name: 'Our Story', href: '/our-story' },
-    { name: 'Live Stories', href: '/stories' },
+    { name: 'About Us', href: '/our-story' },
+    { name: 'Stories', href: '/stories' },
   ];
 
   const allLinks = [...baseLinks, ...categoryLinks, ...endLinks];
