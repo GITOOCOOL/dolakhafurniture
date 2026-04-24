@@ -87,6 +87,16 @@ export default async function RootLayout({
     client.fetch<Campaign[]>(activeCampaignsQuery),
   ]);
 
+  // Combine bulletins with active campaigns for the ticker
+  const combinedBulletins = [
+    ...bulletins,
+    ...(activeCampaigns?.map((campaign) => ({
+      _id: campaign._id,
+      title: "Active Campaign",
+      content: campaign.tagline || campaign.title,
+    })) || []),
+  ];
+
   const latestCampaign = activeCampaigns?.[0] || null;
 
   return (
@@ -144,7 +154,7 @@ export default async function RootLayout({
             </Suspense>
 
             <BrowserBanner />
-            <AnnouncementBar bulletins={bulletins} />
+            <AnnouncementBar bulletins={combinedBulletins as any} />
             <HeaderClient latestCampaign={latestCampaign} />
             <main className="w-full relative flex-1">{children}</main>
           </ToastProvider>
