@@ -56,9 +56,9 @@ export default function Modal({
 
   const variants = {
     center: {
-      initial: { opacity: 0, scale: 0.9, y: 20 },
+      initial: { opacity: 0, scale: 0.95, y: 100 },
       animate: { opacity: 1, scale: 1, y: 0 },
-      exit: { opacity: 0, scale: 0.9, y: 20 },
+      exit: { opacity: 0, scale: 0.95, y: 100 },
     },
     right: {
       initial: { x: "100%" },
@@ -85,7 +85,7 @@ export default function Modal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className={`fixed inset-0 z-[1000] flex ${positions[position]}`}>
+        <div className={`fixed inset-0 z-[9999999] flex ${positions[position]}`}>
           {/* Backdrop (Solid & Defined) */}
           <motion.div
             initial={{ opacity: 0 }}

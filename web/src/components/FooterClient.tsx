@@ -20,7 +20,7 @@ export default function FooterClient() {
               where you can explore more of our story and collections.
             </p>
             <br />
-            <div className="flex justify-center md:justify-start gap-10 type-action">
+            <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-4 md:gap-10 type-action">
               <a
                 href="https://www.facebook.com/dolakhafurniture/"
                 target="_blank"

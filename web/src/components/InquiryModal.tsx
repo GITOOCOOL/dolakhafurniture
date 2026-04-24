@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { client as sanityClient } from "@/lib/sanity";
 import { Order } from "@/types";
-import { ChevronDown, Package, Info, HelpCircle, Sparkles } from "lucide-react";
+import { ChevronDown, Package, Info, HelpCircle, Sparkles, Phone } from "lucide-react";
 import { trackEvent } from "./MetaPixel";
 
 interface FAQ {

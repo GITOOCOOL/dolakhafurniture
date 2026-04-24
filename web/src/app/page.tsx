@@ -2,9 +2,10 @@ import { client } from "@/lib/sanity";
 import CategoryRow from "@/components/CategoryRow"; 
 import { Product, Category } from '@/types';
 import Hero from "@/components/Hero";
-import { categoriesQuery, allProductsQuery, featuredProductsQuery, activeCampaignHomeQuery } from "@/lib/queries";
+import { categoriesQuery, allProductsQuery, featuredProductsQuery, activeCampaignHomeQuery, socialMediaQuery } from "@/lib/queries";
 import Carousel from "@/components/Carousel";
 import ProductCard from "@/components/ProductCard";
+import { SocialContent } from "@/types";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,16 @@ export default async function Home() {
   const categoriesInOrder = (await client.fetch<Category[]>(categoriesQuery)) || [];
 
   const activeCampaign = (await client.fetch<any>(activeCampaignHomeQuery)) || null;
+
+  let socialContent: SocialContent[] = [];
+  try {
+    socialContent = await client.fetch<SocialContent[]>(socialMediaQuery, {}, { next: { revalidate: 60 } });
+  } catch (error) {
+    console.error("Home: Failed to fetch social content:", error);
+  }
+
+  const homepageStories = socialContent.filter(item => item.type === 'story');
+  const homepageReels = socialContent.filter(item => item.type === 'reel');
 
   const productsByCategory = allProducts.reduce((acc, product) => {
     const key = product.category?.slug || 'other';
@@ -93,7 +104,7 @@ export default async function Home() {
 
       {/* 4. BOTTOM: BRAND STORY / MISSION (Moved from middle for better product-first flow) */}
       <div className="border-t border-soft border-dotted">
-        <Hero />
+        <Hero stories={homepageStories} reels={homepageReels} />
       </div>
     </div>
   );

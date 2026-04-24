@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, Facebook, MessageSquare, X } from "lucide-react";
+import { MessageCircle, Facebook, MessageSquare, X, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,14 +36,39 @@ const FloatingContact = () => {
 
   const buttons = [
     {
-      icon: <MessageCircle size={20} strokeWidth={1.5} className="fill-[#128C7E] stroke-[0.5]" />,
+      icon: (
+        <Phone
+          size={20}
+          strokeWidth={1.5}
+          className="text-app"
+        />
+      ),
+      label: "Phone Call",
+      href: "tel:9861326438",
+      color: "bg-heading",
+      textColor: "text-app",
+    },
+    {
+      icon: (
+        <MessageCircle
+          size={20}
+          strokeWidth={1.5}
+          className="fill-[#128C7E] stroke-[0.5]"
+        />
+      ),
       label: "WhatsApp",
       href: whatsappLink,
       color: "bg-[#25D366]",
       textColor: "text-white",
     },
     {
-      icon: <Facebook size={20} strokeWidth={1.5} className="fill-[#0084FF] stroke-[0.5]" />,
+      icon: (
+        <Facebook
+          size={20}
+          strokeWidth={1.5}
+          className="fill-[#0084FF] stroke-[0.5]"
+        />
+      ),
       label: "Messenger",
       href: messengerLink,
       color: "bg-[#0084FF]",
@@ -120,7 +145,7 @@ const FloatingContact = () => {
                         btn.onClick();
                         setIsOpen(false);
                       }}
-                      className={`flex items-center gap-3 px-5 py-3.5 rounded-full shadow-lg ${btn.color} ${btn.textColor} hover:scale-105 transition-transform duration-200 w-full justify-end`}
+                      className={`flex items-center justify-between gap-3 px-6 py-3.5 rounded-full shadow-lg ${btn.color} ${btn.textColor} hover:scale-105 transition-transform duration-200 w-48`}
                     >
                       <span className="text-[11px] font-sans font-bold uppercase tracking-widest">
                         {btn.label}
@@ -133,7 +158,7 @@ const FloatingContact = () => {
                       href={btn.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-3 px-5 py-3.5 rounded-full shadow-lg ${btn.color} ${btn.textColor} hover:scale-105 transition-transform duration-200`}
+                      className={`flex items-center justify-between gap-3 px-6 py-3.5 rounded-full shadow-lg ${btn.color} ${btn.textColor} hover:scale-105 transition-transform duration-200 w-48`}
                     >
                       <span className="text-[11px] font-sans font-bold uppercase tracking-widest">
                         {btn.label}
