@@ -82,17 +82,28 @@ html {
 /* Deep Olive Theme Remapping */
 html[data-theme="dark"] {
   color-scheme: dark;
-  --bg-app: #2c3021; /* Softened Forest Green */
-  --bg-surface: #383d2a; /* Correspondingly lighter surface */
-  --text-heading: #ffffff; /* Bright White */
-  --text-body: #ffffff; /* Bright White */
-  --text-description: #a89f91;
-  --text-label: #5d5449;
-  --border-divider: #3d3f32;
-  --border-soft: #2d3023;
-  --accent-action: #a3573a; /* Keep Terracotta warmth */
-  --accent-warmth: #df9152; /* Keep Ochre warmth */
-  --app-invert: var(--raw-bone);
+  
+  /* Remap Brand Core for Dark Mode Context */
+  --raw-bone: #1a1c13;      /* Deep Forest Shadow (was f1f3e8) */
+  --raw-clay: #2c3021;      /* Deep Olive Surface (was e8eadec) */
+  --raw-espresso: #ffffff;  /* Inverted to White Header (was 3d2b1f) */
+  --raw-muted: #a89f91;     /* Inverted Muted */
+  --raw-muted-light: #5d5449;
+  --raw-stone: #3d3f32;
+  --raw-stone-light: #2d3023;
+
+  /* Semantic Map stays synced */
+  --bg-app: var(--raw-bone);
+  --bg-surface: var(--raw-clay);
+  --text-heading: var(--raw-espresso);
+  --text-body: var(--raw-espresso);
+  --text-description: var(--raw-muted);
+  --text-label: var(--raw-muted-light);
+  --border-divider: var(--raw-stone);
+  --border-soft: var(--raw-stone-light);
+  --accent-action: #df9152; /* Shift Action to warmer Ochre for better dark contrast */
+  --accent-warmth: #df9152;
+  --app-invert: #f1f3e8;
 
   --background: var(--bg-app);
   --foreground: var(--text-body);

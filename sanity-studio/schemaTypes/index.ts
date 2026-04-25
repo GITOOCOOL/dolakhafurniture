@@ -16,6 +16,7 @@ import socialMedia from './socialMedia'
 import socialChannel from './socialChannel'
 import adminLog from './adminLog'
 import blockContent from './blockContent'
+import checkoutSettings from './checkoutSettings'
 import { broadcastType } from './broadcast'
 
 export const schemaTypes = [
@@ -37,5 +38,6 @@ export const schemaTypes = [
   customProduct, 
   material, 
   campaign, 
-  faq
+  faq,
+  checkoutSettings
 ]

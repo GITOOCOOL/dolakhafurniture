@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Stack, Box, Flex, Text, Button, Card, Grid, Badge, useToast, Spinner, Inline, Label } from '@sanity/ui'
 import { RocketIcon, PublishIcon, CheckmarkCircleIcon, ErrorOutlineIcon } from '@sanity/icons'
-import { useFormValue, useClient, patch, set } from 'sanity'
+import { useFormValue, useClient, set } from 'sanity'
 
 /**
  * BROADCAST CONTROL DECK

@@ -64,7 +64,7 @@ export const TacticalTimeInput = (props: any) => {
             }
 
             return (
-              <Stack key={label} space={2} align="center">
+              <Stack key={label} space={2} style={{ alignItems: 'center' }}>
                 <Label size={0} muted>{label}</Label>
                 <Flex align="center" gap={1}>
                    <Button fontSize={1} padding={2} mode="bleed" text="-" onClick={() => updateTime(idx, -1)} />

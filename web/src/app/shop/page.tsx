@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { allProductsQuery } from "@/lib/queries";
 import { Product } from "@/types";
-import ProductCard from "@/components/ProductCard";
+import CategorizedProductGrid from "@/components/CategorizedProductGrid";
 
 export const metadata: Metadata = {
   title: "Shop | Dolakha Furniture",
@@ -18,11 +18,11 @@ export default async function ShopPage() {
   return (
     <div className="bg-app min-h-screen font-sans text-heading relative pb-20">
       
-      {/* MINIMALIST HEADER */}
-      <div className="container mx-auto px-4 md:px-6 pt-8 pb-12 flex flex-col items-center relative">
+      {/* COMPACT LOCALIZED HEADER */}
+      <div className="container mx-auto px-6 md:px-12 pt-40 pb-8 relative">
         
         {/* TOP LEFT: Back to home */}
-        <div className="absolute top-8 left-4 md:left-6">
+        <div className="absolute top-16 left-6 md:left-12">
           <Link 
             href="/" 
             className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-heading hover:text-action transition-all flex items-center gap-2"
@@ -31,20 +31,16 @@ export default async function ShopPage() {
           </Link>
         </div>
 
-        {/* CENTERED TITLE */}
-        <h1 className="text-7xl md:text-9xl font-serif italic font-medium text-heading mt-12 mb-4">
-          Shop<span className="text-action">.</span>
-        </h1>
-      </div>
+        {/* REFINED TITLE */}
+        <div className="text-left mb-8 border-b border-soft pb-6">
+          <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-heading mb-2">
+            Shop / पसल<span className="text-action">.</span>
+          </h1>
+        </div>
 
-      {/* HIGH-DENSITY GRID */}
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-x-10 gap-y-32 md:gap-x-12 md:gap-y-24 border-t border-soft pt-12">
-          {products.map((product: Product) => (
-            <div key={product._id} className="w-full">
-               <ProductCard product={product} />
-            </div>
-          ))}
+        {/* CATEGORIZED GRID */}
+        <div className="mt-8">
+            <CategorizedProductGrid products={products} />
         </div>
       </div>
     </div>

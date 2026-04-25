@@ -24,12 +24,21 @@ export default async function NewArrivalsPage() {
   );
 
   return (
-    <div className="bg-app min-h-screen pt-32 pb-20 font-sans text-heading">
-      <div className="container mx-auto px-6">
+    <div className="bg-app min-h-screen pb-20 font-sans text-heading">
+      <div className="container mx-auto px-6 relative pt-40">
+        {/* TOP LEFT: Back to home */}
+        <div className="absolute top-16 left-6">
+          <Link 
+            href="/" 
+            className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-heading hover:text-action transition-all flex items-center gap-2"
+          >
+            <span className="text-sm">←</span> Back to home
+          </Link>
+        </div>
         
         {/* PAGE HEADER */}
-        <header className="mb-20 max-w-6xl">
-          <div className="flex items-center gap-4 mb-6">
+        <header className="mb-8 max-w-6xl text-left border-b border-soft pb-6">
+          <div className="flex items-center gap-4 mb-4">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-warmth opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-action"></span>
@@ -39,12 +48,9 @@ export default async function NewArrivalsPage() {
             </p>
           </div>
           
-          <h1 className="type-hero font-medium text-heading leading-none mb-10">
-            New Arrivals<span className="text-warmth">.</span>
+          <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-heading leading-tight">
+            New Arrivals / नयाँ सामान<span className="text-warmth">.</span>
           </h1>
-          <p className="text-lg md:text-xl font-serif italic text-label max-w-2xl leading-relaxed">
-            "The newest expressions of Dolakha craftsmanship. Limited pieces, recently perfected and ready for your home."
-          </p>
         </header>
 
         {/* ARRIVALS GRID */}

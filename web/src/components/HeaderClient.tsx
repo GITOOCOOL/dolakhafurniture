@@ -189,7 +189,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                       strokeWidth={1.5}
                     />
                     <span className="text-[11px] font-sans font-medium lowercase tracking-wide text-description group-hover:text-heading transition-colors">
-                      Search by name, material, or style...
+                      खोज्नुहोस् / Search by name, material, or style...
                     </span>
                   </div>
                   <div className="hidden md:flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.2em] text-label opacity-40 group-hover:opacity-100">
@@ -226,7 +226,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                 <input
                   autoFocus
                   type="text"
-                  placeholder="Search by name, material, or style..."
+                  placeholder="खोज्नुहोस् / Search by name, material, or style..."
                   className="w-full bg-transparent border-b-2 border-soft text-heading placeholder:text-label text-2xl md:text-4xl py-6 focus:outline-none focus:border-action transition-all font-light"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

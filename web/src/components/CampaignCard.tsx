@@ -11,7 +11,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
   return (
     <div 
-      className="group relative overflow-hidden rounded-[2.5rem] bg-white border border-divider transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] hover:-translate-y-2 flex flex-col md:flex-row min-h-[320px]"
+      className="group relative overflow-hidden rounded-[2.5rem] bg-surface border border-divider transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] hover:-translate-y-2 flex flex-col md:flex-row min-h-[320px]"
     >
       {/* Visual Side */}
       <div className="md:w-1/2 relative overflow-hidden bg-app">

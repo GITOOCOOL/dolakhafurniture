@@ -56,17 +56,14 @@ export default function AccountClient({
         </div>
       )}
 
-      {/* HEADER - Editorial Serif style */}
-      <header className="mb-16 border-b border-soft border-dotted pb-10">
-        <h1 className="type-hero font-medium text-heading leading-none">
-          My Account<span className="text-action">.</span>
+      {/* HEADER SECTION - Compact Standard Design */}
+      <header className="mb-12 text-left border-b border-soft pb-6">
+        <p className="type-label text-action mb-4">
+           Profile & Settings
+        </p>
+        <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-heading">
+          Account / खाता<span className="text-action">.</span>
         </h1>
-        <div className="flex items-center gap-3 mt-4">
-          <Leaf size={14} className="text-action opacity-60" />
-          <p className="type-label text-label">
-            Account / Orders / Support
-          </p>
-        </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">

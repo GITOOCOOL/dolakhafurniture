@@ -27,17 +27,25 @@ export default async function StoriesPage() {
 
   return (
     <div className="w-full bg-app min-h-screen">
-      {/* 1. Header Section */}
-      <section className="pt-24 pb-12 px-6 border-b border-soft bg-app">
-        <div className="container mx-auto text-center md:text-left">
-          <p className="type-label text-label mb-2 uppercase tracking-widest">Brand Hub</p>
-          <h1 className="text-4xl md:text-6xl font-serif italic tracking-tight text-heading">
-            Stories, Reels & Blogs
-          </h1>
-          <p className="mt-4 text-body max-w-2xl mx-auto md:mx-0">
-            Witness the craft. A unified feed of our latest factory updates, 
-            cinematic reels, and heritage articles.
-          </p>
+      {/* standard COMPACT HEADER */}
+      <section className="pt-40 pb-8 px-6 bg-app relative">
+        <div className="container mx-auto">
+          {/* TOP LEFT: Back to home */}
+          <div className="absolute top-16 left-6 md:left-12">
+            <Link 
+              href="/" 
+              className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-heading hover:text-action transition-all flex items-center gap-2"
+            >
+              <span className="text-sm">←</span> Back to home
+            </Link>
+          </div>
+          
+          <header className="mb-4 max-w-6xl text-left border-b border-soft pb-6">
+            <p className="type-label text-action mb-4">Brand Hub</p>
+            <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-heading">
+              Stories / कथाहरू<span className="text-action">.</span>
+            </h1>
+          </header>
         </div>
       </section>
 

@@ -26,7 +26,7 @@ export const EditorialWorkflowAction = (props: DocumentActionProps): DocumentAct
 
   return {
     label: actionLabel,
-    disabled: publish.disabled || !draft, // standard behavior
+    disabled: !!publish.disabled || !draft, // standard behavior
     onHandle: () => {
       publish.execute()
       props.onComplete()

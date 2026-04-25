@@ -23,36 +23,44 @@ export async function validateVoucher(code: string) {
 
     const now = new Date();
 
-    // 2. Specialized Logic for WELCOME5 (Signup Voucher)
-    if (normalizedCode === "welcome5") {
+    // 2. Specialized Logic for One-time use vouchers (including Welcome Vouchers)
+    if (voucher.isOneTimePerCustomer || voucher.isWelcomeVoucher) {
       const supabase = await createSupabase();
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        return { success: false, message: "Please log in or sign up to use the WELCOME5 voucher." };
+        return { 
+          success: false, 
+          message: voucher.isWelcomeVoucher 
+            ? "Please log in or sign up to use this welcome offer." 
+            : "Please log in to use this one-time voucher."
+        };
       }
 
       // Check if user has already used it (Robust One-time use check)
-      // We check for any variation of welcome in the voucherCodes array
       const usageCount = await client.fetch(
-        `count(*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email) && count(voucherCodes[lower(@) match "welcome*"]) > 0])`,
+        `count(*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email) && count(voucherCodes[lower(@) == $code]) > 0])`,
         { 
           userId: user.id,
-          email: user.email 
+          email: user.email,
+          code: normalizedCode
         },
-        { useCdn: false } // Crucial for session stability
+        { useCdn: false }
       );
 
       if (usageCount > 0) {
-        return { success: false, message: "The WELCOME5 voucher has already been used on this account." };
+        return { 
+          success: false, 
+          message: `The ${voucher.code.toUpperCase()} voucher has already been used on this account.` 
+        };
       }
     }
 
     // 3. Voucher Date Validation
-    if (voucher.startsAt && new Date(voucher.startsAt) > now) {
+    if (!voucher.startsImmediately && voucher.startsAt && new Date(voucher.startsAt) > now) {
       return { success: false, message: "This voucher is not active yet." };
     }
-    if (voucher.endsAt && new Date(voucher.endsAt) < now) {
+    if (!voucher.neverExpires && voucher.endsAt && new Date(voucher.endsAt) < now) {
       return { success: false, message: "This voucher has expired." };
     }
 
@@ -78,3 +86,35 @@ export async function validateVoucher(code: string) {
     return { success: false, message: "Error validating voucher." };
   }
 }
+
+export async function checkVoucherUsage(voucherCode: string, userId: string, email?: string) {
+  try {
+    const normalizedCode = voucherCode.trim().toLowerCase();
+    
+    // Using a more aggressive search that catches any presence of the code
+    const query = `count(*[_type == "order" && 
+      (supabaseUserId == $userId || customerEmail == $email) && 
+      (
+        $code in voucherCodes || 
+        count(voucherCodes[lower(@) == $code]) > 0 ||
+        count(voucherCodes[@ match $code]) > 0
+      )
+    ])`;
+
+    const usageCount = await client.fetch(
+      query,
+      { 
+        userId,
+        email: email || '___none___', // Avoid null match
+        code: normalizedCode
+      },
+      { useCdn: false }
+    );
+    
+    return usageCount > 0;
+  } catch (error) {
+    console.error("Error checking voucher usage:", error);
+    return false;
+  }
+}
+

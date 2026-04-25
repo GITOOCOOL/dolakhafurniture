@@ -5,6 +5,7 @@ import { Order } from "@/types";
 import { urlFor } from "@/lib/sanity";
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 import InquiryModal from "./InquiryModal";
 
 interface OrdersClientProps {
@@ -20,18 +21,25 @@ export default function OrdersClient({ orders }: OrdersClientProps) {
     setShowInquiryModal(true);
   };
   return (
-    <div className="max-w-6xl mx-auto text-heading pt-32 pb-20">
-      {/* HEADER - Editorial Serif style */}
-      <header className="mb-16 border-b border-soft border-dotted pb-10">
-        <h1 className="type-hero font-medium text-heading leading-none">
-          My Orders<span className="text-action">.</span>
+    <div className="max-w-6xl mx-auto text-heading pt-32 pb-20 relative">
+      {/* TOP LEFT: Back to home */}
+      <div className="absolute top-12 left-0 md:left-4">
+        <Link 
+          href="/" 
+          className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-heading hover:text-action transition-all flex items-center gap-2"
+        >
+          <span className="text-sm">←</span> Back to home
+        </Link>
+      </div>
+
+      {/* HEADER SECTION - Compact Standard Design */}
+      <header className="mb-12 text-left border-b border-soft pb-6">
+        <p className="type-label text-action mb-4">
+          Archive History
+        </p>
+        <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-heading leading-tight">
+          Orders / मेरो अर्डर<span className="text-action">.</span>
         </h1>
-        <div className="flex items-center gap-3 mt-4">
-          <Leaf size={14} className="text-action opacity-60" />
-          <p className="type-label text-label">
-            Track your orders
-          </p>
-        </div>
       </header>
 
       {/* ORDERS LIST */}
@@ -105,7 +113,7 @@ export default function OrdersClient({ orders }: OrdersClientProps) {
                     >
                       <div className="flex items-center gap-6">
                         {/* ITEM IMAGE */}
-                        <div className="w-16 h-20 bg-white rounded-2xl overflow-hidden border border-soft flex-shrink-0 relative">
+                        <div className="w-16 h-20 bg-app rounded-2xl overflow-hidden border border-soft flex-shrink-0 relative">
                           {item.image ? (
                             <Image
                               src={urlFor(item.image).width(200).url()}

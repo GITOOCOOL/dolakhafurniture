@@ -10,17 +10,25 @@ export const metadata: Metadata = {
 export default function OurStory() {
   return (
     /* Changed to your Boho Cream background and Espresso text */
-    <div className="bg-app min-h-screen pt-32 pb-20 font-sans text-heading">
+    <div className="bg-app min-h-screen pt-40 pb-20 font-sans text-heading relative">
       <div className="container mx-auto px-6">
-        {/* HEADER SECTION - Softer, more poetic "Journal" style */}
-        <header className="mb-24 text-center max-w-4xl mx-auto">
-          <p className="type-label text-action mb-6">
+        {/* TOP LEFT: Back to home */}
+        <div className="absolute top-16 left-6">
+          <Link 
+            href="/" 
+            className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-heading hover:text-action transition-all flex items-center gap-2"
+          >
+            <span className="text-sm">←</span> Back to home
+          </Link>
+        </div>
+        {/* HEADER SECTION - Compact Standard Design */}
+        <header className="mb-12 text-left max-w-6xl border-b border-soft pb-6">
+          <p className="type-label text-action mb-4">
             Our Heritage & Vision
           </p>
-          <h1 className="type-hero font-medium text-heading leading-tight mb-12">
-            The Story of Dolakha<span className="text-action">.</span>
+          <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-heading leading-tight">
+            Our Story / हाम्रो कथा<span className="text-action">.</span>
           </h1>
-          <div className="h-[1px] w-24 bg-action mx-auto opacity-50"></div>
         </header>
 
         {/* MAIN NARRATIVE GRID - More organic spacing and imagery */}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { client } from "@/lib/sanity";
 import { categoriesQuery } from "@/lib/queries";
 
@@ -18,6 +19,7 @@ export default function CategoryNav({
   isMobile?: boolean;
   onItemClick?: () => void;
 }) {
+  const pathname = usePathname();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -40,10 +42,9 @@ export default function CategoryNav({
   }, []);
 
   const baseLinks = [
-    { name: 'Shop All', href: '/shop' },
+    { name: 'Shop. / पसल', href: '/shop' },
     { name: 'New Arrivals', href: '/new-arrivals' },
     { name: 'Campaigns', href: '/campaigns' },
-    { name: 'Price List', href: '/price-list' },
   ];
 
   const categoryLinks = categories.map((cat) => ({
@@ -74,47 +75,60 @@ export default function CategoryNav({
     );
   }
 
+  const checkActive = (href: string) => {
+    if (href === '/' && pathname === '/') return true;
+    if (href !== '/' && pathname.startsWith(href)) return true;
+    return false;
+  };
+
   if (isMobile) {
     return (
       <nav className="flex flex-col items-start justify-start flex-grow gap-8 overflow-y-auto no-scrollbar pb-20 w-full h-full pt-2">
-        {allLinks.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            onClick={onItemClick}
-            className="text-2xl md:text-3xl font-serif italic tracking-tight text-heading hover:text-action flex-shrink-0 flex items-center gap-3"
-          >
-            {link.name}
-            {link.href === '/stories' && (
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-              </span>
-            )}
-          </Link>
-        ))}
+        {allLinks.map((link) => {
+          const isActive = checkActive(link.href);
+          return (
+            <Link
+              key={link.name}
+              href={link.href}
+              onClick={onItemClick}
+              className={`relative group text-2xl md:text-3xl font-serif italic tracking-tight text-heading hover:text-action flex-shrink-0 flex items-center gap-3 py-2 ${isActive ? 'text-action' : ''}`}
+            >
+              {link.name}
+              {link.href === '/stories' && (
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+              )}
+              <span className={`absolute bottom-0 left-0 h-[2px] bg-action transition-all duration-300 rounded-full ${isActive ? 'w-full opacity-100' : 'w-0 opacity-60 group-hover:w-full'}`}></span>
+            </Link>
+          );
+        })}
       </nav>
     );
   }
 
   return (
     <nav className="flex items-center justify-center gap-6 lg:gap-10 text-[13px] font-medium font-serif italic tracking-wide w-full overflow-x-auto no-scrollbar py-1">
-      {allLinks.map((link) => (
-        <Link
-          key={link.name}
-          href={link.href}
-          className="text-heading whitespace-nowrap hover:text-action transition-colors relative group py-1 flex items-center gap-2"
-        >
-          {link.name}
-          {link.href === '/stories' && (
-            <span className="flex h-1.5 w-1.5 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
-            </span>
-          )}
-          <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-action transition-all duration-300 group-hover:w-full rounded-full"></span>
-        </Link>
-      ))}
+      {allLinks.map((link) => {
+        const isActive = checkActive(link.href);
+        return (
+          <Link
+            key={link.name}
+            href={link.href}
+            className={`text-heading whitespace-nowrap hover:text-action transition-colors relative group py-1 flex items-center gap-2 ${isActive ? 'text-action' : ''}`}
+          >
+            {link.name}
+            {link.href === '/stories' && (
+              <span className="flex h-1.5 w-1.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+              </span>
+            )}
+            <span className={`absolute bottom-[-4px] left-0 h-[2px] bg-action transition-all duration-300 rounded-full ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }

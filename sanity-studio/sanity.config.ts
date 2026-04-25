@@ -1,5 +1,6 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
+import { structure } from './deskStructure'
 import { visionTool } from '@sanity/vision'
 import { webhooksTrigger } from 'sanity-plugin-webhooks-trigger'
 import { schemaTypes } from './schemaTypes'
@@ -16,7 +17,14 @@ export default defineConfig({
   projectId: 'b6iov2to',
   dataset: 'production',
 
-  plugins: [structureTool(), visionTool(), webhooksTrigger(), table()],
+  plugins: [
+    structureTool({
+      structure
+    }), 
+    visionTool(), 
+    webhooksTrigger(), 
+    table()
+  ],
 
   schema: {
     types: schemaTypes,
@@ -24,6 +32,13 @@ export default defineConfig({
 
   document: {
     actions: (prev, context) => {
+      const singletonTypes = new Set(['checkoutSettings'])
+      
+      // If it's a singleton, only allow Publish and discard changes
+      if (singletonTypes.has(context.schemaType)) {
+        return prev.filter(({ action }) => action === 'publish' || action === 'discardChanges' || action === 'restore')
+      }
+
       return prev
     }
   }

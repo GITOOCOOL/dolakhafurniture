@@ -4,8 +4,8 @@ import { useCart } from "@/store/useCart";
 import { useState, useEffect } from "react";
 import { urlFor, client } from "@/lib/sanity";
 import { processOrder } from "@/app/actions/checkout";
-import { validateVoucher } from "@/app/actions/vouchers";
-import { paymentAccountsQuery, activeCampaignsQuery } from "@/lib/queries";
+import { validateVoucher, checkVoucherUsage } from "@/app/actions/vouchers";
+import { paymentAccountsQuery, activeCampaignsQuery, checkoutSettingsQuery } from "@/lib/queries";
 import InquiryModal from "@/components/InquiryModal";
 import Modal from "@/components/ui/Modal";
 import {
@@ -42,6 +42,7 @@ import Input from "@/components/ui/Input";
 import { trackEvent } from "@/components/MetaPixel";
 import Link from "next/link";
 import { useUIStore } from "@/store/useUIStore";
+import ExpressCheckout from "@/components/ExpressCheckout";
 
 import { welcomeVoucherQuery } from "@/lib/queries";
 import { Voucher } from "@/types";
@@ -71,10 +72,14 @@ export default function CheckoutDrawer({
   const [showInquiryModal, setShowInquiryModal] = useState(false);
   const { lockScroll, unlockScroll } = useUIStore();
   const [welcomeVoucher, setWelcomeVoucher] = useState<Voucher | null>(null);
-  const [hasUsedWelcome, setHasUsedWelcome] = useState(false);
+  const [isWelcomeExhausted, setIsWelcomeExhausted] = useState(false);
   const [hasPromptedVoucherReminder, setHasPromptedVoucherReminder] =
     useState(false);
   const [showVoucherReminder, setShowVoucherReminder] = useState(false);
+  const [checkoutMethod, setCheckoutMethod] = useState<"standard" | "express">(
+    "standard",
+  );
+  const [isAutoApplying, setIsAutoApplying] = useState(false);
 
   // Handle centralized scroll lock
   useEffect(() => {
@@ -144,6 +149,60 @@ export default function CheckoutDrawer({
   const total = subtotal + shipping;
   const finalTotal = Math.max(0, total - discount);
 
+  // AUTO-APPLY VOUCHER LOGIC (Express Mode)
+  useEffect(() => {
+    if (
+      isOpen &&
+      items.length > 0 &&
+      checkoutMethod === "express" &&
+      campaigns.length > 0 &&
+      !isAutoApplying &&
+      !isInitialLoading &&
+      appliedVouchers.length === 0
+    ) {
+      const applyAllPossible = async () => {
+        setIsAutoApplying(true);
+        let totalDiscount = 0;
+        const newApplied: any[] = [];
+
+        // Collect all available vouchers from active campaigns
+        const allCandidateVouchers = campaigns.flatMap((c) => c.vouchers || []);
+
+        for (const v of allCandidateVouchers) {
+          // SKIP Welcome Vouchers if the user has already used one
+          if (v.isWelcomeVoucher && isWelcomeExhausted) {
+            continue;
+          }
+
+          try {
+            const result = await validateVoucher(v.code);
+            if (result.success) {
+              let discountVal = 0;
+              if (result.discountType === "percentage") {
+                discountVal = Math.floor(
+                  (subtotal * result.discountValue!) / 100,
+                );
+              } else {
+                discountVal = result.discountValue!;
+              }
+              totalDiscount += discountVal;
+              newApplied.push({ ...v, amount: discountVal });
+            }
+          } catch (err) {
+            console.error("Auto-apply error:", err);
+          }
+        }
+
+        if (newApplied.length > 0) {
+          setDiscount(totalDiscount);
+          setAppliedVouchers(newApplied);
+        }
+        setIsAutoApplying(false);
+      };
+      applyAllPossible();
+    }
+  }, [isOpen, checkoutMethod, campaigns, items.length, isWelcomeExhausted, isInitialLoading]);
+
   useEffect(() => {
     if (isOpen && items.length > 0) {
       const contentIds = items.map((item) => item._id.replace("drafts.", ""));
@@ -163,15 +222,27 @@ export default function CheckoutDrawer({
     const fetchData = async () => {
       try {
         setIsInitialLoading(true);
-        const [campaignsData, accounts, welcome] = await Promise.all([
+        const [campaignsData, accounts, welcome, settings] = await Promise.all([
           client.fetch(activeCampaignsQuery),
           client.fetch(paymentAccountsQuery),
           client.fetch(welcomeVoucherQuery),
+          client.fetch(checkoutSettingsQuery),
         ]);
 
         setCampaigns(campaignsData);
         setPaymentAccounts(accounts);
         setWelcomeVoucher(welcome);
+        if (settings?.method) setCheckoutMethod(settings.method);
+
+        // Check welcome voucher usage if logged in
+        if (propsUser && welcome) {
+          const exhausted = await checkVoucherUsage(
+            welcome.code,
+            propsUser.id,
+            propsUser.email,
+          );
+          setIsWelcomeExhausted(exhausted);
+        }
 
         // Sync with prop user
         setUser(propsUser);
@@ -189,43 +260,11 @@ export default function CheckoutDrawer({
                 .join(" ") || "",
           }));
 
-          // Verify welcome voucher eligibility
-          if (welcome) {
-            const usedVoucher = await client.fetch(
-              `*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email) && count(voucherCodes[lower(@) == lower($code)]) > 0][0]`,
-              {
-                userId: propsUser.id,
-                email: propsUser.email,
-                code: welcome.code.toLowerCase(),
-              },
-            );
-            if (usedVoucher) {
-              setHasUsedWelcome(true);
-            }
-          }
           setInquiryData((prev) => ({
             ...prev,
             name: propsUser.user_metadata.full_name || "",
             email: propsUser.email || "",
           }));
-
-          // Apply dynamic welcome voucher if it exists, hasn't been used, and hasn't been applied yet
-          if (
-            welcome &&
-            !hasUsedWelcome &&
-            !appliedVouchers.some((v) => v.code === welcome.code)
-          ) {
-            const discountVal =
-              welcome.discountType === "percentage"
-                ? Math.floor((subtotal * welcome.discountValue) / 100)
-                : welcome.discountValue;
-
-            setDiscount((prev) => prev + discountVal);
-            setAppliedVouchers((prev) => [
-              ...prev,
-              { ...welcome, amount: discountVal },
-            ]);
-          }
         }
       } catch (error) {
         console.error("Error loading checkout data:", error);
@@ -234,7 +273,7 @@ export default function CheckoutDrawer({
       }
     };
     if (isOpen) fetchData();
-  }, [supabase, isOpen, items.length]);
+  }, [supabase, isOpen, items.length, propsUser]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -290,6 +329,62 @@ export default function CheckoutDrawer({
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // EXPRESS CHECKOUT FAST-PATH
+    if (checkoutMethod === "express") {
+      if (
+        !formData.firstName ||
+        !formData.lastName ||
+        !formData.phone ||
+        !formData.city ||
+        !formData.apartment
+      ) {
+        alert("Please fill in all details (Name, Phone, City, Tole/Area).");
+        return;
+      }
+      const phoneRegex = /^9\d{9}$/;
+      if (!phoneRegex.test(formData.phone)) {
+        alert(
+          "Please enter a valid 10-digit Nepal phone number starting with 9.",
+        );
+        return;
+      }
+
+      setIsProcessing(true);
+      try {
+        const voucherCodes = appliedVouchers.map((v) => v.code);
+        // Force COD for express
+        const result = await processOrder(
+          items,
+          finalTotal,
+          { ...formData, paymentMethod: "cod" },
+          voucherCodes,
+        );
+        if (result.success) {
+          setOrderNumber(result.orderNumber || null);
+          setIsSuccess(true);
+          trackEvent("Purchase", {
+            content_ids: items.map((item) => item._id.replace("drafts.", "")),
+            content_type: "product",
+            currency: "NPR",
+            value: Number(finalTotal) || 0,
+            brand: "Dolakha Furniture",
+            num_items: totalPieces,
+          });
+          clearCart();
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (error: any) {
+        alert(
+          error.message ||
+            "An error occurred during checkout. Please try again.",
+        );
+      } finally {
+        setIsProcessing(false);
+      }
+      return;
+    }
 
     // Step 1 -> 2: Review (Soft Gate for Vouchers - Skip if they already typed something)
     if (activeStep === 1) {
@@ -400,15 +495,21 @@ export default function CheckoutDrawer({
             <span className="text-sm font-serif italic text-heading leading-tight">
               Checkout
             </span>
-            <span className="type-label text-description/60 text-[9px] translate-y-[1px] font-bold uppercase tracking-widest whitespace-nowrap">
-              Step {activeStep} of 4:{" "}
-              {activeStep === 1
-                ? "Review / Vouchers"
-                : activeStep === 2
-                  ? "Customer Details"
-                  : activeStep === 3
-                    ? "Delivery Info"
-                    : "Finalize Payment"}
+            <span className="type-label text-description/60 text-[9px] translate-y-[1px] font-bold uppercase tracking-widest leading-relaxed">
+              {checkoutMethod === "express" ? (
+                "Cash on Delivery Order ( You pay after the item is delivered )"
+              ) : (
+                <>
+                  Step {activeStep} of 4:{" "}
+                  {activeStep === 1
+                    ? "Review / Vouchers"
+                    : activeStep === 2
+                      ? "Customer Details"
+                      : activeStep === 3
+                        ? "Delivery Info"
+                        : "Finalize Payment"}
+                </>
+              )}
             </span>
           </div>
         )
@@ -675,7 +776,28 @@ export default function CheckoutDrawer({
               onSubmit={handleCheckout}
               className="space-y-6 pb-6"
             >
-              {activeStep === 1 && (
+              {checkoutMethod === "express" ? (
+                <ExpressCheckout
+                  items={items}
+                  totalPieces={totalPieces}
+                  subtotal={subtotal}
+                  discount={discount}
+                  total={finalTotal}
+                  formData={formData}
+                  onInputChange={handleInputChange}
+                  isProcessing={isProcessing}
+                  appliedVouchers={appliedVouchers}
+                  addItem={addItem}
+                  removeSingleItem={removeSingleItem}
+                  removeItem={removeItem}
+                  user={user}
+                  welcomeVoucher={welcomeVoucher}
+                  isWelcomeExhausted={isWelcomeExhausted}
+                  onSignUp={onSignUp}
+                />
+              ) : (
+                <>
+                  {activeStep === 1 && (
                 <motion.section
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -860,7 +982,7 @@ export default function CheckoutDrawer({
                         </p>
 
                         {/* DYNAMIC VOUCHER RIBBON */}
-                        {((welcomeVoucher && !hasUsedWelcome && user?.id) ||
+                        {((welcomeVoucher && !isWelcomeExhausted && user?.id) ||
                           campaigns.some((c) => c.vouchers?.length)) && (
                           <div className="space-y-3 pt-2">
                             <div className="flex items-center gap-2">
@@ -873,7 +995,7 @@ export default function CheckoutDrawer({
                               {/* Welcome Voucher - ONLY for logged in users */}
                               {welcomeVoucher &&
                                 user?.id &&
-                                !hasUsedWelcome &&
+                                !isWelcomeExhausted &&
                                 !appliedVouchers.some(
                                   (v) => v.code === welcomeVoucher.code,
                                 ) && (
@@ -919,7 +1041,7 @@ export default function CheckoutDrawer({
 
                                     // UNIVERSAL BLOCK: Hide 'WELCOME' vouchers for guests OR those who have already used them
                                     if (
-                                      (!user?.id || hasUsedWelcome) &&
+                                      (!user?.id || isWelcomeExhausted) &&
                                       codeUpper.includes("WELCOME")
                                     )
                                       return false;
@@ -1079,7 +1201,7 @@ export default function CheckoutDrawer({
                           {items.slice(0, 3).map((item) => (
                             <div
                               key={item._id}
-                              className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-white flex-shrink-0"
+                              className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-app flex-shrink-0"
                             >
                               <img
                                 src={urlFor(item.mainImage).width(80).url()}
@@ -1218,7 +1340,7 @@ export default function CheckoutDrawer({
                         {items.slice(0, 3).map((item) => (
                           <div
                             key={item._id}
-                            className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-white flex-shrink-0"
+                            className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-app flex-shrink-0"
                           >
                             <img
                               src={urlFor(item.mainImage).width(80).url()}
@@ -1353,6 +1475,9 @@ export default function CheckoutDrawer({
                   </div>
                 </motion.section>
               )}
+                </>
+              )}
+
             </form>
           )}
         </div>
@@ -1378,33 +1503,50 @@ export default function CheckoutDrawer({
               )}
             </div>
 
-            <Button
-              form="checkout-form"
-              type="submit"
-              isLoading={
-                isProcessing ||
-                (activeStep === 1 && items.length > 0 && isInitialLoading)
-              }
-              disabled={
-                activeStep === 1 && items.length > 0 && isInitialLoading
-              }
-              className="flex-1 max-w-[280px] !py-3.5 shadow-2xl shadow-action/10"
-              rightIcon={
-                activeStep < 4 ? (
-                  <ChevronRight size={18} />
-                ) : (
-                  <ShieldCheck size={18} />
-                )
-              }
-            >
-              {activeStep === 1
-                ? "Next: Contact Info"
-                : activeStep === 2
-                  ? "Next: Delivery"
-                  : activeStep === 3
-                    ? "Next: Payment"
-                    : "Secure Order"}
-            </Button>
+            <div className="flex-1 flex flex-col items-center">
+              {checkoutMethod === "express" && (
+                <span className="text-[10px] font-bold text-action mb-1.5 animate-pulse">
+                  अहिले पैसा तिर्नु पर्दैन, डेलिभरी पछि मात्र
+                </span>
+              )}
+              <Button
+                form="checkout-form"
+                type="submit"
+                isLoading={
+                  isProcessing ||
+                  (checkoutMethod === "standard" &&
+                    activeStep === 1 &&
+                    items.length > 0 &&
+                    isInitialLoading)
+                }
+                disabled={
+                  checkoutMethod === "standard" &&
+                  activeStep === 1 &&
+                  items.length > 0 &&
+                  isInitialLoading
+                }
+                className="w-full max-w-[280px] !py-3.5 shadow-2xl shadow-action/10"
+                rightIcon={
+                  checkoutMethod === "express" ? (
+                    <ShieldCheck size={18} />
+                  ) : activeStep < 4 ? (
+                    <ChevronRight size={18} />
+                  ) : (
+                    <ShieldCheck size={18} />
+                  )
+                }
+              >
+                {checkoutMethod === "express"
+                  ? "Confirm Cash on Delivery Order"
+                  : activeStep === 1
+                    ? "Next: Contact Info"
+                    : activeStep === 2
+                      ? "Next: Delivery"
+                      : activeStep === 3
+                        ? "Next: Payment"
+                        : "Secure Order"}
+              </Button>
+            </div>
 
             <div className="w-[100px] flex-shrink-0" />
           </div>

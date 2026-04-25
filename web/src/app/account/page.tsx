@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import AccountClient from "../../components/AccountClient";
 import { getUserRole } from "@/lib/auth";
+import Link from "next/link";
 
 // 1. SEO METADATA - Updated with "home" and "" terminology
 export const metadata: Metadata = {
@@ -42,7 +43,16 @@ export default async function AccountPage({
 
   return (
     <div className="bg-app min-h-screen pt-32 pb-20 font-sans text-heading">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 relative">
+        {/* TOP LEFT: Back to home */}
+        <div className="absolute top-12 left-6">
+          <Link 
+            href="/" 
+            className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-heading hover:text-action transition-all flex items-center gap-2"
+          >
+            <span className="text-sm">←</span> Back to home
+          </Link>
+        </div>
         <AccountClient
           user={user}
           role={role || "user"}

@@ -3,6 +3,7 @@ import { activeCampaignsQuery } from "@/lib/queries";
 import { Campaign } from "@/types";
 import CampaignCard from "@/components/CampaignCard";
 import { Leaf, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -10,22 +11,25 @@ export default async function CampaignsPage() {
   const campaigns: Campaign[] = await client.fetch(activeCampaignsQuery);
 
   return (
-    <main className="min-h-screen bg-app pt-24 pb-20 px-6 md:px-12">
+    <main className="min-h-screen bg-app pt-40 pb-20 px-6 md:px-12 relative">
       <div className="container mx-auto max-w-7xl">
-        {/* HEADER: Compressed for better focus on content */}
-        <header className="mb-12 text-center space-y-4">
-          <div className="flex items-center justify-center gap-3 text-action opacity-30">
-            <Sparkles size={16} />
-            <Leaf size={20} />
-            <Sparkles size={16} />
-          </div>
-          <h1 className="text-4xl md:text-6xl font-serif italic text-heading leading-tight">
-            Our <span className="text-action font-light"></span> Campaigns
-          </h1>
-          <p className="text-label max-w-xl mx-auto text-sm md:text-md font-light italic leading-relaxed pt-2">
-            Explore our collections, limited-time offers, and special projects
-            handcrafted for the soulful home.
+        {/* TOP LEFT: Back to home */}
+        <div className="absolute top-16 left-6 md:left-12">
+          <Link 
+            href="/" 
+            className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-heading hover:text-action transition-all flex items-center gap-2"
+          >
+            <span className="text-sm">←</span> Back to home
+          </Link>
+        </div>
+        {/* HEADER SECTION - Compact Standard Design */}
+        <header className="mb-12 text-left max-w-6xl border-b border-soft pb-6">
+          <p className="type-label text-action mb-4">
+             Brand Library & Editiorials
           </p>
+          <h1 className="text-5xl md:text-7xl font-serif italic font-medium text-heading leading-tight">
+            Campaigns / अभियान<span className="text-action">.</span>
+          </h1>
         </header>
 
         {/* CAMPAIGN LIST */}

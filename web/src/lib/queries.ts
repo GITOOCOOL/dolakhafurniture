@@ -59,7 +59,7 @@ export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"
     buttonLink,
     startDate,
     endDate,
-    "vouchers": vouchers[]->{code, details, discountValue, discountType}
+    "vouchers": vouchers[]->{code, details, discountValue, discountType, isWelcomeVoucher, isOneTimePerCustomer, startsImmediately, neverExpires}
 }`
 
 export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $slug][0] {
@@ -74,7 +74,7 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     banner,
     startDate,
     endDate,
-    "vouchers": vouchers[]->{code, details, discountValue, discountType},
+    "vouchers": vouchers[]->{code, details, discountValue, discountType, isWelcomeVoucher, isOneTimePerCustomer, startsImmediately, neverExpires},
     "products": promotedProducts[@->isActive == true]-> {
         _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
     }
@@ -114,7 +114,10 @@ export const welcomeVoucherQuery = `*[_type == "discountVoucher" && isWelcomeVou
     code,
     discountValue,
     discountType,
-    details
+    details,
+    isOneTimePerCustomer,
+    startsImmediately,
+    neverExpires
 }`
 
 export const activeVouchersQuery = `*[_type == "discountVoucher" && isActive == true] | order(code asc) {
@@ -228,3 +231,8 @@ export const adminLogsQuery = `*[_type == "adminLog"] | order(timestamp desc) {
   content,
   metadata
 }`
+export const checkoutSettingsQuery = `*[_type == "checkoutSettings" && _id == "checkoutSettings"][0] {
+  method,
+  autoApplyVouchers
+}`
+

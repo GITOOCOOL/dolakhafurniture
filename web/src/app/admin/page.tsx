@@ -10,6 +10,8 @@ import {
 import Link from "next/link";
 import { client } from "@/lib/sanity";
 import { createClient } from "@/utils/supabase/server";
+import Input from "@/components/ui/Input";
+import DownloadButton from "@/components/DownloadButton";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +53,20 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+
+      {/* QUICK ACTIONS & ASSETS */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 bg-app p-8 rounded-[3rem] border border-soft border-dotted">
+        <div>
+           <h2 className="type-label text-label mb-2">Administrative Center</h2>
+           <h3 className="text-3xl font-serif italic text-heading">Control Dashboard & Assets</h3>
+        </div>
+        <div className="flex flex-wrap gap-4">
+           <Link href="/shop" target="_blank" className="px-6 py-3 bg-surface border border-soft rounded-full type-action hover:bg-app text-heading">
+             View Live Shop
+           </Link>
+           <DownloadButton label="Generate Public Price List" variant="outline" className="!bg-heading !text-white !border-heading hover:!bg-action transition-all" />
+        </div>
+      </div>
 
       {/* STATS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
