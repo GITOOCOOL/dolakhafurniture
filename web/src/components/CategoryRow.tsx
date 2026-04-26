@@ -26,7 +26,7 @@ const CategoryRow = ({
 
   if (!validProducts.length) return null;
   return (
-    <section className="flex flex-col gap-4 w-full overflow-visible border-l-2 border-divider ml-1 lg:ml-0">
+    <section className="flex flex-col gap-4 w-full overflow-visible">
       {/* Ribbon: Spans full width as a banner header */}
       <div className="flex-shrink-0 w-full px-1">
         <CategoryRibbon

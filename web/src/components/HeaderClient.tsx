@@ -40,7 +40,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
   // Scroll listener for search bar visibility
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 200) setIsScrolled(true);
+      if (window.scrollY > 10) setIsScrolled(true);
       else setIsScrolled(false);
     };
     window.addEventListener("scroll", handleScroll);
@@ -93,15 +93,15 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
       <header className="sticky top-0 z-[100] w-full pointer-events-none transition-all duration-300">
         {/* Main Header Surface */}
         <div className="bg-app border-b border-soft shadow-[0_2px_10px_rgba(0,0,0,0.02)] pointer-events-auto">
-          <div className="container mx-auto px-2 md:px-6 w-full flex items-center justify-between py-3 md:py-4">
+          <div className="w-full flex items-center justify-between py-3 md:py-4 px-0">
             {/* Left: Utility (Menu + Offers) - Balanced as flex-1 */}
-            <div className="flex-1 basis-0 flex items-center gap-2 md:gap-4">
+            <div className="flex-1 basis-0 flex items-center gap-1 md:gap-2">
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="w-10 h-10 flex items-center justify-center text-heading hover:text-action transition-all -ml-1 md:-ml-2 flex-shrink-0"
+                className="w-12 h-12 flex items-center justify-center text-heading hover:text-action transition-all flex-shrink-0"
                 aria-label="Menu"
               >
-                <Menu size={26} className="md:w-7 md:h-7" strokeWidth={1.5} />
+                <Menu size={28} className="md:w-8 md:h-8" strokeWidth={1.5} />
               </button>
 
               {/* Promo Trigger */}
@@ -160,47 +160,11 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
             </div>
           </div>
 
-          <div className="hidden md:flex container mx-auto px-6 pb-3 justify-center w-full">
+          <div className="hidden md:flex w-full pb-3 justify-center">
             <CategoryNav />
           </div>
         </div>
 
-        {/* --- FULL-WIDTH SEARCH TRIGGER --- */}
-        {/* Layout-stable wrapper to prevent "bouncing" page jumps */}
-        <div className="h-[82px] md:h-[86px]">
-          <AnimatePresence>
-            {!isScrolled && (
-              <motion.div
-                initial={{ opacity: 1, y: 0 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="container mx-auto px-6 pt-4 pointer-events-none"
-              >
-                <button
-                  onClick={() => setIsSearchOpen(true)}
-                  className="pointer-events-auto w-full bg-app/50 backdrop-blur-md border border-soft/50 shadow-sm px-6 py-4 rounded-2xl text-label hover:border-action transition-all duration-500 group flex items-center justify-between"
-                  aria-label="Search Collection"
-                >
-                  <div className="flex items-center gap-4">
-                    <Search
-                      size={18}
-                      className="text-action opacity-50 group-hover:opacity-100 transition-opacity"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-[11px] font-sans font-medium lowercase tracking-wide text-description group-hover:text-heading transition-colors">
-                      खोज्नुहोस् / Search by name, material, or style...
-                    </span>
-                  </div>
-                  <div className="hidden md:flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.2em] text-label opacity-40 group-hover:opacity-100">
-                    <span>Quick Search</span>
-                    <span className="text-action">→</span>
-                  </div>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
 
         <CampaignModal campaign={latestCampaign || null} />
       </header>
@@ -226,7 +190,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                 <input
                   autoFocus
                   type="text"
-                  placeholder="खोज्नुहोस् / Search by name, material, or style..."
+                  placeholder="Search by name, material, or style..."
                   className="w-full bg-transparent border-b-2 border-soft text-heading placeholder:text-label text-2xl md:text-4xl py-6 focus:outline-none focus:border-action transition-all font-light"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -282,7 +246,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                           <Search size={32} className="text-label" />
                         </div>
                         <h3 className="text-2xl font-serif italic text-heading mb-2">
-                          No results matched your search
+                          No results matched your craft
                         </h3>
                         <p className="text-description max-w-xs">
                           Double check your spelling or try searching for

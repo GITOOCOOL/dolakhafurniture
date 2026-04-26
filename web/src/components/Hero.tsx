@@ -32,11 +32,11 @@ const Hero = ({
   return (
     <section className="relative w-full py-24 flex flex-col justify-center bg-app overflow-hidden">
       <div className="absolute inset-0 bg-app transition-colors duration-1000" />
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+      <div className="w-full px-0 relative z-10">
+        <div className="w-full px-0 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           {/* Mission Statement & Actions */}
           <div className="space-y-12">
-            <div className="space-y-6 border-l-2 border-action pl-10">
+            <div className="space-y-6">
               <p className="type-label text-action mb-2">Our Mission</p>
               <h2 className="type-section text-heading pr-4">
                 "Redefining Nepali spaces with our signature iron-wood fusion."

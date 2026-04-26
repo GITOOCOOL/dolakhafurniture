@@ -34,11 +34,11 @@ const sans = Montserrat({
 
 export const metadata: Metadata = {
   title: {
-    default: "Dolakha Furniture | Quality Furniture in Kathmandu",
+    default: "Dolakha Furniture | Quality Handcrafted Furniture in Kathmandu",
     template: "%s | Dolakha Furniture"
   },
-  description: "High-quality furniture in Nepal. We offer a wide range of sofas, beds, tables, and home decor made with durable materials and professional production.",
-  keywords: ["furniture", "Nepal furniture", "Kathmandu furniture store", "quality sofas Nepal", "beds Kathmandu", "Dolakha Furniture"],
+  description: "High-quality handcrafted furniture in Nepal. We offer a wide range of sofas, beds, tables, and home decor made with durable materials and professional craftsmanship.",
+  keywords: ["handcrafted furniture", "Nepal furniture", "Kathmandu furniture store", "quality sofas Nepal", "beds Kathmandu", "Dolakha Furniture"],
   authors: [{ name: "Dolakha Furniture" }],
   creator: "Dolakha Furniture",
   publisher: "Dolakha Furniture",
@@ -169,7 +169,7 @@ export default async function RootLayout({
             </Suspense>
 
             <BrowserBanner />
-            <AnnouncementBar bulletins={combinedBulletins as any} />
+            {/* <AnnouncementBar bulletins={combinedBulletins as any} /> */}
             <HeaderClient latestCampaign={latestCampaign} />
             <main className="w-full relative flex-1">{children}</main>
           </ToastProvider>

@@ -19,7 +19,7 @@ export default function ReelsSection({ reels }: ReelsSectionProps) {
 
   return (
     <section className="w-full py-16 bg-app border-t border-soft">
-      <div className="container mx-auto px-6">
+      <div className="w-full px-0">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
             <p className="type-label text-label mb-2">Dolakha Studio</p>

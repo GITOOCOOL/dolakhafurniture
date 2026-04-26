@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/store/useCart";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { urlFor, client } from "@/lib/sanity";
 import { processOrder } from "@/app/actions/checkout";
 import { validateVoucher, checkVoucherUsage } from "@/app/actions/vouchers";
@@ -74,6 +74,8 @@ export default function CheckoutDrawer({
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [expressStep, setExpressStep] = useState(1);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { lockScroll, unlockScroll } = useUIStore();
   const [firstOrderVoucher, setFirstOrderVoucher] = useState<Voucher | null>(
     null,
@@ -557,39 +559,22 @@ export default function CheckoutDrawer({
       onClose={onClose}
       position="right"
       noPadding
-      title={
-        isSuccess ? (
-          "Success"
-        ) : items.length === 0 ? (
-          "Empty Cart"
-        ) : (
-          <div className="flex flex-col">
-            <span className="text-sm font-serif italic text-heading leading-tight">
-              Checkout
-            </span>
-            <span className="type-label text-description/60 text-[9px] translate-y-[1px] font-bold uppercase tracking-widest leading-relaxed">
-              {checkoutMethod === "express" ? (
-                "Cash on Delivery Order ( You pay after the item is delivered )"
-              ) : (
-                <>
-                  Step {activeStep} of 4:{" "}
-                  {activeStep === 1
-                    ? "Review / Vouchers"
-                    : activeStep === 2
-                      ? "Customer Details"
-                      : activeStep === 3
-                        ? "Delivery Info"
-                        : "Finalize Payment"}
-                </>
-              )}
-            </span>
-          </div>
-        )
-      }
+      hideHeader
     >
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full h-full flex flex-col relative">
+        {/* Mobile Close Button (Since header is hidden) */}
+        {!isSuccess && (
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 z-[100] w-10 h-10 bg-heading text-app rounded-full shadow-2xl flex items-center justify-center transition-all hover:bg-action active:scale-90"
+            aria-label="Close Checkout"
+          >
+            <X size={18} strokeWidth={3} />
+          </button>
+        )}
+
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 no-scrollbar">
+        <div ref={contentRef} className="flex-1 overflow-y-auto p-6 sm:p-8 no-scrollbar">
           {items.length === 0 && !isSuccess && (
             <p className="text-[9px] uppercase font-bold tracking-[0.2em] text-description/30 pb-4">
               Check our active campaigns
@@ -868,6 +853,11 @@ export default function CheckoutDrawer({
                   isInitialLoading={isInitialLoading}
                   isAutoApplying={isAutoApplying}
                   onSignUp={onSignUp}
+                  step={expressStep}
+                  onBack={() => {
+                    setExpressStep(1);
+                    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                 />
               ) : (
                 <>
@@ -1619,7 +1609,7 @@ export default function CheckoutDrawer({
 
                 <div className="px-0 py-2 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 pl-4">
                       <div className="flex flex-col">
                         <span className="text-[8px] font-bold text-description uppercase tracking-widest opacity-40 leading-none mb-1">
                           Subtotal
@@ -1650,28 +1640,46 @@ export default function CheckoutDrawer({
 
 
                   <div className="flex-1 max-w-[280px]">
-                    <Button
-                      form="checkout-form"
-                      type="submit"
-                      isLoading={isProcessing || isInitialLoading}
-                      disabled={
-                        isProcessing || isInitialLoading || !isFormValid
-                      }
-                      fullWidth
-                      className="!py-3 bg-success hover:bg-success/90 text-espresso shadow-xl shadow-success/20 border-none group/confirm"
-                      rightIcon={
-                        <ShieldCheck size={18} className="text-espresso" />
-                      }
-                    >
-                      <div className="flex flex-col items-center leading-tight">
-                        <span className="text-sm font-bold uppercase tracking-widest text-espresso">
-                          Confirm
-                        </span>
-                        <span className="text-[8px] font-bold text-espresso/60 normal-case tracking-tight">
-                          (Cash on Delivery)
-                        </span>
-                      </div>
-                    </Button>
+                    {expressStep === 1 ? (
+                      <Button
+                        key="btn-next"
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setExpressStep(2);
+                          setTimeout(() => {
+                            contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                          }, 50);
+                        }}
+                        isLoading={isProcessing || isInitialLoading}
+                        disabled={isProcessing || isInitialLoading}
+                        fullWidth
+                        className="!py-3 bg-success hover:bg-success/90 text-espresso shadow-xl shadow-success/20 border-none group/confirm"
+                        rightIcon={<ChevronRight size={18} className="text-espresso" />}
+                      >
+                        <div className="flex flex-col items-center leading-tight">
+                          <span className="text-xs font-bold uppercase tracking-widest text-espresso">Next</span>
+                          <span className="text-[7px] font-bold text-espresso/60 normal-case tracking-tight">to Delivery Details</span>
+                        </div>
+                      </Button>
+                    ) : (
+                      <Button
+                        key="btn-confirm"
+                        form="checkout-form"
+                        type="submit"
+                        isLoading={isProcessing || isInitialLoading}
+                        disabled={isProcessing || isInitialLoading || !isFormValid}
+                        fullWidth
+                        className="!py-3 bg-success hover:bg-success/90 text-espresso shadow-xl shadow-success/20 border-none group/confirm"
+                        rightIcon={<ShieldCheck size={18} className="text-espresso" />}
+                      >
+                        <div className="flex flex-col items-center leading-tight">
+                          <span className="text-xs font-bold uppercase tracking-widest text-espresso">Confirm</span>
+                          <span className="text-[7px] font-bold text-espresso/60 normal-case tracking-tight">Method: Cash on Delivery</span>
+                        </div>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -36,9 +36,9 @@ html {
   --accent-success: #22c55e;
   --app-invert: #4a3526;
 
-  /* Functional Overrides */
   --background: var(--bg-app);
   --foreground: var(--text-body);
+  color-scheme: light;
 }
 
 /** @theme inline */

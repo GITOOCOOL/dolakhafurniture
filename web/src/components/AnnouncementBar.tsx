@@ -37,7 +37,7 @@ export default function AnnouncementBar({ bulletins }: AnnouncementBarProps) {
       transition={{ duration: 0.8 }}
       className="h-12 md:h-14 flex items-center justify-center overflow-hidden relative z-[60]"
     >
-      <div className="container mx-auto px-4 text-center">
+      <div className="w-full text-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}

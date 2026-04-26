@@ -44,7 +44,7 @@ export default async function Home() {
       {/* 0. TOPMOST: ACTIVE CAMPAIGN (High visibility) */}
       {activeCampaign?.products?.length > 0 && (
         <section className="w-full py-6 md:py-10 border-b-2 border-action/20 bg-app">
-          <div className="container mx-auto px-6">
+          <div className="w-full px-0">
             <CategoryRow 
               title={`Campaign: ${activeCampaign.title}`}
               slug={`campaign/${activeCampaign.slug}`}
@@ -61,7 +61,7 @@ export default async function Home() {
       {/* 1. TOP: FEATURED PRODUCTS (Using exactly the same design as Category rows) */}
       {featuredProducts.length > 0 && (
         <section className="w-full py-4 md:py-6 border-b border-soft bg-app">
-          <div className="container mx-auto px-6">
+          <div className="w-full px-0">
             <CategoryRow 
               title="Featured"
               slug="featured"
@@ -74,7 +74,7 @@ export default async function Home() {
 
       {/* 2. TOP: CATEGORY CAROUSELS (Primary product discovery) */}
       <div id="category-rows-section" className="w-full bg-app pb-16">
-        <div className="container mx-auto px-6 border-t border-soft border-dotted pt-16 mt-8">
+        <div className="w-full px-0 border-t border-soft border-dotted pt-16 mt-8">
           <p className="type-label text-label mb-2 text-center">Full Catalogue</p>
           <h2 className="text-4xl text-center font-serif italic tracking-tight text-heading mb-16"> Explore by Category </h2>
         </div>
@@ -88,7 +88,7 @@ export default async function Home() {
               key={cat.slug}
               className="py-6 md:py-8 w-full border-t border-soft transition-all duration-500 bg-app"
             >
-              <div className="container mx-auto px-6">
+              <div className="w-full px-0">
                 <CategoryRow
                   title={cat.title}
                   slug={cat.slug}

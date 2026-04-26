@@ -233,6 +233,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
                 src={user.user_metadata.avatar_url}
                 onError={() => {
                   setAvatarError(true);
+                  console.log("Google's icon couldn't be fetched, showing the initials of the account instead.");
                 }}
                 className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider shadow-sm group-hover:border-action transition-all object-cover flex-shrink-0"
                 alt="profile"
@@ -264,6 +265,7 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
                       src={user.user_metadata.avatar_url}
                       onError={() => {
                         setAvatarError(true);
+                        console.log("Google's icon couldn't be fetched, showing the initials of the account instead.");
                       }}
                       className="w-16 h-16 rounded-full border border-soft/20 shadow-sm object-cover"
                       alt="profile"

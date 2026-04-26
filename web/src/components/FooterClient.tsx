@@ -7,9 +7,9 @@ export default function FooterClient() {
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <footer className="border-t border-soft border-dotted bg-app text-description py-24 w-full transition-colors duration-300">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 text-center md:text-left">
+    <footer className="w-full bg-app text-heading pt-20 pb-10 border-t border-soft">
+      <div className="w-full px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
           <div className="lg:col-span-2">
             <h3 className="type-section text-heading mb-8">
               "Sustainably sourced, <br /> thoughtfully produced."

@@ -10,16 +10,17 @@ import { useUIStore } from "@/store/useUIStore";
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
 
-  // Scroll listener to shrink the button
+  // Scroll listener for visibility - Syncing with header transition
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
+      // Threshold at 10px to match the header's search-bar-vanish timing
+      if (window.scrollY > 10) {
+        setIsVisible(true);
       } else {
-        setScrolled(false);
+        setIsVisible(false);
       }
     };
 
@@ -91,7 +92,7 @@ const FloatingContact = () => {
 
   return (
     <AnimatePresence>
-      {!isAnyModalOpen && (
+      {isVisible && !isAnyModalOpen && (
         <motion.div
           key="fc-trigger-container"
           initial={{ opacity: 0, y: 20, scale: 0.9 }}
@@ -99,32 +100,20 @@ const FloatingContact = () => {
           exit={{ opacity: 0, y: 20, scale: 0.9 }}
           className="fixed bottom-0 right-0 z-[9999999] flex flex-col items-end gap-4 p-6 md:p-10"
         >
-          {/* MAIN TOGGLE BUTTON - Morphs on scroll */}
+          {/* MAIN TOGGLE BUTTON - Minimalist Circular Action */}
           <motion.button
             layout
             onClick={() => setIsOpen(!isOpen)}
-            className={`h-14 flex items-center justify-center transition-all duration-500 overflow-hidden border ring-1 ${
+            className={`w-14 h-14 flex items-center justify-center transition-all duration-500 rounded-full border shadow-lg ring-1 ${
               isOpen
-                ? "bg-heading rounded-full w-14 shadow-2xl border-bone/20 ring-white/10"
-                : "bg-action hover:scale-105 active:scale-95 shadow-lg shadow-accent/20 border-bone/10 ring-white/5"
-            } ${
-              !isOpen &&
-              (scrolled
-                ? "rounded-full w-14"
-                : "rounded-full px-5 min-w-[56px]")
+                ? "bg-heading border-bone/20 ring-white/10 shadow-2xl"
+                : "bg-action border-bone/10 ring-white/5 hover:scale-105 active:scale-95 shadow-accent/20"
             }`}
           >
             {isOpen ? (
               <X size={20} strokeWidth={2.5} className="text-app" />
             ) : (
-              <div className="flex items-center gap-3">
-                {!scrolled && (
-                  <span className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em] text-white whitespace-nowrap">
-                    Chat Now
-                  </span>
-                )}
-                <MessageSquare size={20} strokeWidth={2.5} className="text-app" />
-              </div>
+              <MessageSquare size={20} strokeWidth={2.5} className="text-app" />
             )}
           </motion.button>
 

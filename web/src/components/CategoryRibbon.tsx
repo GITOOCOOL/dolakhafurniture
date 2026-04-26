@@ -82,7 +82,7 @@ const CategoryRibbon = ({
 
         {/* RIGHT SECTION (Description) */}
         {displayDescription && (
-          <div className="flex-1 flex flex-col justify-center lg:justify-start border-l border-soft/30 pl-4 lg:pl-8">
+          <div className="flex-1 flex flex-col justify-center lg:justify-start pl-4 lg:pl-8">
             <p className="type-body text-description leading-relaxed italic text-[11px] md:text-[13px]">
               {displayDescription}
             </p>

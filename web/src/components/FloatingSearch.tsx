@@ -14,8 +14,8 @@ const FloatingSearch = () => {
   // Scroll listener to show/hide the floating button
   useEffect(() => {
     const handleScroll = () => {
-      // Show when scrolled down past 200px
-      if (window.scrollY > 200) {
+      // Threshold at 10px to match the header's search-bar-vanish timing
+      if (window.scrollY > 10) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
