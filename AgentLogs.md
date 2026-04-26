@@ -46,7 +46,12 @@ This file tracks the operational history of the AI assistant for Projekt-Dolakha
 - **[prompt/response]**: User requested the current git branch. Identified that we are currently on the `ui-refinements` branch.
 - **[prompt/response]**: Received request to improve the Checkout Drawer UI by moving the Total, Savings, and Confirm Button to a sticky footer to save vertical space.
 - **[prompt/response]**: Refined the scope to focus exclusively on **Express Checkout** first, deferring standard checkout steps for later. Updated the implementation plan accordingly.
-- **[Codebase/Feature Updates]**: Optimized **Express Checkout** UI by moving the financial summary (Total & Savings) to a persistent sticky footer in `CheckoutDrawer.tsx`. Removed the redundant internal summary box from `ExpressCheckout.tsx`, creating a more compact and mobile-efficient form experience.
+- **[prompt/response]**: Received instruction to move all voucher-related UI (pills, nudges, input) to a new row in the footer above the current summary row, and remove them from the content area.
+- **[prompt/response]**: Implemented a 3-state logic for the Welcome Voucher in the Sentinel footer: Guests see a 'Signup & Save' nudge with a deep espresso brown background and white text for maximum light-mode contrast.
+- **[Codebase/Feature Updates]**: Added an explicit 'Applied' tag with a checkmark icon to active vouchers in the Sentinel Row, providing unambiguous confirmation of which deals are currently active in the checkout session.
+- **[prompt/response]**: Streamlined the financials summary by removing redundant voucher pills from the 'To Pay' section, keeping the pricing row focused and professional while offloading status confirmation to the dedicated management row above.
+
+
 
 
 

@@ -5,7 +5,11 @@ import { useState, useEffect, useMemo } from "react";
 import { urlFor, client } from "@/lib/sanity";
 import { processOrder } from "@/app/actions/checkout";
 import { validateVoucher, checkVoucherUsage } from "@/app/actions/vouchers";
-import { paymentAccountsQuery, activeCampaignsQuery, checkoutSettingsQuery } from "@/lib/queries";
+import {
+  paymentAccountsQuery,
+  activeCampaignsQuery,
+  checkoutSettingsQuery,
+} from "@/lib/queries";
 import InquiryModal from "@/components/InquiryModal";
 import Modal from "@/components/ui/Modal";
 import {
@@ -71,7 +75,9 @@ export default function CheckoutDrawer({
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
   const { lockScroll, unlockScroll } = useUIStore();
-  const [firstOrderVoucher, setFirstOrderVoucher] = useState<Voucher | null>(null);
+  const [firstOrderVoucher, setFirstOrderVoucher] = useState<Voucher | null>(
+    null,
+  );
   const [isFirstOrderExhausted, setIsFirstOrderExhausted] = useState(false);
   const [hasPromptedVoucherReminder, setHasPromptedVoucherReminder] =
     useState(false);
@@ -99,6 +105,9 @@ export default function CheckoutDrawer({
   const [isApplyingVoucher, setIsApplyingVoucher] = useState(false);
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [hoveredVoucher, setHoveredVoucher] = useState<any>(null);
+  const [voucherStatuses, setVoucherStatuses] = useState<
+    Record<string, "success" | "invalid" | "untried">
+  >({});
 
   // RESET LOGIC: Ensure drawer resets on close
   useEffect(() => {
@@ -186,9 +195,22 @@ export default function CheckoutDrawer({
               }
               totalDiscount += discountVal;
               newApplied.push({ ...v, amount: discountVal });
+              setVoucherStatuses((prev) => ({
+                ...prev,
+                [v.code.toUpperCase()]: "success",
+              }));
+            } else {
+              setVoucherStatuses((prev) => ({
+                ...prev,
+                [v.code.toUpperCase()]: "invalid",
+              }));
             }
           } catch (err) {
             console.error("Auto-apply error:", err);
+            setVoucherStatuses((prev) => ({
+              ...prev,
+              [v.code.toUpperCase()]: "invalid",
+            }));
           }
         }
 
@@ -200,7 +222,15 @@ export default function CheckoutDrawer({
       };
       applyAllPossible();
     }
-  }, [isOpen, checkoutMethod, campaigns, items.length, subtotal, isFirstOrderExhausted, isInitialLoading]);
+  }, [
+    isOpen,
+    checkoutMethod,
+    campaigns,
+    items.length,
+    subtotal,
+    isFirstOrderExhausted,
+    isInitialLoading,
+  ]);
 
   useEffect(() => {
     if (isOpen && items.length > 0) {
@@ -220,14 +250,14 @@ export default function CheckoutDrawer({
   // FORM VALIDATION LOGIC
   const isFormValid = useMemo(() => {
     const { firstName, lastName, phone, apartment, city } = formData;
-    
+
     // For Express (Single Page): Every required field must be present
     if (checkoutMethod === "express") {
       return !!(
-        firstName.trim() && 
-        lastName.trim() && 
-        phone.trim() && 
-        apartment.trim() && 
+        firstName.trim() &&
+        lastName.trim() &&
+        phone.trim() &&
+        apartment.trim() &&
         city.trim()
       );
     }
@@ -247,17 +277,22 @@ export default function CheckoutDrawer({
     const fetchData = async () => {
       try {
         setIsInitialLoading(true);
-        const [campaignsData, accounts, firstOrder, settings] = await Promise.all([
+        const [campaignsData, accounts, settings] = await Promise.all([
           client.fetch(activeCampaignsQuery),
           client.fetch(paymentAccountsQuery),
-          client.fetch(firstOrderVoucherQuery),
           client.fetch(checkoutSettingsQuery),
         ]);
 
         setCampaigns(campaignsData);
         setPaymentAccounts(accounts);
-        setFirstOrderVoucher(firstOrder);
         if (settings?.method) setCheckoutMethod(settings.method);
+
+        // Derive first order voucher from campaigns
+        const firstOrder = campaignsData
+          .flatMap((c: any) => c.vouchers || [])
+          .find((v: any) => v.isFirstOrderVoucher);
+
+        setFirstOrderVoucher(firstOrder);
 
         // Check first order voucher usage if logged in
         if (propsUser && firstOrder) {
@@ -341,12 +376,24 @@ export default function CheckoutDrawer({
           ...prev,
           { code: voucherInput, ...result, amount: discountVal },
         ]);
+        setVoucherStatuses((prev) => ({
+          ...prev,
+          [voucherInput.toUpperCase()]: "success",
+        }));
         setVoucherInput("");
       } else {
         setVoucherError(result.message || "Invalid voucher.");
+        setVoucherStatuses((prev) => ({
+          ...prev,
+          [voucherInput.toUpperCase()]: "invalid",
+        }));
       }
     } catch (err) {
       setVoucherError("Failed to apply voucher.");
+      setVoucherStatuses((prev) => ({
+        ...prev,
+        [voucherInput.toUpperCase()]: "invalid",
+      }));
     } finally {
       setIsApplyingVoucher(false);
     }
@@ -825,15 +872,15 @@ export default function CheckoutDrawer({
               ) : (
                 <>
                   {activeStep === 1 && (
-                <motion.section
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-6"
-                >
-                  <div className="space-y-4">
-                    <style
-                      dangerouslySetInnerHTML={{
-                        __html: `
+                    <motion.section
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-6"
+                    >
+                      <div className="space-y-4">
+                        <style
+                          dangerouslySetInnerHTML={{
+                            __html: `
                               .cart-scroll::-webkit-scrollbar {
                                 width: 4px;
                               }
@@ -848,628 +895,788 @@ export default function CheckoutDrawer({
                                 background: accent;
                               }
                             `,
-                      }}
-                    />
-                    <div className="flex justify-between items-center">
-                      <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-description">
-                        Review Your Order
-                      </h4>
-                      <span className="text-[9px] font-bold px-2.5 py-1 bg-espresso text-bone rounded-full uppercase tracking-tighter">
-                        {totalPieces} Total Items
-                      </span>
-                    </div>
-
-                    <div className="space-y-4 max-h-[460px] overflow-y-auto pr-4 cart-scroll">
-                      <AnimatePresence mode="popLayout">
-                        {items.map((item) => (
-                          <motion.div
-                            key={item._id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="group flex gap-3 p-3 bg-surface border border-soft rounded-2xl hover:border-action/30 transition-all shadow-sm"
-                          >
-                            {/* Item Image */}
-                            <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-app flex-shrink-0 border border-soft/50">
-                              <img
-                                src={urlFor(item.mainImage).width(160).url()}
-                                className="object-contain w-full h-full p-2"
-                                alt={item.title}
-                              />
-                            </div>
-
-                            {/* Item Details */}
-                            <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
-                              <div>
-                                <div className="flex justify-between items-start gap-2">
-                                  <h5 className="type-product !text-base text-heading truncate">
-                                    {item.title}
-                                  </h5>
-                                  <span className="type-label text-action text-[9px] flex-shrink-0">
-                                    x {item.quantity}
-                                  </span>
-                                </div>
-                                <p className="type-label text-action">
-                                  Rs.{" "}
-                                  {(
-                                    item.price * item.quantity
-                                  ).toLocaleString()}
-                                </p>
-                              </div>
-
-                              {/* Quantity Controls */}
-                              <div className="flex items-center mt-2">
-                                <div className="flex items-center bg-app border border-soft rounded-full px-1.5 py-1 gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => removeSingleItem(item._id)}
-                                    className="p-1 text-heading/40 hover:text-heading transition-all"
-                                  >
-                                    <Minus size={14} />
-                                  </button>
-                                  <span className="type-label text-heading min-w-[12px] text-center">
-                                    {item.quantity}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() => addItem(item, 1)}
-                                    className="p-1 text-heading/40 hover:text-action transition-all"
-                                  >
-                                    <Plus size={14} />
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Delete Action - Red Bin */}
-                            <div className="flex items-center pl-2">
-                              <button
-                                type="button"
-                                onClick={() => removeItem(item._id)}
-                                className="p-3 text-red-100 hover:text-white bg-red-500/10 hover:bg-red-500 rounded-2xl transition-all group/delete"
-                                title="Remove from cart"
-                              >
-                                <Trash2
-                                  size={18}
-                                  strokeWidth={2}
-                                  className="text-red-500 group-hover/delete:text-white transition-colors"
-                                />
-                              </button>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* FINAL TOTAL */}
-                    {/* FINAL TOTAL */}
-                    <div className="flex flex-col gap-3 pt-5 border-t border-divider bg-app p-5 rounded-2xl border-dotted shadow-sm">
-                      <div className="flex justify-between items-center">
-                        <div className="flex flex-col">
-                          <span className="type-label text-description">
-                            Total
+                          }}
+                        />
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-description">
+                            Review Your Order
+                          </h4>
+                          <span className="text-[9px] font-bold px-2.5 py-1 bg-espresso text-bone rounded-full uppercase tracking-tighter">
+                            {totalPieces} Total Items
                           </span>
                         </div>
-                        <span className="text-2xl font-sans font-bold text-action tracking-tight">
-                          Rs. {finalTotal.toLocaleString()}
-                        </span>
-                      </div>
 
-                      {appliedVouchers.length > 0 && (
-                        <div className="space-y-2 mt-2">
-                          {appliedVouchers.map((v, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-center justify-between px-3 py-1.5 bg-action/10 rounded-full w-full"
-                            >
-                              <div className="flex items-center gap-2">
-                                <Ticket size={12} className="text-action" />
-                                <span className="type-label text-action">
-                                  Voucher: {v.code}
-                                </span>
-                              </div>
-                              <span className="type-label text-action">
-                                - Rs. {v.amount.toLocaleString()}
+                        <div className="space-y-4 max-h-[460px] overflow-y-auto pr-4 cart-scroll">
+                          <AnimatePresence mode="popLayout">
+                            {items.map((item) => (
+                              <motion.div
+                                key={item._id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="group flex gap-3 p-3 bg-surface border border-soft rounded-2xl hover:border-action/30 transition-all shadow-sm"
+                              >
+                                {/* Item Image */}
+                                <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-app flex-shrink-0 border border-soft/50">
+                                  <img
+                                    src={urlFor(item.mainImage)
+                                      .width(160)
+                                      .url()}
+                                    className="object-contain w-full h-full p-2"
+                                    alt={item.title}
+                                  />
+                                </div>
+
+                                {/* Item Details */}
+                                <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                                  <div>
+                                    <div className="flex justify-between items-start gap-2">
+                                      <h5 className="type-product !text-base text-heading truncate">
+                                        {item.title}
+                                      </h5>
+                                      <span className="type-label text-action text-[9px] flex-shrink-0">
+                                        x {item.quantity}
+                                      </span>
+                                    </div>
+                                    <p className="type-label text-action">
+                                      Rs.{" "}
+                                      {(
+                                        item.price * item.quantity
+                                      ).toLocaleString()}
+                                    </p>
+                                  </div>
+
+                                  {/* Quantity Controls */}
+                                  <div className="flex items-center mt-2">
+                                    <div className="flex items-center bg-app border border-soft rounded-full px-1.5 py-1 gap-3">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          removeSingleItem(item._id)
+                                        }
+                                        className="p-1 text-heading/40 hover:text-heading transition-all"
+                                      >
+                                        <Minus size={14} />
+                                      </button>
+                                      <span className="type-label text-heading min-w-[12px] text-center">
+                                        {item.quantity}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => addItem(item, 1)}
+                                        className="p-1 text-heading/40 hover:text-action transition-all"
+                                      >
+                                        <Plus size={14} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Delete Action - Red Bin */}
+                                <div className="flex items-center pl-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => removeItem(item._id)}
+                                    className="p-3 text-red-100 hover:text-white bg-red-500/10 hover:bg-red-500 rounded-2xl transition-all group/delete"
+                                    title="Remove from cart"
+                                  >
+                                    <Trash2
+                                      size={18}
+                                      strokeWidth={2}
+                                      className="text-red-500 group-hover/delete:text-white transition-colors"
+                                    />
+                                  </button>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </AnimatePresence>
+                        </div>
+
+                        {/* FINAL TOTAL */}
+                        {/* FINAL TOTAL */}
+                        <div className="flex flex-col gap-3 pt-5 border-t border-divider bg-app p-5 rounded-2xl border-dotted shadow-sm">
+                          <div className="flex justify-between items-center">
+                            <div className="flex flex-col">
+                              <span className="type-label text-description">
+                                Total
                               </span>
                             </div>
-                          ))}
+                            <span className="text-2xl font-sans font-bold text-action tracking-tight">
+                              Rs. {finalTotal.toLocaleString()}
+                            </span>
+                          </div>
+
+                          {appliedVouchers.length > 0 && (
+                            <div className="space-y-2 mt-2">
+                              {appliedVouchers.map((v, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center justify-between px-3 py-1.5 bg-action/10 rounded-full w-full"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Ticket size={12} className="text-action" />
+                                    <span className="type-label text-action">
+                                      Voucher: {v.code}
+                                    </span>
+                                  </div>
+                                  <span className="type-label text-action">
+                                    - Rs. {v.amount.toLocaleString()}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Voucher Input */}
-                    <div className="pt-4 border-t border-divider border-dashed relative">
-                      <div className="flex flex-col gap-2.5 mt-2">
-                        <div className="w-full">
-                          <Input
-                            placeholder="Enter code"
-                            containerClassName="!gap-0"
-                            value={voucherInput}
-                            onChange={(e) =>
-                              setVoucherInput(e.target.value.toUpperCase())
-                            }
-                            error={voucherError}
-                            className="text-sm py-4"
-                          />
-                        </div>
-                        <Button
-                          type="button"
-                          onClick={handleApplyVoucher}
-                          isLoading={isApplyingVoucher}
-                          variant="primary"
-                          fullWidth
-                          className="!py-4 bg-invert hover:bg-action text-[11px]"
-                        >
-                          Apply Voucher
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.section>
-              )}
-
-              {activeStep === 2 && (
-                <motion.section
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-8"
-                >
-                  <h4 className="type-section mb-6">Contact Information</h4>
-                  <Input
-                    label="Phone Number"
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    leftIcon={
-                      <span className="text-[10px] font-bold pr-2 border-r border-soft mr-2">
-                        +977
-                      </span>
-                    }
-                  />
-                  <Input
-                    label="Email Address (Optional)"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="To receive order updates"
-                    icon={Mail}
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      label="First name"
-                      required
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                    />
-                    <Input
-                      label="Last name"
-                      required
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  {/* Summary with Integrated Voucher Input */}
-                  <div className="bg-app border border-divider p-8 rounded-[2.5rem] mt-12">
-                    <div className="flex justify-between items-center pb-6 border-b border-soft/50">
-                      <div className="flex items-center gap-4">
-                        <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-[120px]">
-                          {items.slice(0, 3).map((item) => (
-                            <div
-                              key={item._id}
-                              className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-app flex-shrink-0"
-                            >
-                              <img
-                                src={urlFor(item.mainImage).width(80).url()}
-                                className="w-full h-full object-contain p-1"
-                                alt={item.title}
+                        {/* Voucher Input */}
+                        <div className="pt-4 border-t border-divider border-dashed relative">
+                          <div className="flex flex-col gap-2.5 mt-2">
+                            <div className="w-full">
+                              <Input
+                                placeholder="Enter code"
+                                containerClassName="!gap-0"
+                                value={voucherInput}
+                                onChange={(e) =>
+                                  setVoucherInput(e.target.value.toUpperCase())
+                                }
+                                error={voucherError}
+                                className="text-sm py-4"
                               />
                             </div>
-                          ))}
-                        </div>
-                        <div>
-                          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label">
-                            Order Summary
-                          </p>
-                          <p className="text-xs font-sans font-bold text-heading">
-                            {totalPieces} Items
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label opacity-40">Total</p>
-                        <p className="text-xl font-sans font-bold text-action">
-                          Rs. {finalTotal.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Vouchers in Summary */}
-                    {appliedVouchers.length > 0 && (
-                      <div className="py-4 space-y-2 border-b border-soft/30">
-                        {appliedVouchers.map((v, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between px-3 py-2 bg-action/5 rounded-xl border border-action/10"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Ticket size={12} className="text-action" />
-                              <span className="text-[10px] font-bold text-action uppercase tracking-tight">
-                                {v.code}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <span className="text-xs font-bold text-action">
-                                -Rs. {v.amount.toLocaleString()}
-                              </span>
-                              <button 
-                                onClick={() => {
-                                  setAppliedVouchers(prev => prev.filter((_, i) => i !== idx));
-                                  setDiscount(prev => prev - v.amount);
-                                }}
-                                className="p-1 hover:text-red-500 transition-colors"
-                              >
-                                <Minus size={12} />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Compact Ribbon for Step 2 */}
-                    {((firstOrderVoucher && !isFirstOrderExhausted && user?.id) ||
-                      campaigns.some((c) => c.vouchers?.length)) && (
-                      <div className="flex flex-wrap gap-2 py-4 border-b border-soft/30">
-                         {firstOrderVoucher && user?.id && !isFirstOrderExhausted && !appliedVouchers.some(v => v.code === firstOrderVoucher.code) && (
-                           <button
-                             type="button"
-                             onClick={() => {
-                               setVoucherInput(firstOrderVoucher.code);
-                               setVoucherError("");
-                             }}
-                             className="text-[9px] font-bold text-action bg-action/5 px-3 py-1.5 rounded-full border border-action/20 hover:bg-action hover:text-white transition-all active:scale-95"
-                           >
-                             Apply First Order Gift 🎁
-                           </button>
-                         )}
-                         {campaigns.flatMap(c => c.vouchers || []).filter(v => v.code !== firstOrderVoucher?.code && !appliedVouchers.some(av => av.code.toUpperCase() === v.code.toUpperCase())).map((v, i) => (
-                            <button
-                              key={i}
+                            <Button
                               type="button"
-                              onClick={() => {
-                                setVoucherInput(v.code);
-                                setVoucherError("");
-                              }}
-                              className="text-[9px] font-bold text-description bg-surface px-3 py-1.5 rounded-full border border-soft hover:border-action transition-all active:scale-95"
+                              onClick={handleApplyVoucher}
+                              isLoading={isApplyingVoucher}
+                              variant="primary"
+                              fullWidth
+                              className="!py-4 bg-invert hover:bg-action text-[11px]"
                             >
-                              {v.code}
-                            </button>
-                         ))}
+                              Apply Voucher
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                    )}
+                    </motion.section>
+                  )}
 
-                    <div className="pt-4 flex gap-2">
-                       <Input
-                         placeholder="Voucher code?"
-                         value={voucherInput}
-                         onChange={(e: any) => {
-                           setVoucherInput(e.target.value.toUpperCase());
-                           setVoucherError("");
-                         }}
-                         className="flex-1 !py-2.5 !rounded-xl !text-xs"
-                         containerClassName="!gap-0"
-                       />
-                       <Button
-                         type="button"
-                         onClick={handleApplyVoucher}
-                         isLoading={isApplyingVoucher}
-                         variant="outline"
-                         className="!px-6 !py-2.5 !rounded-xl text-[10px] font-bold border-soft"
-                       >
-                         Apply
-                       </Button>
-                    </div>
-                  </div>
-                </motion.section>
-              )}
+                  {activeStep === 2 && (
+                    <motion.section
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-8"
+                    >
+                      <h4 className="type-section mb-6">Contact Information</h4>
+                      <Input
+                        label="Phone Number"
+                        type="tel"
+                        name="phone"
+                        required
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        leftIcon={
+                          <span className="text-[10px] font-bold pr-2 border-r border-soft mr-2">
+                            +977
+                          </span>
+                        }
+                      />
+                      <Input
+                        label="Email Address (Optional)"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="To receive order updates"
+                        icon={Mail}
+                      />
 
-              {activeStep === 3 && (
-                <motion.section
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-8"
-                >
-                  <h4 className="type-section mb-6">Delivery Details</h4>
-                  <Input
-                    label="Tole / Area"
-                    required
-                    name="apartment"
-                    value={formData.apartment}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Samakhusi"
-                    icon={MapPin}
-                  />
-                  <Input
-                    label="Town / City"
-                    required
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Kathmandu"
-                  />
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">
-                      Additional Notes (Optional)
-                    </label>
-                    <textarea
-                      name="address"
-                      placeholder="Specific delivery instructions or location reminders..."
-                      value={formData.address}
-                      onChange={(e: any) => handleInputChange(e)}
-                      className="w-full bg-surface border border-soft rounded-2xl p-6 text-sm focus:ring-1 focus:ring-action outline-none min-h-[120px] transition-all"
-                    />
-                  </div>
-
-                  <div className="bg-app border border-soft/20 rounded-[1.5rem] overflow-hidden mt-8">
-                    <label className="flex items-center justify-between p-5 cursor-pointer hover:bg-surface/50 border-transparent transition-all group">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="shippingMethod"
-                          value="standard"
-                          checked={formData.shippingMethod === "standard"}
+                      <div className="grid grid-cols-2 gap-4">
+                        <Input
+                          label="First name"
+                          required
+                          name="firstName"
+                          value={formData.firstName}
                           onChange={handleInputChange}
-                          className="w-5 h-5 accent-action"
                         />
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold text-heading">
-                            Standard Delivery
-                          </span>
-                          <span className="text-[10px] font-bold text-description">
-                            Inside Kathmandu (2-5 days)
-                          </span>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-extrabold text-action uppercase tracking-widest">
-                        Free
-                      </span>
-                    </label>
-                    <label className="flex items-center justify-between p-5 opacity-40 cursor-not-allowed border-t border-soft/10 bg-surface/30">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="shippingMethod"
-                          value="express"
-                          disabled
-                          className="w-5 h-5 accent-action"
-                        />
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold text-heading">
-                            Outside Valley
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-description">
-                              Shipping Partner
-                            </span>
-                            <span className="text-[7px] font-bold bg-action text-white px-1.5 py-0.5 rounded-full tracking-tighter uppercase">
-                              Coming Soon
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-extrabold text-description">
-                        Rs. 500
-                      </span>
-                    </label>
-                  </div>
-
-                  {/* Mini Summary with Thumbnails */}
-                  <div className="p-6 bg-app border border-soft rounded-3xl mt-12 flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                      <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-[120px]">
-                        {items.slice(0, 3).map((item) => (
-                          <div
-                            key={item._id}
-                            className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-app flex-shrink-0"
-                          >
-                            <img
-                              src={urlFor(item.mainImage).width(80).url()}
-                              className="w-full h-full object-contain p-1"
-                              alt={item.title}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label">
-                          Current Order
-                        </p>
-                        <p className="text-xs font-sans font-bold text-heading">
-                          {totalPieces} Items
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <p className="text-xl font-sans font-bold text-action">
-                        Rs. {finalTotal.toLocaleString()}
-                      </p>
-                      {appliedVouchers.length > 0 && (
-                        <span className="text-[9px] font-bold text-action uppercase">
-                          Vouchers Applied
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </motion.section>
-              )}
-
-              {activeStep === 4 && (
-                <motion.section
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-8"
-                >
-                  <h4 className="type-section mb-6">Final Payment</h4>
-                  <div className="space-y-4">
-                    <label className="flex flex-col p-6 bg-app border border-soft/20 rounded-[1.5rem] cursor-pointer hover:bg-surface/50 hover:border-action/30 transition-all group">
-                      <div className="flex items-center gap-4 mb-2">
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="cod"
-                          checked={formData.paymentMethod === "cod"}
+                        <Input
+                          label="Last name"
+                          required
+                          name="lastName"
+                          value={formData.lastName}
                           onChange={handleInputChange}
-                          className="w-5 h-5 accent-action"
                         />
-                        <span className="text-sm font-bold text-heading">
-                          Cash on Delivery
-                        </span>
                       </div>
-                      <p className="text-[10px] text-description font-bold pl-9">
-                        Pay with cash when your order arrives.
-                      </p>
-                    </label>
 
-                    {paymentAccounts.map((account) => (
-                      <label
-                        key={account._id}
-                        className="flex flex-col p-6 bg-app border border-soft/20 rounded-[1.5rem] cursor-pointer hover:bg-surface/50 hover:border-action/30 transition-all group"
-                      >
-                        <div className="flex items-start gap-4 mb-4">
-                          <input
-                            type="radio"
-                            name="paymentMethod"
-                            value={account.accountName}
-                            checked={
-                              formData.paymentMethod === account.accountName
-                            }
-                            onChange={handleInputChange}
-                            className="w-5 h-5 accent-action mt-0.5"
-                          />
-                          <div className="flex flex-col gap-1">
-                            <span className="text-sm font-bold text-heading">
-                              {account.bankNameOrWalletName}
-                            </span>
-                            <span className="text-[10px] text-description font-bold">
-                              {account.accountName} • {account.accountNumber}
-                            </span>
+                      {/* Summary with Integrated Voucher Input */}
+                      <div className="bg-app border border-divider p-8 rounded-[2.5rem] mt-12">
+                        <div className="flex justify-between items-center pb-6 border-b border-soft/50">
+                          <div className="flex items-center gap-4">
+                            <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-[120px]">
+                              {items.slice(0, 3).map((item) => (
+                                <div
+                                  key={item._id}
+                                  className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-app flex-shrink-0"
+                                >
+                                  <img
+                                    src={urlFor(item.mainImage).width(80).url()}
+                                    className="w-full h-full object-contain p-1"
+                                    alt={item.title}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label">
+                                Order Summary
+                              </p>
+                              <p className="text-xs font-sans font-bold text-heading">
+                                {totalPieces} Items
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label opacity-40">
+                              Total
+                            </p>
+                            <p className="text-xl font-sans font-bold text-action">
+                              Rs. {finalTotal.toLocaleString()}
+                            </p>
                           </div>
                         </div>
-                        {account.qrCodeImage && (
-                          <div className="bg-white p-4 rounded-xl flex justify-center border border-soft/20 shadow-sm transition-all group-hover:shadow-md">
-                            <img
-                              src={urlFor(account.qrCodeImage).width(120).url()}
-                              className="h-24 w-24 object-contain"
-                              alt="QR Code"
-                            />
+
+                        {/* Vouchers in Summary */}
+                        {appliedVouchers.length > 0 && (
+                          <div className="py-4 space-y-2 border-b border-soft/30">
+                            {appliedVouchers.map((v, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between px-3 py-2 bg-action/5 rounded-xl border border-action/10"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Ticket size={12} className="text-action" />
+                                  <span className="text-[10px] font-bold text-action uppercase tracking-tight">
+                                    {v.code}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xs font-bold text-action">
+                                    -Rs. {v.amount.toLocaleString()}
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      setAppliedVouchers((prev) =>
+                                        prev.filter((_, i) => i !== idx),
+                                      );
+                                      setDiscount((prev) => prev - v.amount);
+                                    }}
+                                    className="p-1 hover:text-red-500 transition-colors"
+                                  >
+                                    <Minus size={12} />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         )}
-                      </label>
-                    ))}
-                  </div>
 
-                  {/* Final Summary Bar */}
-                  <div className="p-8 bg-espresso rounded-3xl mt-12 flex flex-col gap-4 shadow-2xl relative overflow-hidden">
-                    <div className="flex justify-between items-center relative z-10">
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-label">
-                          Total Order
-                        </p>
-                        <p className="text-lg font-sans font-bold text-white">
-                          {totalPieces} Items
-                        </p>
-                      </div>
-                      <p className="text-3xl font-sans font-bold text-white tracking-tight">
-                        Rs. {finalTotal.toLocaleString()}
-                      </p>
-                    </div>
+                        {/* Compact Ribbon for Step 2 */}
+                        {((firstOrderVoucher &&
+                          !isFirstOrderExhausted &&
+                          user?.id) ||
+                          campaigns.some((c) => c.vouchers?.length)) && (
+                          <div className="flex flex-wrap gap-2 py-4 border-b border-soft/30">
+                            {firstOrderVoucher &&
+                              user?.id &&
+                              !isFirstOrderExhausted &&
+                              !appliedVouchers.some(
+                                (v) => v.code === firstOrderVoucher.code,
+                              ) && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setVoucherInput(firstOrderVoucher.code);
+                                    setVoucherError("");
+                                  }}
+                                  className="text-[9px] font-bold text-action bg-action/5 px-3 py-1.5 rounded-full border border-action/20 hover:bg-action hover:text-white transition-all active:scale-95"
+                                >
+                                  Apply First Order Gift 🎁
+                                </button>
+                              )}
+                            {campaigns
+                              .flatMap((c) => c.vouchers || [])
+                              .filter(
+                                (v) =>
+                                  v.code !== firstOrderVoucher?.code &&
+                                  !appliedVouchers.some(
+                                    (av) =>
+                                      av.code.toUpperCase() ===
+                                      v.code.toUpperCase(),
+                                  ),
+                              )
+                              .map((v, i) => (
+                                <button
+                                  key={i}
+                                  type="button"
+                                  onClick={() => {
+                                    setVoucherInput(v.code);
+                                    setVoucherError("");
+                                  }}
+                                  className="text-[9px] font-bold text-description bg-surface px-3 py-1.5 rounded-full border border-soft hover:border-action transition-all active:scale-95"
+                                >
+                                  {v.code}
+                                </button>
+                              ))}
+                          </div>
+                        )}
 
-                    {appliedVouchers.length > 0 && (
-                      <div className="flex flex-col gap-2 relative z-10 pt-2 border-t border-white/10">
-                        {appliedVouchers.map((v, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between px-3 py-1.5 bg-app rounded-full w-full"
+                        <div className="pt-4 flex gap-2">
+                          <Input
+                            placeholder="Voucher code?"
+                            value={voucherInput}
+                            onChange={(e: any) => {
+                              setVoucherInput(e.target.value.toUpperCase());
+                              setVoucherError("");
+                            }}
+                            className="flex-1 !py-2.5 !rounded-xl !text-xs"
+                            containerClassName="!gap-0"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleApplyVoucher}
+                            isLoading={isApplyingVoucher}
+                            variant="outline"
+                            className="!px-6 !py-2.5 !rounded-xl text-[10px] font-bold border-soft"
                           >
-                            <div className="flex items-center gap-2">
-                              <Ticket size={12} className="text-action" />
-                              <span className="text-[10px] font-bold text-action uppercase">
-                                Voucher: {v.code}
+                            Apply
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.section>
+                  )}
+
+                  {activeStep === 3 && (
+                    <motion.section
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-8"
+                    >
+                      <h4 className="type-section mb-6">Delivery Details</h4>
+                      <Input
+                        label="Tole / Area"
+                        required
+                        name="apartment"
+                        value={formData.apartment}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Samakhusi"
+                        icon={MapPin}
+                      />
+                      <Input
+                        label="Town / City"
+                        required
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Kathmandu"
+                      />
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-extrabold uppercase tracking-widest text-description ml-4">
+                          Additional Notes (Optional)
+                        </label>
+                        <textarea
+                          name="address"
+                          placeholder="Specific delivery instructions or location reminders..."
+                          value={formData.address}
+                          onChange={(e: any) => handleInputChange(e)}
+                          className="w-full bg-surface border border-soft rounded-2xl p-6 text-sm focus:ring-1 focus:ring-action outline-none min-h-[120px] transition-all"
+                        />
+                      </div>
+
+                      <div className="bg-app border border-soft/20 rounded-[1.5rem] overflow-hidden mt-8">
+                        <label className="flex items-center justify-between p-5 cursor-pointer hover:bg-surface/50 border-transparent transition-all group">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="shippingMethod"
+                              value="standard"
+                              checked={formData.shippingMethod === "standard"}
+                              onChange={handleInputChange}
+                              className="w-5 h-5 accent-action"
+                            />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-bold text-heading">
+                                Standard Delivery
+                              </span>
+                              <span className="text-[10px] font-bold text-description">
+                                Inside Kathmandu (2-5 days)
                               </span>
                             </div>
-                            <span className="text-[10px] font-bold text-heading">
-                              - Rs. {v.amount.toLocaleString()}
+                          </div>
+                          <span className="text-[10px] font-extrabold text-action uppercase tracking-widest">
+                            Free
+                          </span>
+                        </label>
+                        <label className="flex items-center justify-between p-5 opacity-40 cursor-not-allowed border-t border-soft/10 bg-surface/30">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="shippingMethod"
+                              value="express"
+                              disabled
+                              className="w-5 h-5 accent-action"
+                            />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-bold text-heading">
+                                Outside Valley
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-description">
+                                  Shipping Partner
+                                </span>
+                                <span className="text-[7px] font-bold bg-action text-white px-1.5 py-0.5 rounded-full tracking-tighter uppercase">
+                                  Coming Soon
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-extrabold text-description">
+                            Rs. 500
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Mini Summary with Thumbnails */}
+                      <div className="p-6 bg-app border border-soft rounded-3xl mt-12 flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                          <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-[120px]">
+                            {items.slice(0, 3).map((item) => (
+                              <div
+                                key={item._id}
+                                className="w-10 h-10 rounded-xl border border-soft overflow-hidden bg-app flex-shrink-0"
+                              >
+                                <img
+                                  src={urlFor(item.mainImage).width(80).url()}
+                                  className="w-full h-full object-contain p-1"
+                                  alt={item.title}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label">
+                              Current Order
+                            </p>
+                            <p className="text-xs font-sans font-bold text-heading">
+                              {totalPieces} Items
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <p className="text-xl font-sans font-bold text-action">
+                            Rs. {finalTotal.toLocaleString()}
+                          </p>
+                          {appliedVouchers.length > 0 && (
+                            <span className="text-[9px] font-bold text-action uppercase">
+                              Vouchers Applied
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </motion.section>
+                  )}
+
+                  {activeStep === 4 && (
+                    <motion.section
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-8"
+                    >
+                      <h4 className="type-section mb-6">Final Payment</h4>
+                      <div className="space-y-4">
+                        <label className="flex flex-col p-6 bg-app border border-soft/20 rounded-[1.5rem] cursor-pointer hover:bg-surface/50 hover:border-action/30 transition-all group">
+                          <div className="flex items-center gap-4 mb-2">
+                            <input
+                              type="radio"
+                              name="paymentMethod"
+                              value="cod"
+                              checked={formData.paymentMethod === "cod"}
+                              onChange={handleInputChange}
+                              className="w-5 h-5 accent-action"
+                            />
+                            <span className="text-sm font-bold text-heading">
+                              Cash on Delivery
                             </span>
                           </div>
+                          <p className="text-[10px] text-description font-bold pl-9">
+                            Pay with cash when your order arrives.
+                          </p>
+                        </label>
+
+                        {paymentAccounts.map((account) => (
+                          <label
+                            key={account._id}
+                            className="flex flex-col p-6 bg-app border border-soft/20 rounded-[1.5rem] cursor-pointer hover:bg-surface/50 hover:border-action/30 transition-all group"
+                          >
+                            <div className="flex items-start gap-4 mb-4">
+                              <input
+                                type="radio"
+                                name="paymentMethod"
+                                value={account.accountName}
+                                checked={
+                                  formData.paymentMethod === account.accountName
+                                }
+                                onChange={handleInputChange}
+                                className="w-5 h-5 accent-action mt-0.5"
+                              />
+                              <div className="flex flex-col gap-1">
+                                <span className="text-sm font-bold text-heading">
+                                  {account.bankNameOrWalletName}
+                                </span>
+                                <span className="text-[10px] text-description font-bold">
+                                  {account.accountName} •{" "}
+                                  {account.accountNumber}
+                                </span>
+                              </div>
+                            </div>
+                            {account.qrCodeImage && (
+                              <div className="bg-white p-4 rounded-xl flex justify-center border border-soft/20 shadow-sm transition-all group-hover:shadow-md">
+                                <img
+                                  src={urlFor(account.qrCodeImage)
+                                    .width(120)
+                                    .url()}
+                                  className="h-24 w-24 object-contain"
+                                  alt="QR Code"
+                                />
+                              </div>
+                            )}
+                          </label>
                         ))}
                       </div>
-                    )}
-                  </div>
-                </motion.section>
-              )}
+
+                      {/* Final Summary Bar */}
+                      <div className="p-8 bg-espresso rounded-3xl mt-12 flex flex-col gap-4 shadow-2xl relative overflow-hidden">
+                        <div className="flex justify-between items-center relative z-10">
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-label">
+                              Total Order
+                            </p>
+                            <p className="text-lg font-sans font-bold text-white">
+                              {totalPieces} Items
+                            </p>
+                          </div>
+                          <p className="text-3xl font-sans font-bold text-white tracking-tight">
+                            Rs. {finalTotal.toLocaleString()}
+                          </p>
+                        </div>
+
+                        {appliedVouchers.length > 0 && (
+                          <div className="flex flex-col gap-2 relative z-10 pt-2 border-t border-white/10">
+                            {appliedVouchers.map((v, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between px-3 py-1.5 bg-app rounded-full w-full"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Ticket size={12} className="text-action" />
+                                  <span className="text-[10px] font-bold text-action uppercase">
+                                    Voucher: {v.code}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-bold text-heading">
+                                  - Rs. {v.amount.toLocaleString()}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </motion.section>
+                  )}
                 </>
               )}
             </form>
           )}
         </div>
-
-        {/* Footer Actions */}
         {!isSuccess && items.length > 0 && (
-          <div className="flex-shrink-0 py-4 border-t border-divider flex items-center justify-between px-6 sm:px-8 relative bg-app/95 backdrop-blur-sm gap-4 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] transition-all">
+          <div className="flex-shrink-0 border-t border-divider bg-app/95 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.03)] transition-all">
             {checkoutMethod === "express" ? (
-              <div className="flex items-center justify-between w-full gap-4 max-w-4xl mx-auto">
-                <div className="flex items-center gap-6">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-description uppercase tracking-widest opacity-50 leading-none mb-1">
-                      To Pay
+              <div className="flex flex-col w-full max-w-4xl mx-auto divide-y divide-soft/10">
+                {/* Row 1: Voucher Sentinel */}
+                <div className="py-2 border-b border-soft/30 bg-surface/30 backdrop-blur-sm overflow-hidden min-h-[50px] flex flex-col justify-center gap-1">
+                  <div className="px-6 flex items-center justify-between">
+                    <span className="text-[8px] font-bold text-description uppercase tracking-[0.2em] opacity-60">
+                      autoapplying eligible discounts
                     </span>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-xl font-sans font-bold text-heading leading-none">
-                        Rs. {finalTotal.toLocaleString()}
-                      </span>
-                      {discount > 0 && (
-                        <span className="text-[10px] font-bold text-action animate-pulse">
-                          (-Rs. {discount.toLocaleString()})
-                        </span>
-                      )}
-                    </div>
                   </div>
+                  <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    {isInitialLoading || isAutoApplying ? (
+                      <div className="flex items-center gap-2 animate-pulse">
+                        <div className="flex gap-1">
+                          <div className="w-1 h-1 rounded-full bg-action animate-bounce [animation-delay:-0.3s]" />
+                          <div className="w-1 h-1 rounded-full bg-action animate-bounce [animation-delay:-0.15s]" />
+                          <div className="w-1 h-1 rounded-full bg-action animate-bounce" />
+                        </div>
+                        <span className="text-[9px] font-bold text-description uppercase tracking-widest">
+                          Scanning and validating vouchers...
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        {/* Sign-up Nudge Pill */}
+                        {!user && firstOrderVoucher && (
+                          <button
+                            type="button"
+                            onClick={onSignUp}
+                            className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-espresso text-white rounded-full text-[9px] font-extrabold uppercase tracking-widest shadow-lg shadow-espresso/20 hover:scale-105 transition-all relative overflow-hidden group/signup border-2 border-emerald-500"
+                          >
+                            <Sparkles
+                              size={11}
+                              className="animate-bounce text-yellow-300"
+                            />
+                            <span className="relative z-10 font-black text-[8px]">EXTRA {firstOrderVoucher.discountValue}% CLICK HERE 🎉</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/signup:translate-x-full transition-transform duration-1000" />
+                          </button>
+                        )}
 
-                  {discount > 0 && (
-                    <div className="hidden sm:flex flex-col border-l border-soft pl-6">
-                      <span className="text-[10px] font-bold text-description uppercase tracking-widest opacity-50 leading-none mb-1">
-                        Savings
-                      </span>
-                      <span className="text-xs font-bold text-green-600 leading-none">
-                        Rs. {discount.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
+                        {/* Combined Vouchers (Campaigns) */}
+                        <div className="flex items-center gap-2">
+                          {Array.from(
+                            new Map(
+                              campaigns
+                                .flatMap((c) => c.vouchers || [])
+                                .map((v: any) => [v.code.toUpperCase(), v]),
+                            ).values(),
+                          ).map((v, i) => {
+                            const isFirstOrder = v.isFirstOrderVoucher;
+                            if (isFirstOrder && !user) return null;
+                            const isExhausted =
+                              isFirstOrder && isFirstOrderExhausted;
+                            const status = isExhausted
+                              ? "invalid"
+                              : voucherStatuses[v.code.toUpperCase()] ||
+                                "untried";
+                            const isApplied = appliedVouchers.some(
+                              (av) =>
+                                av.code.toUpperCase() === v.code.toUpperCase(),
+                            );
+
+                            return (
+                              <button
+                                key={i}
+                                type="button"
+                                disabled={isExhausted}
+                                onClick={() => {
+                                  if (!isApplied && !isExhausted) {
+                                    setVoucherInput(v.code);
+                                    handleApplyVoucher();
+                                  }
+                                }}
+                                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-bold transition-all active:scale-95 shadow-sm border ${
+                                  isApplied || status === "success"
+                                    ? "bg-action/10 border-action text-action"
+                                    : status === "invalid"
+                                      ? "bg-red-50 border-red-300 text-red-700 opacity-90"
+                                      : "bg-surface border-soft hover:border-action text-description hover:text-action"
+                                }`}
+                              >
+                                <Tag
+                                 size={8}
+                                 className={
+                                   isApplied || status === "success"
+                                     ? "fill-action/20"
+                                     : status === "invalid"
+                                       ? "fill-red-500/10"
+                                       : ""
+                                 }
+                               />
+                               <span className="text-[8px]">{v.code}</span>
+                               {isApplied && (
+                                 <div className="flex items-center gap-1 ml-1 bg-action/20 px-1 rounded-xs text-[6.5px] animate-in fade-in zoom-in duration-300">
+                                   <CheckCircle2 size={6} />
+                                   Applied
+                                 </div>
+                               )}
+                                {isExhausted && (
+                                  <span className="opacity-80 ml-1 font-medium">
+                                    Spent
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {appliedVouchers.length === 0 &&
+                          !isAutoApplying &&
+                          campaigns.length === 0 &&
+                          !firstOrderVoucher && (
+                            <span className="text-[9px] font-bold text-description/40 uppercase tracking-widest italic">
+                              No active vouchers found
+                            </span>
+                          )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex-1 max-w-[280px]">
-                  <Button
-                    form="checkout-form"
-                    type="submit"
-                    isLoading={isProcessing || isInitialLoading}
-                    disabled={isProcessing || isInitialLoading || !isFormValid}
-                    fullWidth
-                    className="!py-3.5 shadow-xl shadow-action/10"
-                    rightIcon={<ShieldCheck size={18} />}
-                  >
-                    Confirm Order
-                  </Button>
+                <div className="px-0 py-2 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col">
+                        <span className="text-[8px] font-bold text-description uppercase tracking-widest opacity-40 leading-none mb-1">
+                          Subtotal
+                        </span>
+                        <div className="flex items-center gap-1.5 font-sans font-bold text-heading/80 text-base leading-none">
+                           <span className="opacity-30 line-through">
+                             {total.toLocaleString()}
+                           </span>
+                           {discount > 0 && (
+                             <span className="text-action">
+                               -{discount.toLocaleString()}
+                             </span>
+                           )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-extrabold text-description uppercase tracking-widest leading-none mb-1">
+                          Total
+                        </span>
+                        <span className="text-lg font-sans font-bold text-heading leading-none whitespace-nowrap underline underline-offset-4 decoration-heading/20">
+                          Rs. {finalTotal.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+
+
+                  <div className="flex-1 max-w-[280px]">
+                    <Button
+                      form="checkout-form"
+                      type="submit"
+                      isLoading={isProcessing || isInitialLoading}
+                      disabled={
+                        isProcessing || isInitialLoading || !isFormValid
+                      }
+                      fullWidth
+                      className="!py-3 bg-success hover:bg-success/90 text-espresso shadow-xl shadow-success/20 border-none group/confirm"
+                      rightIcon={
+                        <ShieldCheck size={18} className="text-espresso" />
+                      }
+                    >
+                      <div className="flex flex-col items-center leading-tight">
+                        <span className="text-sm font-bold uppercase tracking-widest text-espresso">
+                          Confirm
+                        </span>
+                        <span className="text-[8px] font-bold text-espresso/60 normal-case tracking-tight">
+                          (Cash on Delivery)
+                        </span>
+                      </div>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
-              <>
+              <div className="px-6 sm:px-8 py-4 flex items-center justify-between gap-4">
                 <div className="w-[100px] flex-shrink-0">
                   {activeStep > 1 && (
                     <button
@@ -1517,11 +1724,10 @@ export default function CheckoutDrawer({
                 </div>
 
                 <div className="w-[100px] flex-shrink-0" />
-              </>
+              </div>
             )}
           </div>
         )}
-
       </div>
 
       {/* Inquiry Modal Integration */}
