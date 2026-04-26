@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { allProductsQuery } from "@/lib/queries";
 import { Product } from "@/types";
-import CategorizedProductGrid from "@/components/CategorizedProductGrid";
+import ShopClient from "@/components/ShopClient";
 
 export const metadata: Metadata = {
   title: "Shop | Dolakha Furniture",
@@ -38,10 +38,8 @@ export default async function ShopPage() {
           </h1>
         </div>
 
-        {/* CATEGORIZED GRID */}
-        <div className="mt-8">
-            <CategorizedProductGrid products={products} />
-        </div>
+        {/* DYNAMIC SHOP SUITE */}
+        <ShopClient products={products} />
       </div>
     </div>
   );

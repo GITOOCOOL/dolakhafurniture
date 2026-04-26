@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Phone, Mail, MapPin, Truck, Ticket, ShoppingBag, CheckCircle2, Minus, Plus, Trash2, Sparkles } from "lucide-react";
+import { User, Info, Mail, MapPin, Truck, Ticket, ShoppingBag, CheckCircle2, Minus, Plus, Trash2, Sparkles } from "lucide-react";
 import Input from "@/components/ui/Input";
 import { urlFor } from "@/lib/sanity";
 
@@ -19,8 +19,10 @@ interface ExpressCheckoutProps {
   removeSingleItem: (productId: string) => void;
   removeItem: (productId: string) => void;
   user: any | null;
-  welcomeVoucher: any | null;
-  isWelcomeExhausted: boolean;
+  firstOrderVoucher: any | null;
+  isFirstOrderExhausted: boolean;
+  isInitialLoading: boolean;
+  isAutoApplying: boolean;
   onSignUp: () => void;
 }
 
@@ -38,8 +40,10 @@ export default function ExpressCheckout({
   removeSingleItem,
   removeItem,
   user,
-  welcomeVoucher,
-  isWelcomeExhausted,
+  firstOrderVoucher,
+  isFirstOrderExhausted,
+  isInitialLoading,
+  isAutoApplying,
   onSignUp,
 }: ExpressCheckoutProps) {
   return (
@@ -71,10 +75,10 @@ export default function ExpressCheckout({
         />
         <div className="flex justify-between items-center px-2">
           <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-description">
-            Review Your Pieces
+            Review Your Order
           </h4>
           <span className="text-[9px] font-bold px-2.5 py-1 bg-espresso text-bone rounded-full uppercase tracking-tighter">
-            {totalPieces} Total Pieces
+            {totalPieces} Total Items
           </span>
         </div>
 
@@ -158,72 +162,87 @@ export default function ExpressCheckout({
         </div>
       </div>
 
-      {/* 2. AUTO-APPLIED VOUCHERS */}
-      {appliedVouchers.length > 0 && (
-        <div className="bg-action/5 border border-action/20 rounded-[1.5rem] p-6 space-y-3">
-          <div className="flex items-center gap-2 mb-1">
-            <Ticket size={14} className="text-action" />
-            <span className="text-[9px] uppercase font-bold tracking-widest text-action">
-              Eligible vouchers applied automatically ⚡
-            </span>
-          </div>
-          {appliedVouchers.map((v, i) => (
-            <div
-              key={i}
-              className="flex justify-between items-center bg-action/5 p-3 rounded-xl border border-action/10"
-            >
-              <span className="text-xs font-bold text-heading">
-                {v.code.toUpperCase()}
-              </span>
-              <span className="text-xs font-bold text-action italic">
-                - Rs. {v.amount.toLocaleString()}
-              </span>
+      {/* 2. AUTO-APPLY PROCESSING STATE */}
+      {isAutoApplying && (
+         <div className="bg-surface border border-soft/50 rounded-[1.5rem] p-6 flex flex-col items-center text-center gap-3 animate-pulse">
+            <div className="flex gap-1.5">
+               <div className="w-1.5 h-1.5 rounded-full bg-action animate-bounce [animation-delay:-0.3s]" />
+               <div className="w-1.5 h-1.5 rounded-full bg-action animate-bounce [animation-delay:-0.15s]" />
+               <div className="w-1.5 h-1.5 rounded-full bg-action animate-bounce" />
             </div>
-          ))}
-        </div>
+            <p className="text-[9px] font-bold text-description uppercase tracking-[0.2em]">
+              Scanning for optimal deals...
+            </p>
+         </div>
       )}
 
-      {/* 2.5 WELCOME OFFER NUDGE (GUESTS ONLY) */}
-      {!user && welcomeVoucher && (
-        <div className="bg-espresso/5 border border-espresso/10 rounded-[1.5rem] p-6 flex flex-col items-center text-center gap-4 animate-in fade-in zoom-in duration-500">
-          <div className="w-10 h-10 bg-app rounded-full flex items-center justify-center shadow-sm">
-            <Sparkles size={20} className="text-action animate-pulse" />
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs font-bold text-heading">
-              Want an extra {welcomeVoucher.discountValue}% off?
-            </p>
-            <p className="text-[10px] text-description leading-relaxed">
-              Sign up now and get an extra discount on your first order. It only
-              takes 30 seconds!
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onSignUp}
-            className="w-full py-2.5 bg-espresso text-white text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-heading transition-all shadow-lg shadow-espresso/10"
-          >
-            Sign Up & Save {welcomeVoucher.discountValue}%
-          </button>
-        </div>
-      )}
 
-      {/* 2.6 WELCOME EXHAUSTED MESSAGE (LOGGED IN ONLY) */}
-      {user && isWelcomeExhausted && (
-        <div className="bg-surface border border-soft/50 rounded-[1.5rem] p-6 flex flex-col items-center text-center gap-3">
-          <div className="w-8 h-8 bg-soft/20 rounded-full flex items-center justify-center">
-            <Ticket size={16} className="text-description opacity-40" />
-          </div>
-          <div className="space-y-1">
+      {/* 2.5 WELCOME VOUCHER FAILSAVE */}
+      {isInitialLoading ? (
+         <div className="bg-surface border border-soft/20 rounded-[1.5rem] p-6 flex flex-col items-center text-center gap-3 animate-pulse">
+            <div className="w-8 h-8 border-2 border-action border-t-transparent rounded-full animate-spin" />
             <p className="text-[10px] font-bold text-heading uppercase tracking-widest">
-              Welcome Voucher Exhausted
+              Checking Voucher Eligibility...
             </p>
-            <p className="text-[10px] text-description italic">
-              Welcome voucher already exhausted in your previous offer, don't
-              worry more offers might be there in the future!
-            </p>
-          </div>
-        </div>
+         </div>
+      ) : (
+        <>
+          {/* 2.5a SIGNUP NUDGE (GUESTS ONLY) */}
+          {!user && firstOrderVoucher && (
+            <div className="bg-espresso/5 border border-espresso/10 rounded-[1.5rem] p-6 flex flex-col items-center text-center gap-4 animate-in fade-in zoom-in duration-500">
+              <div className="w-10 h-10 bg-app rounded-full flex items-center justify-center shadow-sm">
+                <Sparkles size={20} className="text-action animate-pulse" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-heading">
+                  Want an extra {firstOrderVoucher.discountValue}% off?
+                </p>
+                <p className="text-[10px] text-description leading-relaxed">
+                  Sign up now and get an extra discount on your first order. It only
+                  takes 30 seconds!
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onSignUp}
+                className="w-full py-2.5 bg-espresso text-white text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-heading transition-all shadow-lg shadow-espresso/10"
+              >
+                Sign Up & Save {firstOrderVoucher.discountValue}%
+              </button>
+            </div>
+          )}
+
+          {/* 2.5b APPLIED SUCCESS (LOGGED IN & APPLIED) */}
+          {user && appliedVouchers.some(v => v.isFirstOrderVoucher) && (
+            <div className="bg-action/5 border border-action/20 rounded-[1.5rem] p-6 flex items-center gap-4 animate-in fade-in slide-in-from-top-2">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                <CheckCircle2 size={20} className="text-action" />
+              </div>
+              <div className="text-left">
+                <p className="text-[10px] font-bold text-heading uppercase tracking-widest">First Order Discount Active</p>
+                <p className="text-[10px] text-action italic">Your first order gift has been applied to this order 🏮</p>
+              </div>
+            </div>
+          )}
+
+          {/* 2.5c EXHAUSTED MESSAGE (LOGGED IN ONLY) */}
+          {user && isFirstOrderExhausted && (
+            <div className="bg-surface border border-soft/50 rounded-[1.5rem] p-6 flex flex-col items-center text-center gap-3">
+              <div className="w-8 h-8 bg-soft/20 rounded-full flex items-center justify-center">
+                <Ticket size={16} className="text-description opacity-40" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-heading uppercase tracking-widest">
+                  First Order Voucher Exhausted
+                </p>
+                <p className="text-[10px] text-description italic">
+                  First order voucher already used in your previous purchase, don't
+                  worry more offers might be there in the future!
+                </p>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* 3. PAYMENT & TOTAL SUMMARY (MOVED UP) */}
@@ -251,12 +270,19 @@ export default function ExpressCheckout({
                 Rs. {subtotal.toLocaleString()}
               </span>
             </div>
-            {discount > 0 && (
-              <div className="flex justify-between items-center text-action">
-                <span className="text-xs">Voucher Discount</span>
-                <span className="text-sm font-bold">
-                  - Rs. {discount.toLocaleString()}
-                </span>
+            {appliedVouchers.length > 0 && (
+              <div className="space-y-1 py-1">
+                {appliedVouchers.map((v, i) => (
+                  <div key={i} className="flex justify-between items-center text-action/90 animate-in fade-in slide-in-from-right-2">
+                    <div className="flex items-center gap-1.5">
+                      <Ticket size={10} />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{v.code}</span>
+                    </div>
+                    <span className="text-[11px] font-bold">
+                      - Rs. {v.amount.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
             <div className="flex justify-between items-center border-t border-white/10 pt-4 mt-2">
@@ -351,16 +377,16 @@ export default function ExpressCheckout({
       </div>
       {/* 6. TRUST FOOTER */}
       <div className="bg-surface border border-soft/30 rounded-[2rem] p-6 flex items-start gap-4 shadow-sm">
-        <div className="w-8 h-8 bg-action/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-          <Phone size={14} className="text-action animate-bounce" />
+        <div className="w-8 h-8 bg-description/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+          <Info size={14} className="text-description opacity-60" />
         </div>
         <div className="space-y-1">
-          <p className="text-[10px] font-bold text-heading uppercase tracking-widest">Confirmation Call</p>
+          <p className="text-[10px] font-bold text-heading uppercase tracking-widest">Important Info / आवश्यक जानकारी</p>
           <p className="text-xs font-bold text-description italic">
             अर्डर पक्का गर्न हाम्रो टिमले तपाईंलाई फोन गर्नेछ ।
           </p>
           <p className="text-[9px] text-description/60">
-            Our team will call you to confirm the order details before we begin processing your handcrafted pieces.
+            Our team will call you to confirm the order details before we begin processing your order.
           </p>
         </div>
       </div>

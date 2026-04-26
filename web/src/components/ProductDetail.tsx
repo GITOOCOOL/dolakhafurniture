@@ -140,7 +140,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             The Artisan's Story
           </p>
           <p className="text-xl text-heading leading-[1.8] font-serif italic max-w-xl indent-8">
-            {product.description || "Every piece of Dolakha furniture is handcrafted with passion, blending traditional Nepali artistry with modern functional design."}
+            {product.description || "Every item of Dolakha furniture is built with precision, blending durable materials with modern functional design."}
           </p>
 
           {/* SPECIFICATIONS */}
@@ -150,7 +150,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             product.height) && (
             <div className="space-y-6 pt-8 border-t border-soft border-dotted">
               <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-action">
-                Dimensions & Craft
+                Dimensions & Specifications
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-6">
                 {product.material && (
@@ -223,14 +223,14 @@ export default function ProductDetail({ product }: { product: Product }) {
               leftIcon={isSuccess ? <ShieldCheck size={18} /> : undefined}
             >
               {isSuccess
-                ? "Reserved in Cart"
+                ? "Added to Bag"
                 : product.stock !== undefined && product.stock <= 0
-                  ? "Order Custom Studio Piece"
-                  : "Add to Private Collection"}
+                  ? "Order Custom Item"
+                  : "Add to Bag"}
             </Button>
 
             <p className="text-center text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-description">
-              * Locally Sourced • Hand-Finished • Delivered in Kathmandu
+               * Locally Sourced • Quality Assured • Delivered in Kathmandu
             </p>
           </div>
         </div>

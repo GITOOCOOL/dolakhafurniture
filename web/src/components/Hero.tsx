@@ -42,9 +42,8 @@ const Hero = ({
                 "Redefining Nepali spaces with our signature iron-wood fusion."
               </h2>
               <p className="type-body text-description max-w-sm">
-                Thoughtfully crafted for your home, designed for a lifetime of
-                beauty. Every piece tells a story of local artisans and
-                sustainable materials.
+                Thoughtfully designed for your home, built for a lifetime of
+                beauty. Every item is built with quality and sustainable materials.
               </p>
             </div>
 

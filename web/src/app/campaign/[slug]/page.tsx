@@ -1,5 +1,5 @@
 import { client, urlFor } from "@/lib/sanity";
-import { campaignBySlugQuery, welcomeVoucherQuery } from "@/lib/queries";
+import { campaignBySlugQuery, firstOrderVoucherQuery } from "@/lib/queries";
 import { Campaign, Voucher } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { Leaf, Sparkles, ArrowLeft } from "lucide-react";
@@ -37,9 +37,9 @@ export default async function CampaignLandingPage({ params }: Props) {
   const { slug } = await params;
   
   // Fetch both campaign and welcome voucher in parallel
-  const [campaign, welcomeVoucher] = await Promise.all([
+  const [campaign, firstOrderVoucher] = await Promise.all([
     client.fetch(campaignBySlugQuery, { slug }),
-    client.fetch(welcomeVoucherQuery)
+    client.fetch(firstOrderVoucherQuery)
   ]);
 
   if (!campaign) notFound();
@@ -64,7 +64,7 @@ export default async function CampaignLandingPage({ params }: Props) {
 
           <PDFDownloadButton
             campaign={campaign}
-            welcomeVoucher={welcomeVoucher}
+            firstOrderVoucher={firstOrderVoucher}
             label="DOWNLOAD CATALOG / PRICE LIST"
             variant="outline"
             className="!px-8 !py-2.5 !text-[11px] !border-soft !text-heading hover:!bg-app hover:!border-action"

@@ -14,13 +14,13 @@ const PDFDownloadLink = dynamic(
 
 interface Props {
   campaign: Campaign;
-  welcomeVoucher?: Voucher | null;
+  firstOrderVoucher?: Voucher | null;
   label: string;
   className?: string;
   variant?: "glass" | "outline";
 }
 
-export default function PDFDownloadButton({ campaign, welcomeVoucher, label, className = "", variant = "glass" }: Props) {
+export default function PDFDownloadButton({ campaign, firstOrderVoucher, label, className = "", variant = "glass" }: Props) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function PDFDownloadButton({ campaign, welcomeVoucher, label, cla
   return (
     <div className={className}>
       <PDFDownloadLink
-        document={<CampaignPDF campaign={campaign} welcomeVoucher={welcomeVoucher} />}
+        document={<CampaignPDF campaign={campaign} firstOrderVoucher={firstOrderVoucher} />}
         fileName={`${campaign.slug}-catalog.pdf`}
         className="block"
       >

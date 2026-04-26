@@ -59,7 +59,7 @@ export const activeCampaignsQuery = `*[_type == "campaign" && status == "active"
     buttonLink,
     startDate,
     endDate,
-    "vouchers": vouchers[]->{code, details, discountValue, discountType, isWelcomeVoucher, isOneTimePerCustomer, startsImmediately, neverExpires}
+    "vouchers": vouchers[]->{code, details, discountValue, discountType, isFirstOrderVoucher, isOneTimePerCustomer, startsImmediately, neverExpires}
 }`
 
 export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $slug][0] {
@@ -74,7 +74,7 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     banner,
     startDate,
     endDate,
-    "vouchers": vouchers[]->{code, details, discountValue, discountType, isWelcomeVoucher, isOneTimePerCustomer, startsImmediately, neverExpires},
+    "vouchers": vouchers[]->{code, details, discountValue, discountType, isFirstOrderVoucher, isOneTimePerCustomer, startsImmediately, neverExpires},
     "products": promotedProducts[@->isActive == true]-> {
         _id, title, price, mainImage, stock, "slug": slug.current, "category": category->{title, "slug": slug.current}
     }
@@ -110,7 +110,7 @@ export const activeCampaignHomeQuery = `*[_type == "campaign" && status == "acti
     }
 }`
 
-export const welcomeVoucherQuery = `*[_type == "discountVoucher" && isWelcomeVoucher == true && isActive == true][0] {
+export const firstOrderVoucherQuery = `*[_type == "discountVoucher" && isFirstOrderVoucher == true && isActive == true][0] {
     code,
     discountValue,
     discountType,

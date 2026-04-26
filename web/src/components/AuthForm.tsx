@@ -10,7 +10,7 @@ import Input from "./ui/Input";
 import { trackEvent } from "./MetaPixel";
 
 import { client } from "@/lib/sanity";
-import { welcomeVoucherQuery } from "@/lib/queries";
+import { firstOrderVoucherQuery } from "@/lib/queries";
 import { Voucher } from "@/types";
 
 interface AuthFormProps {
@@ -28,13 +28,13 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [welcomeVoucher, setWelcomeVoucher] = useState<Voucher | null>(null);
+  const [firstOrderVoucher, setFirstOrderVoucher] = useState<Voucher | null>(null);
 
   useEffect(() => {
     if (showRewardBanner) {
-      client.fetch(welcomeVoucherQuery)
-        .then(data => setWelcomeVoucher(data))
-        .catch(err => console.error("Error fetching welcome voucher:", err));
+      client.fetch(firstOrderVoucherQuery)
+        .then(data => setFirstOrderVoucher(data))
+        .catch(err => console.error("Error fetching first order voucher:", err));
     }
   }, [showRewardBanner]);
 
@@ -102,11 +102,11 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
         {isLogin ? "Join our community." : "Create an account."}
       </h1>
 
-      {showRewardBanner && welcomeVoucher && (
+      {showRewardBanner && firstOrderVoucher && (
         <div className="bg-app border border-soft rounded-2xl p-4 mb-8 flex items-center gap-3 text-left">
           <Ticket className="text-action" size={20} />
           <p className="text-[11px] font-medium text-heading">
-            Use code <span className="font-bold underline">{welcomeVoucher.code}</span> for {welcomeVoucher.discountValue}{welcomeVoucher.discountType === 'percentage' ? '%' : ''} OFF after signup.
+            Use code <span className="font-bold underline">{firstOrderVoucher.code}</span> for {firstOrderVoucher.discountValue}{firstOrderVoucher.discountType === 'percentage' ? '%' : ''} OFF after signup.
           </p>
         </div>
       )}

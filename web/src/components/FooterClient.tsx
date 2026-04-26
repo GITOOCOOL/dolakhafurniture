@@ -12,10 +12,10 @@ export default function FooterClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 text-center md:text-left">
           <div className="lg:col-span-2">
             <h3 className="type-section text-heading mb-8">
-              "Sustainably sourced, <br /> thoughtfully crafted."
+              "Sustainably sourced, <br /> thoughtfully produced."
             </h3>
             <p className="type-body text-description italic max-w-md mx-auto md:mx-0">
-              Each piece is a testament to our commitment to quality and
+              Each item is a testament to our commitment to quality and
               sustainability. Our other platforms are just a click away,
               where you can explore more of our story and collections.
             </p>

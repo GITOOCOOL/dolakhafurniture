@@ -282,7 +282,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                           <Search size={32} className="text-label" />
                         </div>
                         <h3 className="text-2xl font-serif italic text-heading mb-2">
-                          No results matched your craft
+                          No results matched your search
                         </h3>
                         <p className="text-description max-w-xs">
                           Double check your spelling or try searching for

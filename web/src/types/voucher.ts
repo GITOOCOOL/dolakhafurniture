@@ -3,7 +3,7 @@ export type Voucher = {
   discountType: 'percentage' | 'fixed';
   discountValue: number;
   details?: string;
-  isWelcomeVoucher?: boolean;
+  isFirstOrderVoucher?: boolean;
   isOneTimePerCustomer?: boolean;
   startsImmediately?: boolean;
   neverExpires?: boolean;

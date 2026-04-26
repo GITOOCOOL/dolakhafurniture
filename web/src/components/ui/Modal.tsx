@@ -135,7 +135,7 @@ export default function Modal({
               {!hideCloseButton && (
                 <button
                   onClick={onClose}
-                  className="w-12 h-12 bg-heading text-app rounded-full shadow-xl flex items-center justify-center transition-all hover:bg-action active:scale-95 translate-x-2"
+                  className="w-12 h-12 flex-shrink-0 bg-heading text-app rounded-full shadow-xl flex items-center justify-center transition-all hover:bg-action active:scale-95 translate-x-2"
                   aria-label="Close"
                 >
                   <X size={20} strokeWidth={2.5} />

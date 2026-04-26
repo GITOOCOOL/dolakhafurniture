@@ -23,16 +23,16 @@ export async function validateVoucher(code: string) {
 
     const now = new Date();
 
-    // 2. Specialized Logic for One-time use vouchers (including Welcome Vouchers)
-    if (voucher.isOneTimePerCustomer || voucher.isWelcomeVoucher) {
+    // 2. Specialized Logic for One-time use vouchers (including First-Order Vouchers)
+    if (voucher.isOneTimePerCustomer || voucher.isFirstOrderVoucher) {
       const supabase = await createSupabase();
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
         return { 
           success: false, 
-          message: voucher.isWelcomeVoucher 
-            ? "Please log in or sign up to use this welcome offer." 
+          message: voucher.isFirstOrderVoucher 
+            ? "Please log in or sign up to use this first-order offer." 
             : "Please log in to use this one-time voucher."
         };
       }

@@ -29,7 +29,6 @@ export default function CategoryNav({
     async function fetchCategories() {
       try {
         const data = await client.fetch(categoriesQuery);
-        console.log("FETCHED CATEGORIES:", data);
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/store/useCart";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { urlFor, client } from "@/lib/sanity";
 import { processOrder } from "@/app/actions/checkout";
 import { validateVoucher, checkVoucherUsage } from "@/app/actions/vouchers";
@@ -44,7 +44,7 @@ import Link from "next/link";
 import { useUIStore } from "@/store/useUIStore";
 import ExpressCheckout from "@/components/ExpressCheckout";
 
-import { welcomeVoucherQuery } from "@/lib/queries";
+import { firstOrderVoucherQuery } from "@/lib/queries";
 import { Voucher } from "@/types";
 
 interface CheckoutDrawerProps {
@@ -71,8 +71,8 @@ export default function CheckoutDrawer({
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
   const { lockScroll, unlockScroll } = useUIStore();
-  const [welcomeVoucher, setWelcomeVoucher] = useState<Voucher | null>(null);
-  const [isWelcomeExhausted, setIsWelcomeExhausted] = useState(false);
+  const [firstOrderVoucher, setFirstOrderVoucher] = useState<Voucher | null>(null);
+  const [isFirstOrderExhausted, setIsFirstOrderExhausted] = useState(false);
   const [hasPromptedVoucherReminder, setHasPromptedVoucherReminder] =
     useState(false);
   const [showVoucherReminder, setShowVoucherReminder] = useState(false);
@@ -157,8 +157,7 @@ export default function CheckoutDrawer({
       checkoutMethod === "express" &&
       campaigns.length > 0 &&
       !isAutoApplying &&
-      !isInitialLoading &&
-      appliedVouchers.length === 0
+      !isInitialLoading
     ) {
       const applyAllPossible = async () => {
         setIsAutoApplying(true);
@@ -169,8 +168,8 @@ export default function CheckoutDrawer({
         const allCandidateVouchers = campaigns.flatMap((c) => c.vouchers || []);
 
         for (const v of allCandidateVouchers) {
-          // SKIP Welcome Vouchers if the user has already used one
-          if (v.isWelcomeVoucher && isWelcomeExhausted) {
+          // SKIP First-Order Vouchers if the user has already used one
+          if (v.isFirstOrderVoucher && isFirstOrderExhausted) {
             continue;
           }
 
@@ -201,7 +200,7 @@ export default function CheckoutDrawer({
       };
       applyAllPossible();
     }
-  }, [isOpen, checkoutMethod, campaigns, items.length, isWelcomeExhausted, isInitialLoading]);
+  }, [isOpen, checkoutMethod, campaigns, items.length, subtotal, isFirstOrderExhausted, isInitialLoading]);
 
   useEffect(() => {
     if (isOpen && items.length > 0) {
@@ -218,30 +217,56 @@ export default function CheckoutDrawer({
     }
   }, [isOpen]);
 
+  // FORM VALIDATION LOGIC
+  const isFormValid = useMemo(() => {
+    const { firstName, lastName, phone, apartment, city } = formData;
+    
+    // For Express (Single Page): Every required field must be present
+    if (checkoutMethod === "express") {
+      return !!(
+        firstName.trim() && 
+        lastName.trim() && 
+        phone.trim() && 
+        apartment.trim() && 
+        city.trim()
+      );
+    }
+
+    // For Standard (Multi-step): Validate based on current visual step
+    if (activeStep === 2) {
+      return !!(firstName.trim() && lastName.trim() && phone.trim());
+    }
+    if (activeStep === 3) {
+      return !!(apartment.trim() && city.trim());
+    }
+
+    return true; // Steps 1 and 4 are logically always valid to proceed
+  }, [formData, checkoutMethod, activeStep]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsInitialLoading(true);
-        const [campaignsData, accounts, welcome, settings] = await Promise.all([
+        const [campaignsData, accounts, firstOrder, settings] = await Promise.all([
           client.fetch(activeCampaignsQuery),
           client.fetch(paymentAccountsQuery),
-          client.fetch(welcomeVoucherQuery),
+          client.fetch(firstOrderVoucherQuery),
           client.fetch(checkoutSettingsQuery),
         ]);
 
         setCampaigns(campaignsData);
         setPaymentAccounts(accounts);
-        setWelcomeVoucher(welcome);
+        setFirstOrderVoucher(firstOrder);
         if (settings?.method) setCheckoutMethod(settings.method);
 
-        // Check welcome voucher usage if logged in
-        if (propsUser && welcome) {
+        // Check first order voucher usage if logged in
+        if (propsUser && firstOrder) {
           const exhausted = await checkVoucherUsage(
-            welcome.code,
+            firstOrder.code,
             propsUser.id,
             propsUser.email,
           );
-          setIsWelcomeExhausted(exhausted);
+          setIsFirstOrderExhausted(exhausted);
         }
 
         // Sync with prop user
@@ -791,8 +816,10 @@ export default function CheckoutDrawer({
                   removeSingleItem={removeSingleItem}
                   removeItem={removeItem}
                   user={user}
-                  welcomeVoucher={welcomeVoucher}
-                  isWelcomeExhausted={isWelcomeExhausted}
+                  firstOrderVoucher={firstOrderVoucher}
+                  isFirstOrderExhausted={isFirstOrderExhausted}
+                  isInitialLoading={isInitialLoading}
+                  isAutoApplying={isAutoApplying}
                   onSignUp={onSignUp}
                 />
               ) : (
@@ -825,10 +852,10 @@ export default function CheckoutDrawer({
                     />
                     <div className="flex justify-between items-center">
                       <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-description">
-                        Review Your Pieces
+                        Review Your Order
                       </h4>
                       <span className="text-[9px] font-bold px-2.5 py-1 bg-espresso text-bone rounded-full uppercase tracking-tighter">
-                        {totalPieces} Total Pieces
+                        {totalPieces} Total Items
                       </span>
                     </div>
 
@@ -952,171 +979,6 @@ export default function CheckoutDrawer({
 
                     {/* Voucher Input */}
                     <div className="pt-4 border-t border-divider border-dashed relative">
-                      {/* Do you have a voucher hint - Triggered by 'Next' button if empty */}
-                      {showVoucherReminder && appliedVouchers.length === 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          className="mb-4 overflow-hidden"
-                        >
-                          <div className="p-3 bg-action/5 border border-action/10 rounded-xl flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center text-action">
-                              <Tag size={14} />
-                            </div>
-                            <div>
-                              <p className="type-action text-[10px] leading-tight font-bold">
-                                Wait! Do you have a voucher code?
-                              </p>
-                              <p className="type-label text-[9px] opacity-60 normal-case">
-                                Enter it below to unlock your special furniture
-                                offer.
-                              </p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      <div className="flex flex-col mb-2 ml-1 gap-0.5">
-                        <p className="type-label text-description">
-                          Discount Voucher
-                        </p>
-
-                        {/* DYNAMIC VOUCHER RIBBON */}
-                        {((welcomeVoucher && !isWelcomeExhausted && user?.id) ||
-                          campaigns.some((c) => c.vouchers?.length)) && (
-                          <div className="space-y-3 pt-2">
-                            <div className="flex items-center gap-2">
-                              <Sparkles size={12} className="text-action" />
-                              <p className="type-label text-action">
-                                Available Vouchers (Tap to use)
-                              </p>
-                            </div>
-                            <div className="flex flex-wrap gap-2 items-center pt-1">
-                              {/* Welcome Voucher - ONLY for logged in users */}
-                              {welcomeVoucher &&
-                                user?.id &&
-                                !isWelcomeExhausted &&
-                                !appliedVouchers.some(
-                                  (v) => v.code === welcomeVoucher.code,
-                                ) && (
-                                  <button
-                                    type="button"
-                                    onMouseEnter={() =>
-                                      setHoveredVoucher(welcomeVoucher)
-                                    }
-                                    onMouseLeave={() => setHoveredVoucher(null)}
-                                    onClick={() => {
-                                      setVoucherInput(welcomeVoucher.code);
-                                      setVoucherError("");
-                                    }}
-                                    className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
-                                  >
-                                    <Sparkles
-                                      size={10}
-                                      className="text-app fill-app/20"
-                                    />
-                                    <span className="type-action text-app text-[9px]">
-                                      {welcomeVoucher.code} •{" "}
-                                      {welcomeVoucher.discountValue}
-                                      {welcomeVoucher.discountType ===
-                                      "percentage"
-                                        ? "%"
-                                        : " OFF"}
-                                    </span>
-                                  </button>
-                                )}
-
-                              {/* Campaign Vouchers - Case-insensitive deduplication */}
-                              {(() => {
-                                const displayedCodes = new Set();
-                                const welcomeCodeUpper =
-                                  welcomeVoucher?.code?.toUpperCase();
-                                if (welcomeCodeUpper)
-                                  displayedCodes.add(welcomeCodeUpper);
-
-                                return campaigns
-                                  .flatMap((c) => c.vouchers || [])
-                                  .filter((v) => {
-                                    const codeUpper = v.code.toUpperCase();
-
-                                    // UNIVERSAL BLOCK: Hide 'WELCOME' vouchers for guests OR those who have already used them
-                                    if (
-                                      (!user?.id || isWelcomeExhausted) &&
-                                      codeUpper.includes("WELCOME")
-                                    )
-                                      return false;
-
-                                    // Deduplication: Skip if already shown or already applied
-                                    if (displayedCodes.has(codeUpper))
-                                      return false;
-                                    if (
-                                      appliedVouchers.some(
-                                        (av) =>
-                                          av.code.toUpperCase() === codeUpper,
-                                      )
-                                    )
-                                      return false;
-
-                                    displayedCodes.add(codeUpper);
-                                    return true;
-                                  })
-                                  .map((v, i) => (
-                                    <button
-                                      key={i}
-                                      type="button"
-                                      onMouseEnter={() => setHoveredVoucher(v)}
-                                      onMouseLeave={() =>
-                                        setHoveredVoucher(null)
-                                      }
-                                      onClick={() => {
-                                        setVoucherInput(v.code);
-                                        setVoucherError("");
-                                      }}
-                                      className="px-3 py-1.5 bg-heading border border-soft/20 rounded-full flex items-center gap-2 hover:bg-action transition-all group shadow-sm active:scale-95"
-                                    >
-                                      <Tag
-                                        size={10}
-                                        className="text-app fill-app/20"
-                                      />
-                                      <span className="type-action text-app text-[9px]">
-                                        {v.code} • {v.discountValue}
-                                        {v.discountType === "percentage"
-                                          ? "%"
-                                          : " OFF"}
-                                      </span>
-                                    </button>
-                                  ));
-                              })()}
-                            </div>
-
-                            {/* HOVER DESCRIPTION ROW */}
-                            <AnimatePresence mode="wait">
-                              {hoveredVoucher && (
-                                <motion.div
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  exit={{ opacity: 0, x: 10 }}
-                                  className="py-1 px-2 border-l-2 border-action bg-action/5 rounded-r-md mt-2"
-                                >
-                                  <p className="type-label text-action font-bold uppercase tracking-widest text-[9px]">
-                                    {hoveredVoucher.code}:{" "}
-                                    {hoveredVoucher.discountValue}
-                                    {hoveredVoucher.discountType ===
-                                    "percentage"
-                                      ? "% OFF"
-                                      : " OFF"}{" "}
-                                    on your total cart value
-                                  </p>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                            <p className="type-label opacity-40 normal-case italic mt-2">
-                              *TAP or CLICK the voucher to select it, OR type it
-                              manually and then press APPLY
-                            </p>
-                          </div>
-                        )}
-                      </div>
                       <div className="flex flex-col gap-2.5 mt-2">
                         <div className="w-full">
                           <Input
@@ -1193,9 +1055,9 @@ export default function CheckoutDrawer({
                     />
                   </div>
 
-                  {/* Mini Summary with Thumbnails */}
-                  <div className="bg-app border border-divider p-10 rounded-[3rem] text-center shadow-sm">
-                    <div className="flex justify-between items-center">
+                  {/* Summary with Integrated Voucher Input */}
+                  <div className="bg-app border border-divider p-8 rounded-[2.5rem] mt-12">
+                    <div className="flex justify-between items-center pb-6 border-b border-soft/50">
                       <div className="flex items-center gap-4">
                         <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-[120px]">
                           {items.slice(0, 3).map((item) => (
@@ -1206,39 +1068,114 @@ export default function CheckoutDrawer({
                               <img
                                 src={urlFor(item.mainImage).width(80).url()}
                                 className="w-full h-full object-contain p-1"
+                                alt={item.title}
                               />
                             </div>
                           ))}
                         </div>
                         <div>
                           <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label">
-                            Current Order
+                            Order Summary
                           </p>
                           <p className="text-xs font-sans font-bold text-heading">
-                            {totalPieces} Pieces
+                            {totalPieces} Items
                           </p>
                         </div>
                       </div>
-                      <p className="text-xl font-sans font-bold text-action">
-                        Rs. {finalTotal.toLocaleString()}
-                      </p>
+                      <div className="text-right">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-label opacity-40">Total</p>
+                        <p className="text-xl font-sans font-bold text-action">
+                          Rs. {finalTotal.toLocaleString()}
+                        </p>
+                      </div>
                     </div>
 
+                    {/* Vouchers in Summary */}
                     {appliedVouchers.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-4 border-t border-soft/50">
+                      <div className="py-4 space-y-2 border-b border-soft/30">
                         {appliedVouchers.map((v, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-1.5 px-2 py-1 bg-action/5 rounded-md border border-action/10"
+                            className="flex items-center justify-between px-3 py-2 bg-action/5 rounded-xl border border-action/10"
                           >
-                            <Ticket size={10} className="text-action" />
-                            <span className="text-[8px] font-bold text-action uppercase">
-                              {v.code}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <Ticket size={12} className="text-action" />
+                              <span className="text-[10px] font-bold text-action uppercase tracking-tight">
+                                {v.code}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-bold text-action">
+                                -Rs. {v.amount.toLocaleString()}
+                              </span>
+                              <button 
+                                onClick={() => {
+                                  setAppliedVouchers(prev => prev.filter((_, i) => i !== idx));
+                                  setDiscount(prev => prev - v.amount);
+                                }}
+                                className="p-1 hover:text-red-500 transition-colors"
+                              >
+                                <Minus size={12} />
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
                     )}
+
+                    {/* Compact Ribbon for Step 2 */}
+                    {((firstOrderVoucher && !isFirstOrderExhausted && user?.id) ||
+                      campaigns.some((c) => c.vouchers?.length)) && (
+                      <div className="flex flex-wrap gap-2 py-4 border-b border-soft/30">
+                         {firstOrderVoucher && user?.id && !isFirstOrderExhausted && !appliedVouchers.some(v => v.code === firstOrderVoucher.code) && (
+                           <button
+                             type="button"
+                             onClick={() => {
+                               setVoucherInput(firstOrderVoucher.code);
+                               setVoucherError("");
+                             }}
+                             className="text-[9px] font-bold text-action bg-action/5 px-3 py-1.5 rounded-full border border-action/20 hover:bg-action hover:text-white transition-all active:scale-95"
+                           >
+                             Apply First Order Gift 🎁
+                           </button>
+                         )}
+                         {campaigns.flatMap(c => c.vouchers || []).filter(v => v.code !== firstOrderVoucher?.code && !appliedVouchers.some(av => av.code.toUpperCase() === v.code.toUpperCase())).map((v, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => {
+                                setVoucherInput(v.code);
+                                setVoucherError("");
+                              }}
+                              className="text-[9px] font-bold text-description bg-surface px-3 py-1.5 rounded-full border border-soft hover:border-action transition-all active:scale-95"
+                            >
+                              {v.code}
+                            </button>
+                         ))}
+                      </div>
+                    )}
+
+                    <div className="pt-4 flex gap-2">
+                       <Input
+                         placeholder="Voucher code?"
+                         value={voucherInput}
+                         onChange={(e: any) => {
+                           setVoucherInput(e.target.value.toUpperCase());
+                           setVoucherError("");
+                         }}
+                         className="flex-1 !py-2.5 !rounded-xl !text-xs"
+                         containerClassName="!gap-0"
+                       />
+                       <Button
+                         type="button"
+                         onClick={handleApplyVoucher}
+                         isLoading={isApplyingVoucher}
+                         variant="outline"
+                         className="!px-6 !py-2.5 !rounded-xl text-[10px] font-bold border-soft"
+                       >
+                         Apply
+                       </Button>
+                    </div>
                   </div>
                 </motion.section>
               )}
@@ -1345,6 +1282,7 @@ export default function CheckoutDrawer({
                             <img
                               src={urlFor(item.mainImage).width(80).url()}
                               className="w-full h-full object-contain p-1"
+                              alt={item.title}
                             />
                           </div>
                         ))}
@@ -1354,7 +1292,7 @@ export default function CheckoutDrawer({
                           Current Order
                         </p>
                         <p className="text-xs font-sans font-bold text-heading">
-                          {totalPieces} Pieces
+                          {totalPieces} Items
                         </p>
                       </div>
                     </div>
@@ -1395,7 +1333,7 @@ export default function CheckoutDrawer({
                         </span>
                       </div>
                       <p className="text-[10px] text-description font-bold pl-9">
-                        Pay with cash when your piece arrives.
+                        Pay with cash when your order arrives.
                       </p>
                     </label>
 
@@ -1429,6 +1367,7 @@ export default function CheckoutDrawer({
                             <img
                               src={urlFor(account.qrCodeImage).width(120).url()}
                               className="h-24 w-24 object-contain"
+                              alt="QR Code"
                             />
                           </div>
                         )}
@@ -1441,10 +1380,10 @@ export default function CheckoutDrawer({
                     <div className="flex justify-between items-center relative z-10">
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-label">
-                          Total Pieces
+                          Total Order
                         </p>
                         <p className="text-lg font-sans font-bold text-white">
-                          {totalPieces} Handcrafted Items
+                          {totalPieces} Items
                         </p>
                       </div>
                       <p className="text-3xl font-sans font-bold text-white tracking-tight">
@@ -1465,7 +1404,7 @@ export default function CheckoutDrawer({
                                 Voucher: {v.code}
                               </span>
                             </div>
-                            <span className="text-[10px] font-bold text-white">
+                            <span className="text-[10px] font-bold text-heading">
                               - Rs. {v.amount.toLocaleString()}
                             </span>
                           </div>
@@ -1477,7 +1416,6 @@ export default function CheckoutDrawer({
               )}
                 </>
               )}
-
             </form>
           )}
         </div>
@@ -1520,10 +1458,9 @@ export default function CheckoutDrawer({
                     isInitialLoading)
                 }
                 disabled={
-                  checkoutMethod === "standard" &&
-                  activeStep === 1 &&
-                  items.length > 0 &&
-                  isInitialLoading
+                  isProcessing ||
+                  isInitialLoading ||
+                  !isFormValid
                 }
                 className="w-full max-w-[280px] !py-3.5 shadow-2xl shadow-action/10"
                 rightIcon={
