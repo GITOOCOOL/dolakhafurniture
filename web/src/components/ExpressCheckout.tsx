@@ -245,60 +245,8 @@ export default function ExpressCheckout({
         </>
       )}
 
-      {/* 3. PAYMENT & TOTAL SUMMARY (MOVED UP) */}
-      <div className="bg-espresso rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden text-app">
-        <div className="relative z-10 space-y-6">
-          <div className="flex justify-between items-center border-b border-white/10 pb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/10 rounded-lg">
-                <Truck size={18} />
-              </div>
-              <div>
-                <p className="text-[9px] uppercase font-bold tracking-widest opacity-60">
-                  Payment Mode
-                </p>
-                <p className="text-sm font-bold">Cash on Delivery</p>
-              </div>
-            </div>
-            <CheckCircle2 size={24} className="text-white/40" />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between items-center text-white/60">
-              <span className="text-xs">Subtotal</span>
-              <span className="text-sm font-bold">
-                Rs. {subtotal.toLocaleString()}
-              </span>
-            </div>
-            {appliedVouchers.length > 0 && (
-              <div className="space-y-1 py-1">
-                {appliedVouchers.map((v, i) => (
-                  <div key={i} className="flex justify-between items-center text-action/90 animate-in fade-in slide-in-from-right-2">
-                    <div className="flex items-center gap-1.5">
-                      <Ticket size={10} />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">{v.code}</span>
-                    </div>
-                    <span className="text-[11px] font-bold">
-                      - Rs. {v.amount.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div className="flex justify-between items-center border-t border-white/10 pt-4 mt-2">
-              <span className="text-sm font-bold text-white uppercase tracking-widest">
-                To Pay
-              </span>
-              <span className="text-2xl font-bold text-white tracking-tight">
-                Rs. {total.toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-action/10 rounded-full -mr-16 -mt-16 blur-3xl" />
-      </div>
-
       {/* 4. CUSTOMER DETAILS */}
+
       <div className="space-y-6">
         <div className="flex items-center gap-2 px-2">
           <User size={14} className="text-action" />

@@ -14,6 +14,7 @@ interface ModalProps {
   className?: string;
   position?: "center" | "right" | "left" | "bottom";
   hideCloseButton?: boolean;
+  hideHeader?: boolean;
   noPadding?: boolean;
   id?: string;
 }
@@ -26,6 +27,7 @@ export default function Modal({
   className = "",
   position = "center",
   hideCloseButton = false,
+  hideHeader = false,
   noPadding = false,
   id = "ui-modal",
 }: ModalProps) {
@@ -118,30 +120,32 @@ export default function Modal({
             `}
           >
             {/* Standardized Master Header */}
-            <div
-              className={`flex items-center justify-between px-8 py-4 border-b border-soft/20 flex-shrink-0 relative z-20`}
-            >
-              <div className="flex items-center gap-3">
-                {isDrawer && position === "left" && (
-                  <div className="w-2 h-2 rounded-full bg-action animate-pulse" />
-                )}
-                <div className="flex items-baseline gap-3">
-                  <h3 className="type-label text-heading text-[12px]">
-                    {title || (position === "left" ? "Navigation" : "Info")}
-                  </h3>
+            {!hideHeader && (
+              <div
+                className={`flex items-center justify-between px-8 py-4 border-b border-soft/20 flex-shrink-0 relative z-20`}
+              >
+                <div className="flex items-center gap-3">
+                  {isDrawer && position === "left" && (
+                    <div className="w-2 h-2 rounded-full bg-action animate-pulse" />
+                  )}
+                  <div className="flex items-baseline gap-3">
+                    <h3 className="type-label text-heading text-[12px]">
+                      {title || (position === "left" ? "Navigation" : "Info")}
+                    </h3>
+                  </div>
                 </div>
-              </div>
 
-              {!hideCloseButton && (
-                <button
-                  onClick={onClose}
-                  className="w-12 h-12 flex-shrink-0 bg-heading text-app rounded-full shadow-xl flex items-center justify-center transition-all hover:bg-action active:scale-95 translate-x-2"
-                  aria-label="Close"
-                >
-                  <X size={20} strokeWidth={2.5} />
-                </button>
-              )}
-            </div>
+                {!hideCloseButton && (
+                  <button
+                    onClick={onClose}
+                    className="w-12 h-12 flex-shrink-0 bg-heading text-app rounded-full shadow-xl flex items-center justify-center transition-all hover:bg-action active:scale-95 translate-x-2"
+                    aria-label="Close"
+                  >
+                    <X size={20} strokeWidth={2.5} />
+                  </button>
+                )}
+              </div>
+            )}
 
             <div
               className={`relative z-10 font-sans flex-1 overflow-y-auto custom-scrollbar ${

@@ -1422,72 +1422,106 @@ export default function CheckoutDrawer({
 
         {/* Footer Actions */}
         {!isSuccess && items.length > 0 && (
-          <div className="flex-shrink-0 py-4 border-t border-soft/10 flex items-center justify-between px-8 relative bg-app/80 backdrop-blur-md gap-4">
-            <div className="w-[100px] flex-shrink-0">
-              {activeStep > 1 && (
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="flex items-center gap-2 type-action text-description/60 hover:text-heading transition-all group py-2"
-                >
-                  <ArrowLeft
-                    size={16}
-                    className="group-hover:-translate-x-1 transition-transform"
-                  />
-                  <span className="text-[9px] uppercase font-bold tracking-[0.2em] hidden sm:inline">
-                    Back
-                  </span>
-                </button>
-              )}
-            </div>
+          <div className="flex-shrink-0 py-4 border-t border-divider flex items-center justify-between px-6 sm:px-8 relative bg-app/95 backdrop-blur-sm gap-4 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] transition-all">
+            {checkoutMethod === "express" ? (
+              <div className="flex items-center justify-between w-full gap-4 max-w-4xl mx-auto">
+                <div className="flex items-center gap-6">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-description uppercase tracking-widest opacity-50 leading-none mb-1">
+                      To Pay
+                    </span>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-xl font-sans font-bold text-heading leading-none">
+                        Rs. {finalTotal.toLocaleString()}
+                      </span>
+                      {discount > 0 && (
+                        <span className="text-[10px] font-bold text-action animate-pulse">
+                          (-Rs. {discount.toLocaleString()})
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-            <div className="flex-1 flex flex-col items-center">
-              {checkoutMethod === "express" && (
-                <span className="text-[10px] font-bold text-action mb-1.5 animate-pulse">
-                  अहिले पैसा तिर्नु पर्दैन, डेलिभरी पछि मात्र
-                </span>
-              )}
-              <Button
-                form="checkout-form"
-                type="submit"
-                isLoading={
-                  isProcessing ||
-                  (checkoutMethod === "standard" &&
-                    activeStep === 1 &&
-                    items.length > 0 &&
-                    isInitialLoading)
-                }
-                disabled={
-                  isProcessing ||
-                  isInitialLoading ||
-                  !isFormValid
-                }
-                className="w-full max-w-[280px] !py-3.5 shadow-2xl shadow-action/10"
-                rightIcon={
-                  checkoutMethod === "express" ? (
-                    <ShieldCheck size={18} />
-                  ) : activeStep < 4 ? (
-                    <ChevronRight size={18} />
-                  ) : (
-                    <ShieldCheck size={18} />
-                  )
-                }
-              >
-                {checkoutMethod === "express"
-                  ? "Confirm Cash on Delivery Order"
-                  : activeStep === 1
-                    ? "Next: Contact Info"
-                    : activeStep === 2
-                      ? "Next: Delivery"
-                      : activeStep === 3
-                        ? "Next: Payment"
-                        : "Secure Order"}
-              </Button>
-            </div>
+                  {discount > 0 && (
+                    <div className="hidden sm:flex flex-col border-l border-soft pl-6">
+                      <span className="text-[10px] font-bold text-description uppercase tracking-widest opacity-50 leading-none mb-1">
+                        Savings
+                      </span>
+                      <span className="text-xs font-bold text-green-600 leading-none">
+                        Rs. {discount.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                </div>
 
-            <div className="w-[100px] flex-shrink-0" />
+                <div className="flex-1 max-w-[280px]">
+                  <Button
+                    form="checkout-form"
+                    type="submit"
+                    isLoading={isProcessing || isInitialLoading}
+                    disabled={isProcessing || isInitialLoading || !isFormValid}
+                    fullWidth
+                    className="!py-3.5 shadow-xl shadow-action/10"
+                    rightIcon={<ShieldCheck size={18} />}
+                  >
+                    Confirm Order
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="w-[100px] flex-shrink-0">
+                  {activeStep > 1 && (
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="flex items-center gap-2 type-action text-description/60 hover:text-heading transition-all group py-2"
+                    >
+                      <ArrowLeft
+                        size={16}
+                        className="group-hover:-translate-x-1 transition-transform"
+                      />
+                      <span className="text-[9px] uppercase font-bold tracking-[0.2em] hidden sm:inline">
+                        Back
+                      </span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex-1 flex flex-col items-center">
+                  <Button
+                    form="checkout-form"
+                    type="submit"
+                    isLoading={
+                      isProcessing ||
+                      (activeStep === 1 && items.length > 0 && isInitialLoading)
+                    }
+                    disabled={isProcessing || isInitialLoading || !isFormValid}
+                    className="w-full max-w-[280px] !py-3.5 shadow-2xl shadow-action/10"
+                    rightIcon={
+                      activeStep < 4 ? (
+                        <ChevronRight size={18} />
+                      ) : (
+                        <ShieldCheck size={18} />
+                      )
+                    }
+                  >
+                    {activeStep === 1
+                      ? "Next: Contact Info"
+                      : activeStep === 2
+                        ? "Next: Delivery"
+                        : activeStep === 3
+                          ? "Next: Payment"
+                          : "Secure Order"}
+                  </Button>
+                </div>
+
+                <div className="w-[100px] flex-shrink-0" />
+              </>
+            )}
           </div>
         )}
+
       </div>
 
       {/* Inquiry Modal Integration */}
