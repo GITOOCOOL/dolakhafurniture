@@ -41,6 +41,7 @@ export default function CategoryNav({
   }, []);
 
   const baseLinks = [
+    { name: 'Home. / घर', href: '/' },
     { name: 'Shop. / पसल', href: '/shop' },
     { name: 'New Arrivals', href: '/new-arrivals' },
     { name: 'Campaigns', href: '/campaigns' },

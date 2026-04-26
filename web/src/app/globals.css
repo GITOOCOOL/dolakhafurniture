@@ -101,7 +101,7 @@ html[data-theme="dark"] {
   --text-label: var(--raw-muted-light);
   --border-divider: var(--raw-stone);
   --border-soft: var(--raw-stone-light);
-  --accent-action: #df9152; /* Shift Action to warmer Ochre for better dark contrast */
+  --accent-action: #a3573a; /* Standardized to brand Terracotta for consistency */
   --accent-warmth: #df9152;
   --app-invert: #f1f3e8;
 

@@ -60,13 +60,28 @@ export default async function Home() {
 
       {/* 1. TOP: FEATURED PRODUCTS (Using exactly the same design as Category rows) */}
       {featuredProducts.length > 0 && (
-        <section className="w-full py-4 md:py-6 border-b border-soft bg-app">
+        <section id="cat-featured" className="w-full py-4 md:py-6 border-b border-soft bg-app">
           <div className="w-full px-0">
             <CategoryRow 
               title="Featured"
               slug="featured"
               products={featuredProducts}
               autoScroll={true}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* 1.5 ALL PRODUCTS CAROUSEL (Sabai Saman) */}
+      {allProducts.length > 0 && (
+        <section id="cat-all" className="w-full py-4 md:py-6 border-b border-soft bg-app">
+          <div className="w-full px-0">
+            <CategoryRow 
+              title="सबै सामान (Sabai Saman)"
+              slug="shop"
+              products={allProducts}
+              autoScroll={false}
+              description="Explore our full collection of handcrafted furniture."
             />
           </div>
         </section>
@@ -86,6 +101,7 @@ export default async function Home() {
           return (
             <section
               key={cat.slug}
+              id={`cat-${cat.slug}`}
               className="py-6 md:py-8 w-full border-t border-soft transition-all duration-500 bg-app"
             >
               <div className="w-full px-0">

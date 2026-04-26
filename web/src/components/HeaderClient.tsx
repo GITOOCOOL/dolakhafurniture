@@ -15,6 +15,7 @@ import { searchProductsQuery } from "@/lib/queries";
 import ProductCard from "@/components/ProductCard";
 import CampaignModal from "./CampaignModal";
 import Modal from "./ui/Modal";
+import CategorySwitcher from "./CategorySwitcher";
 
 interface HeaderClientProps {
   latestCampaign?: Campaign | null;
@@ -145,6 +146,12 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
             <CategoryNav />
           </div>
         </div>
+
+        {pathname === "/" && (
+          <div className="pointer-events-auto">
+            <CategorySwitcher />
+          </div>
+        )}
 
         <CampaignModal campaign={latestCampaign || null} />
       </header>

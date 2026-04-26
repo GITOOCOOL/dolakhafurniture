@@ -64,19 +64,19 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div ref={containerRef} className="flex-1 relative group w-full px-0 overflow-visible flex flex-col gap-2">
+    <div ref={containerRef} className="flex-1 relative group w-full px-0 overflow-visible flex flex-col gap-0 transition-all">
       <style>{`
         /* Card width injection for responsive sizing */
-        :root { --card-width: 60%; }
-        @media (min-width: 768px) { :root { --card-width: 18%; } }
-        @media (min-width: 1024px) { :root { --card-width: 18%; } }
+        :root { --card-width: 30%; }
+        @media (min-width: 768px) { :root { --card-width: 9%; } }
+        @media (min-width: 1024px) { :root { --card-width: 9%; } }
       `}</style>
         <div 
           ref={scrollRef}
           onMouseDown={() => {
               setHasUserScrolled(true);
           }}
-          className={`flex gap-4 md:gap-8 lg:gap-12 overflow-x-auto pb-6 no-scrollbar w-full touch-pan-x touch-pan-y scroll-smooth ${maxScroll <= 0 ? 'justify-center' : 'justify-start'}`}
+          className={`flex gap-4 md:gap-8 lg:gap-12 overflow-x-auto pb-2 no-scrollbar w-full touch-pan-x touch-pan-y scroll-smooth ${maxScroll <= 0 ? 'justify-center' : 'justify-start'}`}
         >
           {infiniteChildren.map((child, index) => {
             const safeKey = (child as React.ReactElement)?.key || `carousel-item-${index}`;
@@ -95,12 +95,12 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
           })}
         </div>
 
-      {/* REPOSITIONED FOOTER CONTROLS AREA */}
-      {maxScroll > 0 && (
-        <div className="flex flex-col items-center gap-1 w-full px-4 mb-4 mt-2">
+          {/* REPOSITIONED FOOTER CONTROLS AREA */}
+          {maxScroll > 0 && (
+            <div className="flex flex-col items-center gap-0 w-full px-0 md:px-12 mb-4 mt-0">
           
           {/* UNIFIED NAV DECK: [‹] [---SCRUBBER---] [›] */}
-          <div className="flex items-center justify-between w-full max-w-[320px] gap-4 pt-2">
+          <div className="flex items-center justify-between w-full gap-4 pt-2">
             <button 
               onClick={() => scrollByAmount('left')}
               className="hidden md:flex text-action hover:opacity-70 active:scale-90 transition-all"

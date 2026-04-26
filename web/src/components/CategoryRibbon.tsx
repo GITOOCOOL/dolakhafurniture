@@ -19,7 +19,7 @@ const CategoryRibbon = ({
   const isFeatured = slug === "featured";
   const isCampaign = slug.startsWith("campaign/");
 
-  const buttonText = isFeatured ? "Shop All" : "Explore";
+  const buttonText = isFeatured ? "Explore Featured" : "Explore";
   const buttonHref = isFeatured
     ? "/shop"
     : isCampaign
