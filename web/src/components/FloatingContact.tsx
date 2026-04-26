@@ -9,9 +9,9 @@ import { useUIStore } from "@/store/useUIStore";
 
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showInquiryModal, setShowInquiryModal] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
+  const { activeLocks, isInquiryModalOpen, setIsInquiryModalOpen } = useUIStore();
 
   // Scroll listener for visibility - Syncing with header transition
   useEffect(() => {
@@ -78,14 +78,13 @@ const FloatingContact = () => {
     {
       icon: <MessageSquare size={20} strokeWidth={2.5} />,
       label: "Inquiry",
-      onClick: () => setShowInquiryModal(true),
+      onClick: () => setIsInquiryModalOpen(true),
       color: "bg-action",
       textColor: "text-app",
       showLabel: true,
     },
   ];
 
-  const { activeLocks } = useUIStore();
   const isAnyModalOpen = activeLocks.size > 0;
 
   if (pathname?.startsWith("/admin")) return null;
@@ -164,8 +163,8 @@ const FloatingContact = () => {
       )}
       <InquiryModal
         key="fc-inquiry-modal"
-        isOpen={showInquiryModal}
-        onClose={() => setShowInquiryModal(false)}
+        isOpen={isInquiryModalOpen}
+        onClose={() => setIsInquiryModalOpen(false)}
         title=" Inquiry"
         subtitle="How can we assist you today?"
       />

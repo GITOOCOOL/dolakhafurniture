@@ -93,36 +93,14 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
       <header className="sticky top-0 z-[100] w-full pointer-events-none transition-all duration-300">
         {/* Main Header Surface */}
         <div className="bg-app border-b border-soft shadow-[0_2px_10px_rgba(0,0,0,0.02)] pointer-events-auto">
-          <div className="w-full flex items-center justify-between py-3 md:py-4 px-0">
-            {/* Left: Utility (Menu + Offers) - Balanced as flex-1 */}
-            <div className="flex-1 basis-0 flex items-center gap-1 md:gap-2">
-              <button
-                onClick={() => setIsMenuOpen(true)}
-                className="w-12 h-12 flex items-center justify-center text-heading hover:text-action transition-all flex-shrink-0"
-                aria-label="Menu"
-              >
-                <Menu size={28} className="md:w-8 md:h-8" strokeWidth={1.5} />
-              </button>
+          <div className="w-full flex items-center justify-between py-3 md:py-4 px-3 gap-2 md:gap-0">
+            {/* Hidden Spacer for Desktop - Ensures Logo stays centered */}
+            <div className="hidden md:flex flex-1 basis-0" />
 
-              {/* Promo Trigger */}
-              <div className="flex items-center">
-                {latestCampaign && (
-                  <button
-                    onClick={() => setCampaignModalOpen(true)}
-                    className="h-7 md:h-[48px] flex items-center px-3 md:px-6 text-[9px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-white bg-action hover:bg-espresso rounded-full transition-all whitespace-nowrap flex-shrink-0 shadow-lg shadow-accent/20"
-                  >
-                    <span className="mr-1 md:mr-2">🏮</span>
-                    <span className="hidden xs:inline">Offers</span>
-                    <span className="xs:hidden">Sale</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Center: Branding - Dead Center Nudge */}
-            <div className="flex-none flex items-center justify-center px-4">
+            {/* Logo/Branding - Centered on desktop, left-aligned on mobile flow */}
+            <div className="flex-none md:flex-1 md:basis-0 flex items-center justify-start md:justify-center">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="relative flex-shrink-0 w-14 h-14 md:w-20 md:h-20 flex items-center justify-center">
+                <div className="relative flex-shrink-0 w-12 h-12 md:w-20 md:h-20 flex items-center justify-center">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -144,7 +122,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                   <img
                     src="/logo.png"
                     alt="Home"
-                    style={{ width: "30px", height: "30px" }}
+                    style={{ width: "26px", height: "26px" }}
                     className="md:w-15 md:h-15 aspect-square object-contain transition-transform duration-700 group-hover:rotate-6 relative z-10 mt-1"
                   />
                 </div>
@@ -154,9 +132,12 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
               </Link>
             </div>
 
-            {/* Right: Actions - Balanced as flex-1 */}
-            <div className="flex-1 basis-0 flex items-center justify-end">
-              <NavbarActions onSearchClick={() => setIsSearchOpen(true)} />
+            {/* All Utilities (including Menu on mobile) */}
+            <div className="flex-1 flex items-center justify-end gap-2">
+              <NavbarActions 
+                onSearchClick={() => setIsSearchOpen(true)} 
+                onMenuClick={() => setIsMenuOpen(true)}
+              />
             </div>
           </div>
 
@@ -164,7 +145,6 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
             <CategoryNav />
           </div>
         </div>
-
 
         <CampaignModal campaign={latestCampaign || null} />
       </header>
@@ -287,7 +267,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
       <Modal
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
-        position="left"
+        position="right"
         title="Navigation"
       >
         <div className="w-full h-full flex flex-col">

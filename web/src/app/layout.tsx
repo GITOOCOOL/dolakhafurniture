@@ -96,21 +96,10 @@ export default async function RootLayout({
     console.error("Layout data fetch failed:", error);
   }
 
-  // Combine bulletins with active campaigns for the ticker
-  const combinedBulletins = [
-    ...(bulletins.length > 0 
-      ? bulletins.map(b => ({ ...b, type: "default" }))
-      : [{ _id: 'fallback', title: 'Dolakha Furniture', content: 'Crafting Heritage since 1998.', type: 'default' }]),
-    ...(activeCampaigns?.map((campaign) => {
-      return {
-        _id: campaign._id,
-        title: campaign.title,
-        content: campaign.tagline || "Explore our latest collection",
-        voucherCode: campaign.vouchers?.[0]?.code?.toUpperCase(),
-        type: "campaign"
-      };
-    }) || []),
-  ];
+  // Bulletins for the ticker
+  const combinedBulletins = bulletins.length > 0 
+    ? bulletins.map(b => ({ ...b, type: "default" }))
+    : [{ _id: 'fallback', title: 'Dolakha Furniture', content: 'Crafting Heritage since 1998.', type: 'default' }];
 
   const latestCampaign = activeCampaigns?.[0] || null;
 
@@ -169,7 +158,6 @@ export default async function RootLayout({
             </Suspense>
 
             <BrowserBanner />
-            {/* <AnnouncementBar bulletins={combinedBulletins as any} /> */}
             <HeaderClient latestCampaign={latestCampaign} />
             <main className="w-full relative flex-1">{children}</main>
           </ToastProvider>

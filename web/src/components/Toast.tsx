@@ -32,15 +32,15 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      {/* BOTTOM CENTER CONTAINER - 90% WIDTH FOCUS */}
-      <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[9999999] flex flex-col-reverse gap-3 items-center pointer-events-none w-[90vw] max-w-sm">
+      {/* TOP CENTER CONTAINER - Below Navbar */}
+      <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[9999999] flex flex-col gap-3 items-center pointer-events-none w-[90vw] max-w-sm">
         <AnimatePresence mode="popLayout">
           {toasts.map((toast) => (
             <motion.div
               key={toast.id}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              exit={{ opacity: 0, scale: 0.9, y: -10 }}
               layout
               className="pointer-events-auto w-full"
             >

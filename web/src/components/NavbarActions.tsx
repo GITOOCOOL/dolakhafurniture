@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp, Sun, Moon, X, LayoutDashboard } from "lucide-react";
+import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp, Sun, Moon, X, LayoutDashboard, MessageSquare, Gift, Menu } from "lucide-react";
 import AuthForm from "./AuthForm";
 import CheckoutDrawer from "./CheckoutDrawer";
 import { ThemeToggle } from "./ThemeToggle";
@@ -16,9 +16,10 @@ import Modal from "./ui/Modal";
 
 interface NavbarActionsProps {
   onSearchClick: () => void;
+  onMenuClick: () => void;
 }
 
-export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
+export default function NavbarActions({ onSearchClick, onMenuClick }: NavbarActionsProps) {
   const supabase = createClient();
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
@@ -29,7 +30,8 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
     isCheckoutDrawerOpen, 
     setIsCheckoutDrawerOpen,
     isAccountModalOpen,
-    setIsAccountModalOpen
+    setIsAccountModalOpen,
+    setIsInquiryModalOpen
   } = useUIStore();
   
   const router = useRouter();
@@ -37,26 +39,6 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
   const items = useCart((state) => state.items);
   const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
 
-  const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
-  const popupTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (totalQuantity > 0) {
-      setShowCheckoutPopup(true);
-      
-      if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
-      
-      popupTimerRef.current = setTimeout(() => {
-        setShowCheckoutPopup(false);
-      }, 5000);
-    } else {
-      setShowCheckoutPopup(false);
-    }
-
-    return () => {
-      if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
-    }
-  }, [totalQuantity]);
 
   useEffect(() => {
     // 1. Single source of truth for auth
@@ -144,22 +126,16 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
 
 
   return (
-    <div className="flex items-center gap-6 md:gap-4 relative z-50 flex-shrink-0">
-      {/* Search Toggle Button - Grouped with Actions - Commented out for minimalism */}
-      {/* 
+    <div className="flex items-center gap-3 md:gap-4 relative z-50 flex-shrink-0">
+      {/* --- OFFERS / GIFT ICON --- */}
       <button
         type="button"
-        onPointerDown={() => onSearchClick()}
-        onClick={() => onSearchClick()}
-        className="w-[38px] h-[38px] flex items-center justify-center text-heading bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all cursor-pointer flex-shrink-0"
-        aria-label="Search"
+        onClick={() => setCampaignModalOpen(true)}
+        className="w-[38px] h-[38px] flex items-center justify-center bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all text-action cursor-pointer touch-manipulation group flex-shrink-0"
+        aria-label="View Offers"
       >
-        <Search size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
+        <Gift size={22} className="md:w-7 md:h-7" strokeWidth={1.5} />
       </button>
-      */}
-
-      {/* Theme Switcher */}
-      <ThemeToggle />
 
       {/* --- ANIMATED CART SECTION --- */}
       <div className="relative flex-shrink-0">
@@ -198,24 +174,6 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           )}
         </motion.button>
 
-        {/* 5-Second Checkout Prompt */}
-        <AnimatePresence>
-          {showCheckoutPopup && totalQuantity > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9, y: 10 }}
-              className="absolute top-full right-0 mt-4 z-[100] whitespace-nowrap"
-            >
-              <div className="bg-app-invert text-action-success px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 border border-action-success/20">
-                <span>Checkout here</span>
-                <ArrowUp size={12} className="animate-bounce" />
-              </div>
-              {/* Tooltip Arrow */}
-              <div className="absolute -top-1 right-4 w-2 h-2 bg-app-invert rotate-45 border-t border-l border-action-success/20" />
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* --- ACCOUNT / AUTH SECTION --- */}
@@ -343,6 +301,16 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
         </Modal>
       </div>
 
+      {/* Inquiry Modal Trigger */}
+      <button
+        type="button"
+        onClick={() => setIsInquiryModalOpen(true)}
+        className="w-[38px] h-[38px] flex items-center justify-center bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all text-heading cursor-pointer touch-manipulation group flex-shrink-0"
+        aria-label="Send Inquiry"
+      >
+        <MessageSquare size={20} className="md:w-6 md:h-6" strokeWidth={1.5} />
+      </button>
+
       {/* --- CHECKOUT DRAWER --- */}
       <CheckoutDrawer 
         isOpen={isCheckoutDrawerOpen} 
@@ -353,6 +321,19 @@ export default function NavbarActions({ onSearchClick }: NavbarActionsProps) {
           setIsAccountModalOpen(true);
         }}
       />
+
+      {/* Theme Switcher - Grouped at the rightmost position */}
+      <ThemeToggle />
+
+      {/* Hamburger Menu - Unified into the utility stack */}
+      <button
+        type="button"
+        onClick={onMenuClick}
+        className="w-[38px] h-[38px] flex items-center justify-center bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all text-heading cursor-pointer touch-manipulation flex-shrink-0"
+        aria-label="Toggle Menu"
+      >
+        <Menu size={22} strokeWidth={1.5} />
+      </button>
     </div>
   );
 }

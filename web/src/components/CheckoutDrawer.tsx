@@ -575,11 +575,6 @@ export default function CheckoutDrawer({
 
         {/* Content */}
         <div ref={contentRef} className="flex-1 overflow-y-auto p-6 sm:p-8 no-scrollbar">
-          {items.length === 0 && !isSuccess && (
-            <p className="text-[9px] uppercase font-bold tracking-[0.2em] text-description/30 pb-4">
-              Check our active campaigns
-            </p>
-          )}
           {isSuccess ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -627,6 +622,16 @@ export default function CheckoutDrawer({
               animate={{ opacity: 1 }}
               className="space-y-8 py-6 no-scrollbar"
             >
+              <div className="text-center py-4 space-y-2">
+                <h2 className="text-3xl font-serif italic text-heading flex items-center justify-center gap-3">
+                  Empty Cart <span className="not-italic">😔</span>
+                </h2>
+                {campaigns.length > 0 && (
+                  <p className="type-label text-description lowercase italic">
+                    check our exciting offers below
+                  </p>
+                )}
+              </div>
               {/* Dynamic Campaign Gallery */}
               {isInitialLoading ? (
                 <div className="space-y-6">
