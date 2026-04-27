@@ -31,6 +31,7 @@ export default function ProductDetail({
   const [quantity, setQuantity] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const { showToast } = useToast();
 
   // FETCH ACTIVE CAMPAIGNS AND GLOBAL VOUCHERS FOR REAL-TIME DISCOUNTING
@@ -190,18 +191,50 @@ export default function ProductDetail({
       <div
         className={`grid grid-cols-1 lg:grid-cols-2 ${variant === "modal" ? "gap-0" : "gap-16"} items-start`}
       >
-        {/* LEFT: INTERACTIVE IMAGE TIMELINE */}
         <div className="space-y-4">
           <div className="relative group overflow-hidden">
+            {/* TOP STORY BARS INDICATOR */}
+            {allImages.length > 1 && (
+              <div className="absolute top-4 left-4 right-4 z-20 flex gap-1.5 pointer-events-none">
+                {allImages.map((_, i) => (
+                  <div 
+                    key={i} 
+                    className="h-1.5 flex-1 rounded-full transition-colors duration-300 transform-gpu"
+                    style={{ backgroundColor: i === activeIndex ? '#ff6b00' : 'rgba(0, 0, 0, 0.4)' }}
+                  />
+                ))}
+              </div>
+            )}
             {/* SWIPEABLE MAIN IMAGE CONTAINER */}
             <div
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                if (allImages.length <= 1) return;
+
+                if (x < rect.width / 3) {
+                  // Prev
+                  const newIndex = Math.max(0, activeIndex - 1);
+                  document.getElementById(`product-image-${newIndex}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                  setActiveIndex(newIndex);
+                  if (allImages[newIndex]) setSelectedImage(allImages[newIndex]);
+                } else if (x > (rect.width * 2) / 3) {
+                  // Next
+                  const newIndex = Math.min(allImages.length - 1, activeIndex + 1);
+                  document.getElementById(`product-image-${newIndex}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                  setActiveIndex(newIndex);
+                  if (allImages[newIndex]) setSelectedImage(allImages[newIndex]);
+                }
+              }}
               onScroll={(e) => {
                 const container = e.currentTarget;
                 const index = Math.round(
                   container.scrollLeft / container.clientWidth,
                 );
-                if (allImages[index] && selectedImage !== allImages[index]) {
-                  setSelectedImage(allImages[index]);
+                if (index !== activeIndex) {
+                  setActiveIndex(index);
+                  if (allImages[index]) setSelectedImage(allImages[index]);
+                  
                   // Sync thumbnail scroll as well
                   const thumb = document.getElementById(`thumb-${index}`);
                   thumb?.scrollIntoView({
@@ -211,8 +244,9 @@ export default function ProductDetail({
                   });
                 }
               }}
-              className={`relative bg-app overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex flex-nowrap scrollbar-hide touch-pan-x transition-all duration-700 ${variant === "modal" ? "aspect-square lg:aspect-auto lg:h-[600px] rounded-none" : "aspect-square rounded-[3rem] border border-divider shadow-sm hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] hover:border-action/20"}`}
+              className={`relative bg-app overflow-x-hidden overflow-y-hidden flex flex-nowrap scrollbar-hide transition-all duration-700 ${variant === "modal" ? "aspect-square lg:aspect-auto lg:h-[600px] rounded-none" : "aspect-square rounded-[3rem] border border-divider shadow-sm hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] hover:border-action/20"}`}
             >
+
               {allImages.map((img, idx) => (
                 <div
                   key={idx}
@@ -240,48 +274,7 @@ export default function ProductDetail({
                 </div>
               ))}
             </div>
-
-            {/* TIMELINE NAVIGATION (THUMBNAILS) */}
-            {allImages.length > 1 && (
-              <div
-                className={`flex gap-3 px-6 py-4 overflow-x-auto scrollbar-hide snap-x ${variant === "modal" ? "bg-surface border-y border-soft/20" : ""}`}
-              >
-                {allImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    id={`thumb-${idx}`}
-                    onClick={() => {
-                      const el = document.getElementById(
-                        `product-image-${idx}`,
-                      );
-                      el?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "nearest",
-                        inline: "center",
-                      });
-                      setSelectedImage(img);
-                    }}
-                    className={`relative w-20 h-14 flex-shrink-0 overflow-hidden snap-center group/thumb transition-all duration-300 ${
-                      selectedImage === img
-                        ? "opacity-100 ring-2 ring-action ring-offset-2 scale-105"
-                        : "opacity-40 hover:opacity-100 grayscale hover:grayscale-0"
-                    }`}
-                  >
-                    <div className="absolute inset-0 bg-action/5" />
-                    <Image
-                      src={urlFor(img).width(200).format("webp").url()}
-                      alt={`View ${idx}`}
-                      fill
-                      className="object-cover"
-                    />
-                    {/* TIMELINE CONNECTOR */}
-                    {idx < allImages.length - 1 && (
-                      <div className="absolute top-1/2 -right-3 w-3 h-[1px] bg-divider opacity-50" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+          </div>
 
             <div
               className={`flex flex-col sm:grid sm:grid-cols-[auto,1fr] items-center gap-6 sm:gap-8 py-6 border-t border-divider/10 ${variant === "modal" ? "px-4 sm:px-6 bg-surface/50 backdrop-blur-sm" : ""}`}
@@ -426,7 +419,6 @@ export default function ProductDetail({
                 </div>
               </div>
             </div>
-          </div>
         </div>
 
         {/* RIGHT: CONTENT */}

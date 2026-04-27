@@ -99,11 +99,29 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
     return () => unlockScroll("header-overlay");
   }, [isMenuOpen, isSearchOpen, isInquiryModalOpen, lockScroll, unlockScroll]);
 
+  // Track Header Height dynamically to allow modals to dock perfectly below it
+  useEffect(() => {
+    if (isAdmin) return;
+    const header = document.getElementById("main-site-header");
+    if (!header) return;
+
+    // Set initial height
+    document.documentElement.style.setProperty("--header-height", `${header.clientHeight}px`);
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        document.documentElement.style.setProperty("--header-height", `${entry.target.clientHeight}px`);
+      }
+    });
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, [isAdmin]);
+
   if (isAdmin) return null;
 
   return (
     <>
-      <header className="sticky top-0 z-[100] w-full pointer-events-none transition-all duration-300">
+      <header id="main-site-header" className="sticky top-0 z-[100] w-full pointer-events-none transition-all duration-300">
         {/* Main Header Surface */}
         <div className="bg-app border-b border-soft shadow-[0_2px_10px_rgba(0,0,0,0.02)] pointer-events-auto">
           <div className="w-full flex items-center justify-between py-3 md:py-4 px-3 gap-2 md:gap-0">

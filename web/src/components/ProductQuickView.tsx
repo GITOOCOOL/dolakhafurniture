@@ -16,7 +16,7 @@ export default function ProductQuickView() {
       onClose={() => setViewingProduct(null)}
       title={viewingProduct.title}
       position="bottom"
-      className="sm:max-w-7xl !p-0 sm:h-[85dvh]"
+      className="sm:max-w-7xl !p-0 sm:h-[calc(100dvh-var(--header-height,5rem))]"
       noPadding
     >
       <div className="relative w-full h-full bg-app/80 backdrop-blur-3xl">

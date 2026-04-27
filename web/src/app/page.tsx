@@ -80,6 +80,25 @@ export default async function Home() {
         </section>
       )}
 
+      {/* 0.5 ALL PRODUCTS CAROUSEL (Sabai Saman) */}
+      {allProducts.length > 0 && (
+        <section
+          id="cat-all"
+          className="w-full py-4 md:py-6 border-b border-soft bg-app"
+        >
+          <div className="w-full px-0">
+            <CategoryRow
+              title="सबै सामान (Sabai Saman)"
+              slug="shop"
+              products={allProducts}
+              autoScroll={false}
+              description="Explore our full collection of handcrafted furniture."
+              businessMetaData={businessMetaData}
+            />
+          </div>
+        </section>
+      )}
+
       {/* 1. TOP:  FEATURED PRODUCTS (Using exactly the same design as Category rows) */}
       {featuredProducts.length > 0 && (
         <section
@@ -98,24 +117,6 @@ export default async function Home() {
         </section>
       )}
 
-      {/* 1.5 ALL PRODUCTS CAROUSEL (Sabai Saman) */}
-      {allProducts.length > 0 && (
-        <section
-          id="cat-all"
-          className="w-full py-4 md:py-6 border-b border-soft bg-app"
-        >
-          <div className="w-full px-0">
-            <CategoryRow
-              title="सबै सामान (Sabai Saman)"
-              slug="shop"
-              products={allProducts}
-              autoScroll={false}
-              description="Explore our full collection of handcrafted furniture."
-              businessMetaData={businessMetaData}
-            />
-          </div>
-        </section>
-      )}
 
       {/* 2. TOP: CATEGORY CAROUSELS (Primary product discovery) */}
       <div id="category-rows-section" className="w-full bg-app pb-16">

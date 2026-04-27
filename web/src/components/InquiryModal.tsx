@@ -158,7 +158,7 @@ export default function InquiryModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} position="bottom" id="inquiry-modal">
+    <Modal isOpen={isOpen} onClose={onClose} title={title} position="bottom" id="inquiry-modal" className="sm:h-[calc(100dvh-var(--header-height,5rem))]">
       <p className="type-label text-description mb-8 -mt-2">
         {subtitle}
       </p>

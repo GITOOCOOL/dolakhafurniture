@@ -40,17 +40,23 @@ const ProductCard = ({
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-soft bg-surface w-full h-full shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1">
-      <Link
-        href={`/product/${product.slug}`}
-        className="block transition-transform duration-200 ease-out touch-manipulation"
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={(e) => {
+          e.preventDefault();
+          setViewingProduct(product);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setViewingProduct(product);
+          }
+        }}
+        className="block transition-transform duration-200 ease-out touch-manipulation cursor-pointer focus:outline-none"
       >
         <div 
-          className="aspect-square bg-app overflow-hidden relative cursor-pointer"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setViewingProduct(product);
-          }}
+          className="aspect-square bg-app overflow-hidden relative"
         >
           {/* BLURRED BACKDROP */}
           <img
@@ -109,7 +115,7 @@ const ProductCard = ({
             </p>
           )}
         </div>
-      </Link>
+      </div>
 
       {/* ACTION DECK: Triple-Command Row (Expands to fill remaining space) */}
       <div className="flex-1 flex flex-col">
