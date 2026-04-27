@@ -2,7 +2,7 @@
 
 import { urlFor } from "../lib/sanity";
 import Link from "next/link";
-import { Product } from "@/types";
+import { Product, BusinessMetaData } from "@/types";
 import { ShoppingBag, Plus, Minus } from "lucide-react";
 import { useToast } from "./Toast";
 import { trackEvent } from "./MetaPixel";
@@ -14,10 +14,12 @@ const ProductCard = ({
   product,
   variant = "default",
   accentColor = "accent",
+  businessMetaData,
 }: {
   product: Product;
   variant?: "default" | "ribbon";
   accentColor?: string;
+  businessMetaData?: BusinessMetaData | null;
 }) => {
   const { showToast } = useToast();
   const { addItem } = useCart();
@@ -25,14 +27,14 @@ const ProductCard = ({
   const [quantity, setQuantity] = useState(1);
 
   // Pre-filled WhatsApp link
-  const whatsappNumber = "61410765748";
+  const whatsappNumber = businessMetaData?.whatsapp || "undefined_setmetadata_in_studio";
   const whatsappMessage = encodeURIComponent(
-    `Hi Dolakha! I'm interested in buying ${product.title}.`,
+    `Hi ${businessMetaData?.businessName || "undefined_setmetadata_in_studio"}! I'm interested in buying ${product.title}.`,
   );
-  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
 
   // Messenger link
-  const messengerLink = `https://m.me/224061751418570?ref=${encodeURIComponent(product.title)}`;
+  const messengerLink = businessMetaData?.messengerUrl || "undefined_setmetadata_in_studio";
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-soft bg-surface w-full h-full shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1">
@@ -159,7 +161,7 @@ const ProductCard = ({
                 content_type: "product",
                 value: product.price * quantity,
                 currency: "NPR",
-                brand: "Dolakha Furniture",
+                brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
                 availability:
                   (product.stock ?? 0) > 0 ? "in stock" : "available for order",
               });

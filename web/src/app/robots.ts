@@ -1,12 +1,15 @@
-import { MetadataRoute } from 'next'
+import { client } from '@/lib/sanity'
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const businessMetaData = await client.fetch(`*[_type == "businessMetaData"][0]{ businessUrl }`);
+  const domain = businessMetaData?.businessUrl || 'https://undefined_setmetadata_in_studio.com';
+
   return {
     rules: {
       userAgent: '*',
       allow: '/',
       disallow: ['/admin/', '/account/', '/api/', '/checkout/'],
     },
-    sitemap: 'https://dolakhafurniture.com/sitemap.xml',
+    sitemap: `${domain}/sitemap.xml`,
   }
 }

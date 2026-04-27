@@ -1,14 +1,19 @@
 import { client } from "@/lib/sanity";
 import Link from "next/link";
 import { Metadata } from "next";
-import { allProductsQuery } from "@/lib/queries";
+import { allProductsQuery, businessMetaDataQuery } from "@/lib/queries";
 import { Product } from "@/types";
 import ShopClient from "@/components/ShopClient";
 
-export const metadata: Metadata = {
-  title: "Shop | Dolakha Furniture",
-  description: "Explore our collection of handcrafted, sustainable furniture.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const businessMetaData = await client.fetch(businessMetaDataQuery);
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+
+  return {
+    title: `Shop | ${name}`,
+    description: `Explore our collection of handcrafted, sustainable furniture at ${name}.`,
+  };
+}
 
 export const dynamic = 'force-dynamic';
 

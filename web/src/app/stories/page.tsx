@@ -1,22 +1,35 @@
 import { client } from "@/lib/sanity";
-import { socialMediaQuery } from "@/lib/queries";
+import { businessMetaDataQuery, socialMediaQuery } from "@/lib/queries";
 import SocialStories from "@/components/SocialStories";
 import ReelsSection from "@/components/ReelsSection";
 import { SocialContent } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
-export const metadata = {
-  title: 'Stories | Dolakha Furniture',
-  description: 'Behind the scenes at Dolakha Furniture - Factory reels, latest designs, and heritage blogs.',
-};
+
+export async function generateMetadata(): Promise<Metadata> {
+  const businessMetaData = await client.fetch(businessMetaDataQuery);
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+
+  return {
+    title: `Stories | ${name}`,
+    description: `Behind the scenes at ${name} - Factory reels, latest designs, and heritage blogs.`,
+  };
+}
 
 export default async function StoriesPage() {
   let socialContent: SocialContent[] = [];
+  let businessMetaData: any = null;
 
   try {
-    socialContent = await client.fetch<SocialContent[]>(socialMediaQuery, {}, { next: { revalidate: 60 } });
+    const [socialData, metaData] = await Promise.all([
+      client.fetch<SocialContent[]>(socialMediaQuery, {}, { next: { revalidate: 60 } }),
+      client.fetch(businessMetaDataQuery)
+    ]);
+    socialContent = socialData;
+    businessMetaData = metaData;
   } catch (error) {
     console.error("Failed to fetch stories:", error);
   }
@@ -25,12 +38,12 @@ export default async function StoriesPage() {
   const reels = socialContent.filter(item => item.type === 'reel');
   const blogs = socialContent.filter(item => item.type === 'blog');
 
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+
   return (
     <div className="w-full bg-app min-h-screen">
-      {/* standard COMPACT HEADER */}
       <section className="pt-40 pb-8 px-6 bg-app relative">
         <div className="container mx-auto">
-          {/* TOP LEFT: Back to home */}
           <div className="absolute top-16 left-6 md:left-12">
             <Link 
               href="/" 
@@ -49,7 +62,6 @@ export default async function StoriesPage() {
         </div>
       </section>
 
-      {/* 2. THE STORIES (CIRCLE FEED) */}
       <section className="py-12 border-b border-soft overflow-hidden">
         <div className="container mx-auto">
           <div className="px-6 mb-8 flex justify-between items-end">
@@ -65,7 +77,6 @@ export default async function StoriesPage() {
         </div>
       </section>
 
-      {/* 3. THE REELS (CAROUSEL) */}
       <section className="py-20 bg-app">
         <div className="container mx-auto">
           <div className="px-6 mb-12 text-center md:text-left">
@@ -76,7 +87,6 @@ export default async function StoriesPage() {
         </div>
       </section>
 
-      {/* 4. THE BLOGS (ARTICLE GRID) */}
       {blogs.length > 0 && (
         <section className="py-24 border-t border-soft bg-app-alt/30">
           <div className="container mx-auto px-6">
@@ -99,7 +109,7 @@ export default async function StoriesPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-label italic">
-                        Dolakha Furniture Heritage
+                        {name} Heritage
                       </div>
                     )}
                     <div className="absolute top-4 left-4">
@@ -128,7 +138,6 @@ export default async function StoriesPage() {
         </section>
       )}
 
-      {/* 5. CALL TO ACTION */}
       <section className="py-24 border-t border-soft border-dotted text-center bg-app">
         <div className="container mx-auto px-6">
           <h3 className="text-3xl font-serif italic text-heading mb-6 tracking-tight">Stay connected to the source.</h3>
@@ -136,22 +145,36 @@ export default async function StoriesPage() {
             Follow our journey across platforms for daily craft updates and exclusive previews.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a 
-              href="https://www.instagram.com/dolakhafurnituredesign/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-heading text-white hover:bg-black transition-all duration-300 rounded-sm font-medium tracking-wide shadow-custom"
-            >
-              INSTAGRAM
-            </a>
-            <a 
-              href="https://www.facebook.com/dolakhafurniture/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="px-8 py-4 border border-heading text-heading hover:bg-heading hover:text-white transition-all duration-300 rounded-sm font-medium tracking-wide"
-            >
-              FACEBOOK
-            </a>
+            {businessMetaData?.instagramUrl && (
+              <a 
+                href={businessMetaData.instagramUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-8 py-4 bg-heading text-white hover:bg-black transition-all duration-300 rounded-sm font-medium tracking-wide shadow-custom"
+              >
+                INSTAGRAM
+              </a>
+            )}
+            {businessMetaData?.facebookUrl && (
+              <a 
+                href={businessMetaData.facebookUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-8 py-4 border border-heading text-heading hover:bg-heading hover:text-white transition-all duration-300 rounded-sm font-medium tracking-wide"
+              >
+                FACEBOOK
+              </a>
+            )}
+            {businessMetaData?.tiktokUrl && (
+              <a 
+                href={businessMetaData.tiktokUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-8 py-4 border border-heading text-heading hover:bg-heading hover:text-white transition-all duration-300 rounded-sm font-medium tracking-wide"
+              >
+                TIKTOK
+              </a>
+            )}
           </div>
         </div>
       </section>

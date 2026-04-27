@@ -8,10 +8,11 @@ import {
   featuredProductsQuery,
   activeCampaignHomeQuery,
   socialMediaQuery,
+  businessMetaDataQuery,
 } from "@/lib/queries";
 import Carousel from "@/components/Carousel";
 import ProductCard from "@/components/ProductCard";
-import { SocialContent } from "@/types";
+import { SocialContent, BusinessMetaData } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,9 @@ export default async function Home() {
 
   const activeCampaign =
     (await client.fetch<any>(activeCampaignHomeQuery)) || null;
+
+  const businessMetaData = 
+    (await client.fetch<BusinessMetaData>(businessMetaDataQuery)) || null;
 
   let socialContent: SocialContent[] = [];
   try {
@@ -67,10 +71,11 @@ export default async function Home() {
               title={`Campaign: ${activeCampaign.title}`}
               slug={`campaign/${activeCampaign.slug}`}
               products={activeCampaign.products}
-              subtitle={activeCampaign.endDate}
+               subtitle={activeCampaign.endDate}
               vouchers={activeCampaign.vouchers}
               autoScroll={true}
               description={activeCampaign.description}
+              businessMetaData={businessMetaData}
             />
           </div>
         </section>
@@ -88,6 +93,7 @@ export default async function Home() {
               slug="featured"
               products={featuredProducts}
               autoScroll={true}
+              businessMetaData={businessMetaData}
             />
           </div>
         </section>
@@ -106,6 +112,7 @@ export default async function Home() {
               products={allProducts}
               autoScroll={false}
               description="Explore our full collection of handcrafted furniture."
+              businessMetaData={businessMetaData}
             />
           </div>
         </section>
@@ -140,6 +147,7 @@ export default async function Home() {
                   products={catProducts}
                   autoScroll={true}
                   description={cat.description}
+                  businessMetaData={businessMetaData}
                 />
               </div>
             </section>
@@ -149,7 +157,7 @@ export default async function Home() {
 
       {/* 4. BOTTOM: BRAND STORY / MISSION (Moved from middle for better product-first flow) */}
       <div className="border-t border-soft border-dotted">
-        <Hero stories={homepageStories} reels={homepageReels} />
+        <Hero stories={homepageStories} reels={homepageReels} businessMetaData={businessMetaData} />
       </div>
     </div>
   );

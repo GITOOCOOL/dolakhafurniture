@@ -1,14 +1,35 @@
 import { client } from "@/lib/sanity";
-import { activeCampaignsQuery } from "@/lib/queries";
-import { Campaign } from "@/types";
+import { activeCampaignsQuery, businessMetaDataQuery } from "@/lib/queries";
+import { Campaign, BusinessMetaData } from "@/types";
 import CampaignCard from "@/components/CampaignCard";
 import { Leaf, Sparkles } from "lucide-react";
 import Link from "next/link";
 
+import { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  let businessMetaData: BusinessMetaData | null = null;
+  try {
+    businessMetaData = await client.fetch<BusinessMetaData>(businessMetaDataQuery);
+  } catch (error) {
+    console.error("Metadata fetch failed:", error);
+  }
+
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+
+  return {
+    title: `Campaigns & Editorials | ${name}`,
+    description: `Explore exclusive collections and limited-time offers from ${name}.`,
+  };
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function CampaignsPage() {
-  const campaigns: Campaign[] = await client.fetch(activeCampaignsQuery);
+  const [campaigns, businessMetaData]: [Campaign[], BusinessMetaData | null] = await Promise.all([
+    client.fetch(activeCampaignsQuery),
+    client.fetch(businessMetaDataQuery),
+  ]);
 
   return (
     <main className="min-h-screen bg-app pt-40 pb-20 px-6 md:px-12 relative">
@@ -36,7 +57,11 @@ export default async function CampaignsPage() {
         <div className="space-y-12 md:space-y-20">
           {campaigns.length > 0 ? (
             campaigns.map((campaign) => (
-              <CampaignCard key={campaign._id} campaign={campaign} />
+              <CampaignCard 
+                key={campaign._id} 
+                campaign={campaign} 
+                businessMetaData={businessMetaData}
+              />
             ))
           ) : (
             <div className="py-32 text-center space-y-4">

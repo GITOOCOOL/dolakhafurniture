@@ -9,7 +9,7 @@ import { Menu, X, Facebook, Instagram, Search, Leaf } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/store/useUIStore";
 import { trackEvent } from "./MetaPixel";
-import { Campaign, Product } from "@/types";
+import { Campaign, Product, BusinessMetaData } from "@/types";
 import { client } from "@/lib/sanity";
 import { searchProductsQuery } from "@/lib/queries";
 import ProductCard from "@/components/ProductCard";
@@ -20,9 +20,10 @@ import ProductQuickView from "./ProductQuickView";
 
 interface HeaderClientProps {
   latestCampaign?: Campaign | null;
+  businessMetaData?: BusinessMetaData | null;
 }
 
-export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
+export default function HeaderClient({ latestCampaign, businessMetaData }: HeaderClientProps) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -128,8 +129,9 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                     className="md:w-15 md:h-15 aspect-square object-contain transition-transform duration-700 group-hover:rotate-6 relative z-10 mt-1"
                   />
                 </div>
-                <span className="hidden lg:block text-2xl xl:text-3xl font-serif italic tracking-tight text-heading">
-                  Dolakha<span className="text-action">.</span>Furniture
+                 <span className="hidden lg:block text-2xl xl:text-3xl font-serif italic tracking-tight text-heading">
+                  {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}
+                  <span className="text-action">.</span>
                 </span>
               </Link>
             </div>
@@ -139,6 +141,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
               <NavbarActions 
                 onSearchClick={() => setIsSearchOpen(true)} 
                 onMenuClick={() => setIsMenuOpen(true)}
+                businessMetaData={businessMetaData}
               />
             </div>
           </div>
@@ -225,7 +228,7 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
                             className="h-full"
                             onClick={() => setIsSearchOpen(false)}
                           >
-                            <ProductCard product={product} />
+                            <ProductCard product={product} businessMetaData={businessMetaData} />
                           </div>
                         ))}
                       </div>
@@ -316,29 +319,41 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
 
           <div className="flex-shrink-0 w-full border-t border-soft/20 pt-10 pb-6 mt-10">
             <div className="flex gap-8 mb-6">
-              <a
-                href="https://www.facebook.com/dolakhafurniture/"
-                className="text-heading/40 hover:text-action transition-all"
-              >
-                <Facebook size={22} strokeWidth={1.5} />
-              </a>
-              <a
-                href="https://www.instagram.com/dolakhafurnituredesign/"
-                className="text-heading/40 hover:text-action transition-all"
-              >
-                <Instagram size={22} strokeWidth={1.5} />
-              </a>
-              <a
-                href="https://www.tiktok.com/@dolakhafurniture/"
-                className="text-heading/40 hover:text-action transition-all"
-              >
-                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
-                </svg>
-              </a>
+              {businessMetaData?.facebookUrl && (
+                <a
+                  href={businessMetaData.facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-heading/40 hover:text-action transition-all"
+                >
+                  <Facebook size={22} strokeWidth={1.5} />
+                </a>
+              )}
+              {businessMetaData?.instagramUrl && (
+                <a
+                  href={businessMetaData.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-heading/40 hover:text-action transition-all"
+                >
+                  <Instagram size={22} strokeWidth={1.5} />
+                </a>
+              )}
+              {businessMetaData?.tiktokUrl && (
+                <a
+                  href={businessMetaData.tiktokUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-heading/40 hover:text-action transition-all"
+                >
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
+                  </svg>
+                </a>
+              )}
             </div>
             <p className="type-label text-description/40 uppercase tracking-[0.3em] text-[10px]">
-              Honest Craft, Nepal
+              Honest Craft, {businessMetaData?.address || "undefined_setmetadata_in_studio"}
             </p>
           </div>
         </div>

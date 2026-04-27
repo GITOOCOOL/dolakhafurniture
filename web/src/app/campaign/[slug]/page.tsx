@@ -1,6 +1,6 @@
 import { client, urlFor } from "@/lib/sanity";
-import { campaignBySlugQuery, firstOrderVoucherQuery } from "@/lib/queries";
-import { Campaign, Voucher } from "@/types";
+import { campaignBySlugQuery, firstOrderVoucherQuery, businessMetaDataQuery } from "@/lib/queries";
+import { Campaign, Voucher, BusinessMetaData } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { Leaf, Sparkles, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -18,16 +18,23 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const campaign: Campaign = await client.fetch(campaignBySlugQuery, { slug });
+  const [campaign, businessMetaData] = await Promise.all([
+    client.fetch<Campaign | null>(campaignBySlugQuery, { slug }),
+    client.fetch<BusinessMetaData | null>(businessMetaDataQuery),
+  ]);
   
-  if (!campaign) return { title: "Campaign Not Found" };
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  
+  if (!campaign) return { title: `Campaign Not Found | ${name}` };
+  
+  const description = campaign.description || campaign.tagline || `Exclusive Campaign from ${name}.`;
   
   return {
-    title: `${campaign.title} | Dolakha Furniture`,
-    description: campaign.description || campaign.tagline || 'Exclusive Campaign from Dolakha Furniture.',
+    title: `${campaign.title} | ${name}`,
+    description,
     openGraph: {
-      title: `${campaign.title} | Dolakha Furniture`,
-      description: campaign.description || campaign.tagline || 'Exclusive Campaign from Dolakha Furniture.',
+      title: `${campaign.title} | ${name}`,
+      description,
       images: campaign.banner ? [urlFor(campaign.banner).width(1200).height(630).url()] : [],
     }
   };
@@ -36,10 +43,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CampaignLandingPage({ params }: Props) {
   const { slug } = await params;
   
-  // Fetch both campaign and welcome voucher in parallel
-  const [campaign, firstOrderVoucher] = await Promise.all([
+  // Fetch campaign, welcome voucher and business meta in parallel
+  const [campaign, firstOrderVoucher, businessMetaData] = await Promise.all([
     client.fetch(campaignBySlugQuery, { slug }),
-    client.fetch(firstOrderVoucherQuery)
+    client.fetch(firstOrderVoucherQuery),
+    client.fetch<BusinessMetaData>(businessMetaDataQuery)
   ]);
 
   if (!campaign) notFound();
@@ -65,6 +73,7 @@ export default async function CampaignLandingPage({ params }: Props) {
           <PDFDownloadButton
             campaign={campaign}
             firstOrderVoucher={firstOrderVoucher}
+            businessMetaData={businessMetaData}
             label="DOWNLOAD CATALOG / PRICE LIST"
             variant="outline"
             className="!px-8 !py-2.5 !text-[11px] !border-soft !text-heading hover:!bg-app hover:!border-action"
@@ -192,6 +201,7 @@ export default async function CampaignLandingPage({ params }: Props) {
                 key={product._id} 
                 product={product as any} 
                 accentColor={themeColor}
+                businessMetaData={businessMetaData}
               />
             ))}
           </div>

@@ -49,13 +49,14 @@ import { useUIStore } from "@/store/useUIStore";
 import ExpressCheckout from "@/components/ExpressCheckout";
 
 import { firstOrderVoucherQuery } from "@/lib/queries";
-import { Voucher } from "@/types";
+import { Voucher, BusinessMetaData } from "@/types";
 
 interface CheckoutDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onSignUp: () => void;
   user?: any;
+  businessMetaData?: BusinessMetaData | null;
 }
 
 export default function CheckoutDrawer({
@@ -63,6 +64,7 @@ export default function CheckoutDrawer({
   onClose,
   onSignUp,
   user: propsUser,
+  businessMetaData,
 }: CheckoutDrawerProps) {
   const supabase = createClient();
   const { items, addItem, removeSingleItem, removeItem, clearCart } = useCart();
@@ -243,7 +245,7 @@ export default function CheckoutDrawer({
         num_items: totalPieces,
         value: finalTotal,
         currency: "NPR",
-        brand: "Dolakha Furniture",
+        brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
         availability: "in stock",
       });
     }
@@ -442,7 +444,7 @@ export default function CheckoutDrawer({
             content_type: "product",
             currency: "NPR",
             value: Number(finalTotal) || 0,
-            brand: "Dolakha Furniture",
+            brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
             num_items: totalPieces,
           });
           clearCart();
@@ -527,7 +529,7 @@ export default function CheckoutDrawer({
           content_type: "product",
           currency: "NPR",
           value: Number(finalTotal) || 0,
-          brand: "Dolakha Furniture",
+          brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
           num_items: totalPieces,
         });
         clearCart();
@@ -584,14 +586,14 @@ export default function CheckoutDrawer({
               <div className="w-20 h-20 bg-success/10 border border-success/20 rounded-full flex items-center justify-center mx-auto mb-8 text-success">
                 <CheckCircle2 size={32} />
               </div>
-              <h3 className="type-section mb-4">Order Received.</h3>
+              <h3 className="type-section mb-4">Order Received at {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}.</h3>
               {orderNumber && (
                 <div className="inline-block bg-heading text-app px-5 py-1.5 rounded-full type-label mb-6">
                   Order #{orderNumber}
                 </div>
               )}
               <p className="type-body text-description mb-10 max-w-xs mx-auto">
-                Thank you for choosing Dolakha Furniture. We'll contact you
+                Thank you for choosing {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}. We'll contact you
                 shortly to confirm your delivery details.
               </p>
 
@@ -771,7 +773,7 @@ export default function CheckoutDrawer({
 
                   <div className="grid grid-cols-1 gap-3">
                     <a
-                      href="tel:+9779808005210"
+                      href={`tel:${businessMetaData?.phone || "undefined_setmetadata_in_studio"}`}
                       className="flex items-center gap-4 p-4 bg-app rounded-2xl border border-soft/20 hover:border-action/30 transition-all group/link"
                     >
                       <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center group-hover/link:bg-action transition-colors">
@@ -785,13 +787,13 @@ export default function CheckoutDrawer({
                           Instant Reach
                         </span>
                         <span className="text-sm font-bold text-heading">
-                          +977 9808005210
+                          {businessMetaData?.phone || "undefined_setmetadata_in_studio"}
                         </span>
                       </div>
                     </a>
 
                     <a
-                      href="mailto:dolakhafurniture@gmail.com"
+                      href={`mailto:${businessMetaData?.email || "undefined_setmetadata_in_studio"}`}
                       className="flex items-center gap-4 p-4 bg-app rounded-2xl border border-soft/20 hover:border-action/30 transition-all group/link"
                     >
                       <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center group-hover/link:bg-action transition-colors">
@@ -805,7 +807,7 @@ export default function CheckoutDrawer({
                           Support Desk
                         </span>
                         <span className="text-sm font-bold italic text-heading truncate">
-                          dolakhafurniture@gmail.com
+                          {businessMetaData?.email || "undefined_setmetadata_in_studio"}
                         </span>
                       </div>
                     </a>
@@ -817,14 +819,14 @@ export default function CheckoutDrawer({
 
               <div className="flex items-center justify-center gap-8 pt-4 opacity-50 hover:opacity-100 transition-opacity">
                 <a
-                  href="https://www.facebook.com/dolakhafurniture/"
+                  href={businessMetaData?.facebookUrl || "https://www.facebook.com/dolakhafurniture/"}
                   target="_blank"
                   className="text-app hover:text-[#1877F2] transition-all hover:scale-110"
                 >
                   <Facebook size={22} strokeWidth={1.5} />
                 </a>
                 <a
-                  href="https://www.instagram.com/dolakhafurnituredesign/"
+                  href={businessMetaData?.instagramUrl || "https://www.instagram.com/dolakhafurnituredesign/"}
                   target="_blank"
                   className="text-app hover:text-[#e1306c] transition-all hover:scale-110"
                 >

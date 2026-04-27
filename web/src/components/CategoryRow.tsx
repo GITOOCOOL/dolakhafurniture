@@ -1,7 +1,7 @@
 import CategoryRibbon from "./CategoryRibbon";
 import Carousel from "./Carousel";
 import ProductCard from "./ProductCard";
-import type { Product } from "../types/product";
+import type { Product, BusinessMetaData } from "../types";
 
 type CategoryRowProps = {
   title: string;
@@ -11,6 +11,7 @@ type CategoryRowProps = {
   subtitle?: string;
   vouchers?: string[];
   description?: string;
+  businessMetaData?: BusinessMetaData | null;
 };
 
 const CategoryRow = ({
@@ -21,6 +22,7 @@ const CategoryRow = ({
   subtitle,
   vouchers,
   description,
+  businessMetaData,
 }: CategoryRowProps) => {
   const validProducts = products?.filter(Boolean) || [];
 
@@ -42,7 +44,7 @@ const CategoryRow = ({
       <div className="w-full min-w-0">
         <Carousel>
           {validProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard key={product._id} product={product} businessMetaData={businessMetaData} />
           ))}
         </Carousel>
       </div>

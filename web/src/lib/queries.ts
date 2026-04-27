@@ -236,3 +236,18 @@ export const checkoutSettingsQuery = `*[_type == "checkoutSettings" && _id == "c
   autoApplyVouchers
 }`
 
+export const businessMetaDataQuery = `*[_type == "businessMetaData"][0] {
+  businessName,
+  tagline,
+  phone,
+  whatsapp,
+  email,
+  address,
+  facebookUrl,
+  instagramUrl,
+  tiktokUrl,
+  googleMapsUrl,
+  businessUrl,
+  messengerUrl,
+  facebookPixelId
+}`

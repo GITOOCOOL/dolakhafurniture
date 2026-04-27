@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Campaign } from "@/types";
+import { Campaign, BusinessMetaData } from "@/types";
 import { urlFor } from "@/lib/sanity";
 import { Copy, Check, X, Leaf } from "lucide-react";
 import { useToast } from "./Toast";
@@ -13,9 +13,10 @@ import Modal from "@/components/ui/Modal";
 
 interface CampaignModalProps {
   campaign: Campaign | null;
+  businessMetaData?: BusinessMetaData | null;
 }
 
-export default function CampaignModal({ campaign }: CampaignModalProps) {
+export default function CampaignModal({ campaign, businessMetaData }: CampaignModalProps) {
   const {
     isCampaignModalOpen,
     setCampaignModalOpen,
@@ -231,7 +232,7 @@ export default function CampaignModal({ campaign }: CampaignModalProps) {
       </div>
 
       <div className="w-full text-center py-6 text-[10px] uppercase tracking-widest text-label border-t border-soft/50 mt-10">
-        Honest Craft, Dolakha Furniture
+        Honest Craft, {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}
       </div>
     </Modal>
   );

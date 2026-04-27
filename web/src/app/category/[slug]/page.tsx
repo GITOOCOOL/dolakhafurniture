@@ -3,8 +3,9 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Leaf } from "lucide-react";
-import { Product } from "@/types";
+import { Product, BusinessMetaData } from "@/types";
 import ProductCard from "@/components/ProductCard";
+import { businessMetaDataQuery } from "@/lib/queries";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -12,27 +13,27 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = await client.fetch(
-    `*[_type == "category" && slug.current == $slug][0]`,
-    { slug },
-  );
+  const [category, businessMetaData] = await Promise.all([
+    client.fetch(`*[_type == "category" && slug.current == $slug][0]`, { slug }),
+    client.fetch(businessMetaDataQuery)
+  ]);
 
   if (!category) return { title: "Collection Not Found" };
 
-  const description = category.description || 
-    `Explore our ${category.title} collection.`;
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const description = category.description || `Explore our ${category.title} collection.`;
 
   return {
-    title: `${category.title}`,
+    title: `${category.title} | ${name}`,
     description: description,
     openGraph: {
-      title: `${category.title} | Dolakha`,
+      title: `${category.title} | ${name}`,
       description: description,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${category.title} Collection | Dolakha`,
+      title: `${category.title} Collection | ${name}`,
       description: description,
     },
   };
@@ -46,7 +47,8 @@ export default async function CategoryPage({ params }: Props) {
       "category": *[_type == "category" && slug.current == $slug][0],
       "products": *[_type == "product" && category->slug.current == $slug && isActive == true] | order(_createdAt desc) {
         _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
-      }
+      },
+      "businessMetaData": *[_type == "businessMetaData"][0]
     }`,
     { slug },
   );
@@ -87,7 +89,7 @@ export default async function CategoryPage({ params }: Props) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-soft border-dotted pt-16">
             {data.products.map((product: Product) => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard key={product._id} product={product} businessMetaData={data.businessMetaData} />
             ))}
           </div>
         )}
@@ -95,7 +97,7 @@ export default async function CategoryPage({ params }: Props) {
         {/* BOTTOM NAVIGATION */}
         <div className="mt-48 pt-16 border-t border-soft border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-[10px] font-medium uppercase tracking-[0.4em] text-label">
-            Dolakha / {data.category.title}
+            {data.businessMetaData?.businessName || "undefined_setmetadata_in_studio"} / {data.category.title}
           </div>
           <Link
             href="/"
@@ -104,7 +106,7 @@ export default async function CategoryPage({ params }: Props) {
             Back to Showroom ↑
           </Link>
           <div className="type-label text-label">
-            EST. 2024
+            {new Date().getFullYear()} Archive
           </div>
         </div>
       </div>

@@ -6,12 +6,12 @@ import { urlFor, client } from "@/lib/sanity";
 import { useCart } from "@/store/useCart";
 import { Leaf, Minus, Plus, ShieldCheck, Truck, MessageCircle, MessageSquare } from "lucide-react";
 import Button from "./ui/Button";
-import { Product } from "@/types";
+import { Product, BusinessMetaData } from "@/types";
 import { trackEvent } from "./MetaPixel";
 import { useToast } from "./Toast";
 import { useEffect } from "react";
 
-export default function ProductDetail({ product, variant = "default" }: { product: Product; variant?: "default" | "modal" }) {
+export default function ProductDetail({ product, businessMetaData, variant = "default" }: { product: Product; businessMetaData?: BusinessMetaData | null; variant?: "default" | "modal" }) {
   const [quantity, setQuantity] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
@@ -109,9 +109,8 @@ export default function ProductDetail({ product, variant = "default" }: { produc
         content_category: product.category?.title,
         content_ids: [cleanId],
         content_type: "product",
-        value: product.price,
         currency: "NPR",
-        brand: "Dolakha Furniture",
+        brand: businessMetaData?.businessName || "Dolakha Furniture",
         availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order"
       });
     }
@@ -135,9 +134,8 @@ export default function ProductDetail({ product, variant = "default" }: { produc
       content_category: product.category?.title,
       content_ids: [cleanId],
       content_type: "product",
-      value: Number(product.price * quantity) || 0,
       currency: "NPR",
-      brand: "Dolakha Furniture",
+      brand: businessMetaData?.businessName || "Dolakha Furniture",
       availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order"
     });
     setIsSuccess(true);
@@ -327,7 +325,7 @@ export default function ProductDetail({ product, variant = "default" }: { produc
                 <div className="flex items-stretch w-full overflow-hidden rounded-full border border-soft shadow-sm bg-surface">
                   {/* WHATSAPP ACTION */}
                   <a 
-                    href={`https://wa.me/9779808005210?text=Hi Dolakha! I'm interested in the ${product.title}`}
+                    href={`https://wa.me/${(businessMetaData?.whatsapp || "undefined_setmetadata_in_studio").replace(/[^0-9]/g, '')}?text=Hi ${businessMetaData?.businessName || "undefined_setmetadata_in_studio"}! I'm interested in the ${product.title}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 flex items-center justify-center py-4 bg-app hover:bg-green-600 group/wa transition-all duration-300"
@@ -349,7 +347,7 @@ export default function ProductDetail({ product, variant = "default" }: { produc
 
                   {/* MESSENGER ACTION */}
                   <a 
-                    href="https://m.me/224061751418570"
+                    href={businessMetaData?.messengerUrl || "undefined_setmetadata_in_studio"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 flex items-center justify-center py-4 bg-app hover:bg-action group/ms transition-all duration-300 border-l border-soft"

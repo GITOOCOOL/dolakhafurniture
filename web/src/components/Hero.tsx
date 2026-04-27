@@ -15,19 +15,23 @@ import {
 import Button from "./ui/Button";
 import Image from "next/image";
 
-import { SocialContent } from "@/types";
+import { SocialContent, BusinessMetaData } from "@/types";
 import SocialStories from "./SocialStories";
 import StoryViewer from "./StoryViewer";
 import Carousel from "./Carousel";
 
 const Hero = ({ 
   stories = [], 
-  reels = [] 
+  reels = [],
+  businessMetaData
 }: { 
   stories?: SocialContent[], 
-  reels?: SocialContent[] 
+  reels?: SocialContent[],
+  businessMetaData?: BusinessMetaData | null
 }) => {
   const [selectedReel, setSelectedReel] = useState<number | null>(null);
+
+  const placeholder = "undefined_setmetadata_in_studio";
 
   return (
     <section className="relative w-full py-24 flex flex-col justify-center bg-app overflow-hidden">
@@ -60,14 +64,14 @@ const Hero = ({
                 </Link>
               </div>
               <div className="flex gap-5">
-                <a href="tel:+9779808005210" className="w-full flex-1">
+                <a href={`tel:${businessMetaData?.phone || placeholder}`} className="w-full flex-1">
                   <div className="flex items-center justify-center gap-3 py-4 px-8 rounded-lg bg-invert text-app shadow-sm active:translate-y-[1px] transition-all font-bold uppercase tracking-widest text-[10px] h-14 hover:bg-action">
                     <Phone size={18} />
                     <span>Call Us</span>
                   </div>
                 </a>
                 <a
-                  href="https://wa.me/9779808005210"
+                  href={`https://wa.me/${(businessMetaData?.whatsapp || placeholder).replace(/[^0-9]/g, '')}?text=Hi ${businessMetaData?.businessName || placeholder}! I'm interested in your pieces.`}
                   target="_blank"
                   className="w-full flex-1"
                 >
@@ -75,6 +79,29 @@ const Hero = ({
                     <MessageCircle size={18} className="text-app stroke-[2]" />
                     <span className="type-action text-app">WhatsApp</span>
                   </div>
+                </a>
+              </div>
+            </div>
+
+            {/* Business Micro-Links */}
+            <div className="flex flex-col gap-6 pt-8 border-t border-soft/30 max-w-xs transition-opacity hover:opacity-100">
+              <div className="flex flex-col gap-1 items-center lg:items-start text-center lg:text-left">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-description opacity-50">Studio Desk</span>
+                <a href={`mailto:${businessMetaData?.email || placeholder}`} className="type-label flex items-center gap-2 hover:text-action transition-colors">
+                  <Mail size={12} strokeWidth={2.5} />
+                  {businessMetaData?.email || placeholder}
+                </a>
+              </div>
+
+              <div className="flex flex-col gap-1 items-center lg:items-start text-center lg:text-left">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-description opacity-50">Visit Studio</span>
+                <a 
+                  href={businessMetaData?.googleMapsUrl || placeholder}
+                  target="_blank"
+                  className="type-label flex items-center gap-2 hover:text-action transition-colors text-heading"
+                >
+                  <ArrowRight size={12} className="rotate-[-45deg]" />
+                  {businessMetaData?.address || placeholder}
                 </a>
               </div>
             </div>
@@ -149,7 +176,7 @@ const Hero = ({
               <div className="grid grid-cols-2 gap-6 md:gap-8 justify-center items-center">
                 {/* Facebook */}
                 <a
-                  href="https://www.facebook.com/dolakhafurniture/"
+                  href={businessMetaData?.facebookUrl || placeholder}
                   target="_blank"
                   className="flex flex-col items-center gap-3 group"
                 >
@@ -163,7 +190,7 @@ const Hero = ({
 
                 {/* Instagram */}
                 <a
-                  href="https://www.instagram.com/dolakhafurnituredesign/"
+                  href={businessMetaData?.instagramUrl || placeholder}
                   target="_blank"
                   className="flex flex-col items-center gap-3 group"
                 >
@@ -177,7 +204,7 @@ const Hero = ({
 
                 {/* TikTok */}
                 <a
-                  href="https://www.tiktok.com/@dolakhafurniture/"
+                  href={businessMetaData?.tiktokUrl || placeholder}
                   target="_blank"
                   className="flex flex-col items-center gap-3 group"
                 >
@@ -197,7 +224,7 @@ const Hero = ({
 
                 {/* Email */}
                 <a
-                  href="mailto:dolakhafurniture@gmail.com"
+                  href={`mailto:${businessMetaData?.email || placeholder}`}
                   className="flex flex-col items-center gap-3 group"
                 >
                   <div className="h-14 w-14 rounded-full bg-invert border border-divider flex items-center justify-center text-app group-hover:bg-action transition-all duration-500 shadow-sm active:translate-y-[1px]">

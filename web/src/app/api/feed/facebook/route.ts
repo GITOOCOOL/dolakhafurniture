@@ -27,10 +27,15 @@ function escapeXml(unsafe: string) {
 
 export async function GET() {
   try {
-    const products: Product[] = await client.fetch(facebookMelaProductsQuery);
+    const [products, businessMetaData] = await Promise.all([
+      client.fetch(facebookMelaProductsQuery),
+      client.fetch(`*[_type == "businessMetaData"][0] { businessName, businessUrl, tagline }`)
+    ]);
+
     const melaProducts = Array.isArray(products) ? products : [];
     
-    const DOMAIN = "https://dolakhafurniture.com";
+    const DOMAIN = businessMetaData?.businessUrl || "https://undefined_setmetadata_in_studio.com";
+    const BRAND = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
     const CURRENCY = "NPR";
 
     const xmlItems = melaProducts
@@ -44,7 +49,7 @@ export async function GET() {
         
         const description = escapeXml(
           product.description ||
-            `High-quality handcrafted ${product.category?.title || "furniture"} from Dolakha Furniture. Material: ${product.material || " Wood"}.`,
+            `High-quality handcrafted ${product.category?.title || "furniture"} from ${BRAND}. Material: ${product.material || " Wood"}.`,
         );
         const availability =
           product.stock && product.stock > 0
@@ -61,7 +66,7 @@ export async function GET() {
         <g:description><![CDATA[${description}]]></g:description>
         <g:link>${escapeXml(`${DOMAIN}/product/${product.slug}`)}</g:link>
         <g:image_link>${imageLink}</g:image_link>
-        <g:brand>Dolakha Furniture</g:brand>
+        <g:brand>${escapeXml(BRAND)}</g:brand>
         <g:condition>new</g:condition>
         <g:availability>${availability}</g:availability>
         <g:price>${product.price}.00 ${CURRENCY}</g:price>
@@ -75,9 +80,9 @@ export async function GET() {
     const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
   <channel>
-    <title>Dolakha Furniture Product Catalog</title>
+    <title>${escapeXml(BRAND)} Product Catalog</title>
     <link>${DOMAIN}</link>
-    <description>, handcrafted furniture from Nepal.</description>
+    <description>${escapeXml(businessMetaData?.tagline || "Handcrafted furniture from Nepal.")}</description>
     ${xmlItems}
   </channel>
 </rss>`;

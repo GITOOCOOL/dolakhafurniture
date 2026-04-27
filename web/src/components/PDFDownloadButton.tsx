@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { Campaign, Voucher } from "@/types";
+import { Campaign, Voucher, BusinessMetaData } from "@/types";
 import { Download } from "lucide-react";
 import { CampaignPDF } from "./CampaignPDF";
 
@@ -15,12 +15,13 @@ const PDFDownloadLink = dynamic(
 interface Props {
   campaign: Campaign;
   firstOrderVoucher?: Voucher | null;
+  businessMetaData?: BusinessMetaData | null;
   label: string;
   className?: string;
   variant?: "glass" | "outline";
 }
 
-export default function PDFDownloadButton({ campaign, firstOrderVoucher, label, className = "", variant = "glass" }: Props) {
+export default function PDFDownloadButton({ campaign, firstOrderVoucher, businessMetaData, label, className = "", variant = "glass" }: Props) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function PDFDownloadButton({ campaign, firstOrderVoucher, label, 
   return (
     <div className={className}>
       <PDFDownloadLink
-        document={<CampaignPDF campaign={campaign} firstOrderVoucher={firstOrderVoucher} />}
+        document={<CampaignPDF campaign={campaign} firstOrderVoucher={firstOrderVoucher} businessMetaData={businessMetaData} />}
         fileName={`${campaign.slug}-catalog.pdf`}
         className="block"
       >

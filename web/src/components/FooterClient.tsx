@@ -1,8 +1,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { BusinessMetaData } from "@/types";
 
-export default function FooterClient() {
+interface FooterClientProps {
+  businessMetaData?: BusinessMetaData | null;
+}
+
+export default function FooterClient({ businessMetaData }: FooterClientProps) {
   const pathname = usePathname();
   if (pathname?.startsWith("/admin")) return null;
 
@@ -21,30 +26,36 @@ export default function FooterClient() {
             </p>
             <br />
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-4 md:gap-10 type-action">
-              <a
-                href="https://www.facebook.com/dolakhafurniture/"
-                target="_blank"
-                className="text-label hover:text-action transition-colors"
-                rel="noreferrer"
-              >
-                Facebook
-              </a>
-              <a
-                href="https://www.instagram.com/dolakhafurnituredesign/"
-                target="_blank"
-                className="text-label hover:text-action transition-colors"
-                rel="noreferrer"
-              >
-                Instagram
-              </a>
-              <a
-                href="https://www.tiktok.com/@dolakhafurniture/"
-                target="_blank"
-                className="text-label hover:text-action transition-colors"
-                rel="noreferrer"
-              >
-                TikTok
-              </a>
+              {businessMetaData?.facebookUrl && (
+                <a
+                  href={businessMetaData.facebookUrl}
+                  target="_blank"
+                  className="text-label hover:text-action transition-colors"
+                  rel="noreferrer"
+                >
+                  Facebook
+                </a>
+              )}
+              {businessMetaData?.instagramUrl && (
+                <a
+                  href={businessMetaData.instagramUrl}
+                  target="_blank"
+                  className="text-label hover:text-action transition-colors"
+                  rel="noreferrer"
+                >
+                  Instagram
+                </a>
+              )}
+              {businessMetaData?.tiktokUrl && (
+                <a
+                  href={businessMetaData.tiktokUrl}
+                  target="_blank"
+                  className="text-label hover:text-action transition-colors"
+                  rel="noreferrer"
+                >
+                  TikTok
+                </a>
+              )}
               <a
                 href="/stories"
                 className="text-label hover:text-action transition-colors font-medium border-l border-divider pl-8 ml-2"

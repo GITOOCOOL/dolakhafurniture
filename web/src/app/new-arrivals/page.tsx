@@ -1,32 +1,33 @@
 import { client, urlFor } from "@/lib/sanity";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Leaf } from "lucide-react";
+import { businessMetaDataQuery } from "@/lib/queries";
 
-export const metadata: Metadata = {
-  title: "New Arrivals | Dolakha Furniture",
-  description: "The latest handcrafted additions to our  collection.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const businessMetaData = await client.fetch(businessMetaDataQuery);
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+
+  return {
+    title: `New Arrivals | ${name}`,
+    description: `The latest handcrafted additions to our collection at ${name}.`,
+  };
+}
 
 export const dynamic = 'force-dynamic';
 
 export default async function NewArrivalsPage() {
-  const products = await client.fetch(
-    `*[_type == "product" && isActive == true] | order(_createdAt desc) [0...4] {
-      _id,
-      title,
-      price,
-      mainImage,
-      "category": category->{title, "slug": slug.current},
-      description,
-      "slug": slug.current
-    }`
-  );
+  const [products, businessMetaData] = await Promise.all([
+    client.fetch(
+      `*[_type == "product" && isActive == true] | order(_createdAt desc) [0...4] {
+        _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, description, "slug": slug.current
+      }`
+    ),
+    client.fetch(businessMetaDataQuery)
+  ]);
 
   return (
     <div className="bg-app min-h-screen pb-20 font-sans text-heading">
       <div className="container mx-auto px-6 relative pt-40">
-        {/* TOP LEFT: Back to home */}
         <div className="absolute top-16 left-6">
           <Link 
             href="/" 
@@ -36,7 +37,6 @@ export default async function NewArrivalsPage() {
           </Link>
         </div>
         
-        {/* PAGE HEADER */}
         <header className="mb-8 max-w-6xl text-left border-b border-soft pb-6">
           <div className="flex items-center gap-4 mb-4">
             <span className="relative flex h-2 w-2">
@@ -53,7 +53,6 @@ export default async function NewArrivalsPage() {
           </h1>
         </header>
 
-        {/* ARRIVALS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-32 border-t border-soft border-dotted pt-16">
           {products.map((product: any, index: number) => (
             <Link 
@@ -61,7 +60,6 @@ export default async function NewArrivalsPage() {
               key={product._id}
               className={`group flex flex-col space-y-8 ${index % 2 !== 0 ? 'md:mt-32' : ''}`}
             >
-              {/* IMAGE CONTAINER */}
               <div className="aspect-[4/5] relative overflow-hidden rounded-[4rem] bg-white border border-soft shadow-sm transition-all duration-700 group-hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] group-hover:border-action/20">
                 <img
                   src={urlFor(product.mainImage).width(1000).url()}
@@ -76,7 +74,6 @@ export default async function NewArrivalsPage() {
                 </div>
               </div>
 
-              {/* PRODUCT INFO */}
               <div className="px-6 space-y-4">
                 <div className="flex justify-between items-start">
                   <div>
@@ -87,14 +84,13 @@ export default async function NewArrivalsPage() {
                       {product.title}
                     </h2>
                   </div>
-                  {/* FONT CORRECTION: Price set to font-sans */}
                   <span className="text-xl font-sans font-bold text-action whitespace-nowrap pt-2">
                     Rs. {product.price}
                   </span>
                 </div>
                 
                 <p className="text-label text-sm md:text-base font-light italic leading-relaxed max-w-xl">
-                  {product.description || "A fresh addition to our store, made with care in Kathmandu."}
+                  {product.description || `A fresh addition to our store, made with care at ${businessMetaData?.businessName || "our workshop"}.`}
                 </p>
 
                 <div className="pt-6">
@@ -108,10 +104,9 @@ export default async function NewArrivalsPage() {
           ))}
         </div>
 
-        {/* FOOTER NAV */}
         <div className="mt-64 pt-16 border-t border-soft border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="type-label text-label">
-                Dolakha Furniture / New Arrivals
+                {businessMetaData?.businessName || "undefined_setmetadata_in_studio"} / New Arrivals
             </div>
             <Link 
               href="/shop" 
@@ -119,7 +114,6 @@ export default async function NewArrivalsPage() {
             >
               Full Archive <span className="inline-block group-hover:translate-x-2 transition-transform">→</span>
             </Link>
-            {/* FONT CORRECTION: Year set to font-sans */}
             <div className="type-label text-label">
                 {new Date().getFullYear()} Inventory
             </div>

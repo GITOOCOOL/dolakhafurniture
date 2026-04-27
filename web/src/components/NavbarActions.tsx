@@ -13,13 +13,15 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUIStore } from "@/store/useUIStore";
 import Modal from "./ui/Modal";
+import { BusinessMetaData } from "@/types";
 
 interface NavbarActionsProps {
   onSearchClick: () => void;
   onMenuClick: () => void;
+  businessMetaData?: BusinessMetaData | null;
 }
 
-export default function NavbarActions({ onSearchClick, onMenuClick }: NavbarActionsProps) {
+export default function NavbarActions({ onSearchClick, onMenuClick, businessMetaData }: NavbarActionsProps) {
   const supabase = createClient();
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
@@ -316,6 +318,7 @@ export default function NavbarActions({ onSearchClick, onMenuClick }: NavbarActi
         isOpen={isCheckoutDrawerOpen} 
         onClose={() => setIsCheckoutDrawerOpen(false)} 
         user={user}
+        businessMetaData={businessMetaData}
         onSignUp={() => {
           setIsCheckoutDrawerOpen(false);
           setIsAccountModalOpen(true);

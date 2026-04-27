@@ -3,8 +3,8 @@ import "./globals.css";
 import HeaderClient from "@/components/HeaderClient";
 import VerticalBulletinTicker from "@/components/VerticalBulletinTicker";
 import { client } from "@/lib/sanity";
-import { bulletinQuery, activeCampaignsQuery } from "@/lib/queries";
-import { Bulletin, Campaign } from "@/types";
+import { bulletinQuery, activeCampaignsQuery, businessMetaDataQuery } from "@/lib/queries";
+import { Bulletin, Campaign, BusinessMetaData } from "@/types";
 import { ToastProvider } from "@/components/Toast";
 import MetaPixel from "@/components/MetaPixel";
 import FloatingContact from "@/components/FloatingContact";
@@ -32,48 +32,58 @@ const sans = Montserrat({
   weight: ["300", "400", "500"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Dolakha Furniture | Quality Handcrafted Furniture in Kathmandu",
-    template: "%s | Dolakha Furniture"
-  },
-  description: "High-quality handcrafted furniture in Nepal. We offer a wide range of sofas, beds, tables, and home decor made with durable materials and professional craftsmanship.",
-  keywords: ["handcrafted furniture", "Nepal furniture", "Kathmandu furniture store", "quality sofas Nepal", "beds Kathmandu", "Dolakha Furniture"],
-  authors: [{ name: "Dolakha Furniture" }],
-  creator: "Dolakha Furniture",
-  publisher: "Dolakha Furniture",
-  formatDetection: {
-    email: false,
-    address: true,
-    telephone: true,
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://dolakhafurniture.com",
-    siteName: "Dolakha Furniture",
-    title: "Dolakha Furniture | Quality Handcrafted Furniture",
-    description: "Quality handcrafted furniture for your home. Built to last and delivered across Kathmandu.",
-    images: [
-      {
-        url: "/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "Dolakha Furniture",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Dolakha Furniture | Quality Handcrafted Furniture",
-    description: "Quality handcrafted furniture for your home. Built to last and delivered across Kathmandu.",
-    images: ["/logo.png"],
-  },
-  metadataBase: new URL("https://dolakhafurniture.com"),
-  verification: {
-    google: "3dc7dc77d6b4bafe",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let businessMetaData: BusinessMetaData | null = null;
+  try {
+    businessMetaData = await client.fetch<BusinessMetaData>(businessMetaDataQuery);
+  } catch (error) {
+    console.error("Metadata fetch failed:", error);
+  }
+
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const tagline = businessMetaData?.tagline || "undefined_setmetadata_in_studio";
+  const url = businessMetaData?.businessUrl || "https://undefined_setmetadata_in_studio.com";
+
+  return {
+    title: {
+      default: `${name} | ${tagline}`,
+      template: `%s | ${name}`
+    },
+    description: `High-quality handcrafted furniture by ${name}. We offer a wide range of sofas, beds, tables, and home decor made with durable materials and professional craftsmanship.`,
+    keywords: ["handcrafted furniture", "quality sofas", "bespoke interior", name, tagline],
+    authors: [{ name }],
+    creator: name,
+    publisher: name,
+    formatDetection: {
+      email: false,
+      address: true,
+      telephone: true,
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: url,
+      siteName: name,
+      title: `${name} | Quality Handcrafted Furniture`,
+      description: `Quality handcrafted furniture for your home by ${name}. Built to last and delivered with care.`,
+      images: [
+        {
+          url: "/logo.png",
+          width: 1200,
+          height: 630,
+          alt: name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${name} | Quality Handcrafted Furniture`,
+      description: `Quality handcrafted furniture for your home by ${name}. Built to last and delivered with care.`,
+      images: ["/logo.png"],
+    },
+    metadataBase: new URL(url),
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -84,14 +94,17 @@ export default async function RootLayout({
 }) {
   let bulletins: Bulletin[] = [];
   let activeCampaigns: Campaign[] = [];
+  let businessMetaData: BusinessMetaData | null = null;
 
   try {
-    const [fetchedBulletins, fetchedCampaigns] = await Promise.all([
+    const [fetchedBulletins, fetchedCampaigns, fetchedMetaData] = await Promise.all([
       client.fetch<Bulletin[]>(bulletinQuery),
       client.fetch<Campaign[]>(activeCampaignsQuery),
+      client.fetch<BusinessMetaData>(businessMetaDataQuery),
     ]);
     bulletins = fetchedBulletins || [];
     activeCampaigns = fetchedCampaigns || [];
+    businessMetaData = fetchedMetaData || null;
   } catch (error) {
     console.error("Layout data fetch failed:", error);
   }
@@ -99,7 +112,7 @@ export default async function RootLayout({
   // Bulletins for the ticker
   const combinedBulletins = bulletins.length > 0 
     ? bulletins.map(b => ({ ...b, type: "default" }))
-    : [{ _id: 'fallback', title: 'Dolakha Furniture', content: 'Crafting Heritage since 1998.', type: 'default' }];
+    : [{ _id: 'fallback', title: businessMetaData?.businessName || 'undefined_setmetadata_in_studio', content: 'Crafting Heritage.', type: 'default' }];
 
   const latestCampaign = activeCampaigns?.[0] || null;
 
@@ -154,18 +167,18 @@ export default async function RootLayout({
           />
           <ToastProvider>
             <Suspense fallback={null}>
-              <MetaPixel />
+              <MetaPixel pixelId={businessMetaData?.facebookPixelId} />
             </Suspense>
 
             <BrowserBanner />
-            <HeaderClient latestCampaign={latestCampaign} />
+            <HeaderClient latestCampaign={latestCampaign} businessMetaData={businessMetaData} />
             <main className="w-full relative flex-1">{children}</main>
+            
+            <FloatingContact businessMetaData={businessMetaData} />
+            <FloatingSearch />
+            <CampaignModal campaign={latestCampaign} businessMetaData={businessMetaData} />
+            <FooterClient businessMetaData={businessMetaData} />
           </ToastProvider>
-          <FloatingContact />
-          <FloatingSearch />
-
-          {/* FOOTER */}
-          <FooterClient />
         </ThemeProvider>
       </body>
     </html>

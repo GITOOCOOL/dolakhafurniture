@@ -1,13 +1,14 @@
 "use client";
 
-import { Product } from "@/types";
+import { Product, BusinessMetaData } from "@/types";
 import ProductCard from "./ProductCard";
 
 interface CategorizedProductGridProps {
   products: Product[];
+  businessMetaData?: BusinessMetaData | null;
 }
 
-export default function CategorizedProductGrid({ products }: CategorizedProductGridProps) {
+export default function CategorizedProductGrid({ products, businessMetaData }: CategorizedProductGridProps) {
   // Group products by category
   const groupedProducts = products.reduce((acc, product) => {
     const categoryName = product.category?.title || "Other";
@@ -39,7 +40,7 @@ export default function CategorizedProductGrid({ products }: CategorizedProductG
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
             {groupedProducts[category].map((product) => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard key={product._id} product={product} businessMetaData={businessMetaData} />
             ))}
           </div>
         </section>

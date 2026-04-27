@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bulletin as BulletinType } from '@/types/bulletin';
+import { Bulletin as BulletinType, BusinessMetaData } from '@/types';
 
 // Items enter from bottom, move up, then exit top
 const bulletinVariants = {
@@ -11,7 +11,7 @@ const bulletinVariants = {
   exit: { y: '-50%', opacity: 0 },
 };
 
-export default function VerticalBulletinTicker({ bulletins = [] }: { bulletins: BulletinType[] }) {
+export default function VerticalBulletinTicker({ bulletins = [], businessMetaData }: { bulletins: BulletinType[]; businessMetaData?: BusinessMetaData | null }) {
   const [bulletinIndex, setBulletinIndex] = useState(0);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function VerticalBulletinTicker({ bulletins = [] }: { bulletins: 
 
       {/* Footer Label: Fixed at the bottom */}
       <div className="text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-action rotate-90 origin-center whitespace-nowrap mt-16">
-        Dolakha Furniture
+        {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}
       </div>
     </div>
   );

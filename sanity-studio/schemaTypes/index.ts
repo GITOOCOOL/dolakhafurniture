@@ -18,6 +18,7 @@ import adminLog from './adminLog'
 import blockContent from './blockContent'
 import checkoutSettings from './checkoutSettings'
 import { broadcastType } from './broadcast'
+import { businessMetaData } from './businessMetaData'
 
 export const schemaTypes = [
   broadcastType,
@@ -39,5 +40,6 @@ export const schemaTypes = [
   material, 
   campaign, 
   faq,
-  checkoutSettings
+  checkoutSettings,
+  businessMetaData
 ]

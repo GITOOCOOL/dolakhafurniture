@@ -4,10 +4,15 @@ import { MessageCircle, Facebook, MessageSquare, X, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import InquiryModal from "./InquiryModal";
 import { useUIStore } from "@/store/useUIStore";
+import { BusinessMetaData } from "@/types";
+import InquiryModal from "./InquiryModal";
 
-const FloatingContact = () => {
+interface FloatingContactProps {
+  businessMetaData?: BusinessMetaData | null;
+}
+
+const FloatingContact = ({ businessMetaData }: FloatingContactProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
@@ -29,11 +34,11 @@ const FloatingContact = () => {
   }, []);
 
   // Pre-filled WhatsApp link
-  const whatsappNumber = "9779808005210";
-  const whatsappLink = `https://wa.me/${whatsappNumber}`;
+  const whatsappNumber = businessMetaData?.whatsapp || "undefined_setmetadata_in_studio";
+  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`;
 
   // Messenger link
-  const messengerLink = "https://m.me/224061751418570";
+  const messengerLink = businessMetaData?.messengerUrl || "undefined_setmetadata_in_studio";
 
   const buttons = [
     {
@@ -45,7 +50,7 @@ const FloatingContact = () => {
         />
       ),
       label: "Phone Call",
-      href: "tel:9861326438",
+      href: `tel:${businessMetaData?.phone || "undefined_setmetadata_in_studio"}`,
       color: "bg-heading",
       textColor: "text-app",
     },

@@ -3,10 +3,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity";
-import { Campaign } from "@/types";
+import { Campaign, BusinessMetaData } from "@/types";
 import { ArrowRight, Sparkles, MessageCircle, Facebook } from "lucide-react";
 
-export default function CampaignCard({ campaign }: { campaign: Campaign }) {
+export default function CampaignCard({ 
+  campaign, 
+  businessMetaData 
+}: { 
+  campaign: Campaign;
+  businessMetaData?: BusinessMetaData | null;
+}) {
   const themeColor = campaign.themeColor || "accent";
 
   return (
@@ -91,7 +97,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
 
           <div className="flex items-center gap-2">
             <a 
-              href={`https://wa.me/61410765748?text=${encodeURIComponent(`Hi! I'm interested in the ${campaign.title} collection.`)}`}
+              href={`https://wa.me/${(businessMetaData?.whatsapp || "undefined_setmetadata_in_studio").replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${businessMetaData?.businessName || "undefined_setmetadata_in_studio"}! I'm interested in the ${campaign.title} collection.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25D366]/5 border border-[#25D366]/20 text-[#128C7E] hover:bg-[#25D366] hover:text-white transition-all duration-300"
@@ -100,7 +106,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               <MessageCircle size={18} />
             </a>
             <a 
-              href="https://m.me/224061751418570"
+              href={businessMetaData?.messengerUrl || "undefined_setmetadata_in_studio"}
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full flex items-center justify-center bg-[#0084FF]/5 border border-[#0084FF]/20 text-[#0084FF] hover:bg-[#0084FF] hover:text-white transition-all duration-300"

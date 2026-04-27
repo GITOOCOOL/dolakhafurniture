@@ -9,3 +9,4 @@ export * from './cart';
 export * from './campaign';
 export * from './voucher';
 export * from './social';
+export * from './business';

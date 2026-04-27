@@ -3,33 +3,36 @@ import { urlFor } from "@/lib/sanity";
 import ProductDetail from "@/components/ProductDetail";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { productBySlugQuery } from "@/lib/queries";
-import { Product } from "@/types";
+import { productBySlugQuery, businessMetaDataQuery } from "@/lib/queries";
+import { Product, BusinessMetaData } from "@/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// 1. DYNAMIC SEO METADATA - Updated for a boutique,  feel
+// 1. DYNAMIC SEO METADATA - Updated for a boutique feel
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await client.fetch<Product | null>(productBySlugQuery, {
-    slug,
-  });
+  const [product, businessMetaData] = await Promise.all([
+    client.fetch<Product | null>(productBySlugQuery, { slug }),
+    client.fetch<BusinessMetaData | null>(businessMetaDataQuery),
+  ]);
 
-  if (!product) return { title: "Piece Not Found" };
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+
+  if (!product) return { title: `Piece Not Found | ${name}` };
 
   const defaultDescription =
-    "A unique,  addition to your home, handcrafted in Kathmandu.";
+    `A unique, handcrafted addition to your home, created by ${name}.`;
   const imageUrl = product.mainImage
     ? urlFor(product.mainImage).width(1200).height(630).url()
     : "/logo.png"; // Fallback image
 
   return {
-    title: `${product.title} | Dolakha Furniture`,
+    title: `${product.title} | ${name}`,
     description: product.description || defaultDescription,
     openGraph: {
-      title: `${product.title} | Dolakha Furniture`,
+      title: `${product.title} | ${name}`,
       description: product.description || defaultDescription,
       images: [
         {
@@ -42,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.title} | Dolakha Furniture`,
+      title: `${product.title} | ${name}`,
       description: product.description || defaultDescription,
       images: [imageUrl],
     },
@@ -53,9 +56,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
 
-  const product = await client.fetch<Product | null>(productBySlugQuery, {
-    slug,
-  });
+  const [product, businessMetaData] = await Promise.all([
+    client.fetch<Product | null>(productBySlugQuery, { slug }),
+    client.fetch<BusinessMetaData | null>(businessMetaDataQuery)
+  ]);
 
   if (!product) {
     notFound();
@@ -65,7 +69,9 @@ export default async function ProductPage({ params }: Props) {
     ? urlFor(product.mainImage).width(1200).height(630).url()
     : "/logo.png";
   
-  const defaultDescription = "A unique, handcrafted addition to your home, created in Kathmandu.";
+  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const url = businessMetaData?.businessUrl || "https://undefined_setmetadata_in_studio.com";
+  const defaultDescription = `A unique, handcrafted addition to your home, created by ${name}.`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -75,11 +81,11 @@ export default async function ProductPage({ params }: Props) {
     "description": product.description || defaultDescription,
     "brand": {
       "@type": "Brand",
-      "name": "Dolakha Furniture"
+      "name": name
     },
     "offers": {
       "@type": "Offer",
-      "url": `https://dolakhafurniture.com/product/${slug}`,
+      "url": `${url}/product/${slug}`,
       "priceCurrency": "NPR",
       "price": product.price,
       "availability": (product.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
@@ -93,7 +99,7 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProductDetail product={product} />
+      <ProductDetail product={product} businessMetaData={businessMetaData} />
     </div>
   );
 }
