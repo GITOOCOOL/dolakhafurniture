@@ -60,8 +60,10 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
 
 
   useEffect(() => {
+    console.log("[Auth-Trace] Mounting auth effect. Setting up listener.");
     // 1. Single source of truth for auth
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: string, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
+      console.log(`[Auth-Trace] onAuthStateChange fired! Event: ${event}, User present:`, !!session?.user);
       try {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
@@ -85,7 +87,9 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
 
     // 2. Initial fast check to set loading state
     const syncSession = async () => {
+      console.log("[Auth-Trace] Running fast initial getSession()...");
       const { data: { session } } = await supabase.auth.getSession();
+      console.log("[Auth-Trace] Initial getSession() result. User present:", !!session?.user);
       if (session) {
         setUser(session.user);
       }
@@ -94,9 +98,10 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
     syncSession();
 
     return () => {
+      console.log("[Auth-Trace] Unmounting component. Unsubscribing auth listener.");
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []); // Fixed the dependency array to run only once on mount
 
   // Deep linking to checkout
   useEffect(() => {
@@ -212,9 +217,7 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
           onClick={() => setIsAccountModalOpen(true)}
            className="w-[38px] h-[38px] flex items-center justify-center bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all text-heading cursor-pointer touch-manipulation group flex-shrink-0"
         >
-          {loading ? (
-            <div className="w-[26px] h-[26px] md:w-8 md:h-8 rounded-full border border-divider animate-pulse bg-soft" />
-          ) : user ? (
+          {user ? (
             user.user_metadata?.avatar_url && !avatarError ? (
               <img
                 src={user.user_metadata.avatar_url}
