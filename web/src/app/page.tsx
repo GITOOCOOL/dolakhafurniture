@@ -74,7 +74,6 @@ export default async function Home() {
                subtitle={activeCampaign.endDate}
               vouchers={activeCampaign.vouchers}
               autoScroll={true}
-              description={activeCampaign.description}
               businessMetaData={businessMetaData}
             />
           </div>

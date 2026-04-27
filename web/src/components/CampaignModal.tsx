@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/store/useUIStore";
 import Link from "next/link";
 import Modal from "@/components/ui/Modal";
+import Carousel from "./Carousel";
+import ProductCard from "./ProductCard";
 
 interface CampaignModalProps {
   campaign: Campaign | null;
@@ -89,6 +91,7 @@ export default function CampaignModal({ campaign, businessMetaData }: CampaignMo
 
   if (!campaign) return null;
 
+  const totalDiscountPercent = campaign.vouchers?.reduce((acc, v) => acc + (v.discountType === 'percentage' ? v.discountValue : 0), 0) || 0;
   const firstVoucher = campaign.vouchers?.[0]?.code || "NEWYEAR10";
 
   return (
@@ -102,7 +105,7 @@ export default function CampaignModal({ campaign, businessMetaData }: CampaignMo
       <div className="w-full flex-1 flex flex-col">
         {/* Banner Section */}
         {campaign.banner && (
-          <div className="relative h-64 md:h-96 rounded-[2rem] overflow-hidden flex-shrink-0 mb-8 border border-soft/50">
+          <div className="relative h-64 md:h-96 rounded-[2rem] overflow-hidden flex-shrink-0 mb-6 border border-soft/50">
             <img
               src={urlFor(campaign.banner).width(1200).url()}
               alt={campaign.title}
@@ -112,8 +115,51 @@ export default function CampaignModal({ campaign, businessMetaData }: CampaignMo
           </div>
         )}
 
+        {/* --- HIGH VISIBILITY SAVINGS HUB --- */}
+        <div className="flex flex-col items-center justify-center p-6 bg-surface border border-soft/20 rounded-[2rem] gap-4 mb-10 shadow-sm">
+          <div className="flex flex-col items-center gap-1">
+            <div className="text-[10px] uppercase tracking-[0.3em] text-description/60 font-bold">
+              Vouchers:
+            </div>
+            {campaign.vouchers && campaign.vouchers.length > 0 && (
+              <div className="text-[10px] uppercase tracking-widest text-action font-black">
+                Total Discounts: {totalDiscountPercent}%
+              </div>
+            )}
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-3">
+            {campaign.vouchers && campaign.vouchers.length > 0 ? (
+              campaign.vouchers.map((v) => (
+                <div
+                  key={v.code}
+                  className="group relative px-6 py-3 bg-heading border border-soft/20 rounded-full flex items-center gap-3 shadow-md"
+                >
+                  <div className="w-2 h-2 rounded-full bg-app animate-pulse" />
+                  <span className="type-action text-app uppercase">
+                    {v.code}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div
+                className="group relative px-6 py-3 bg-heading border border-soft/20 rounded-full flex items-center gap-3 shadow-md"
+              >
+                  <div className="w-2 h-2 rounded-full bg-app animate-pulse" />
+                <span className="type-action text-app uppercase">
+                  {firstVoucher}
+                </span>
+              </div>
+            )}
+          </div>
+          
+          <p className="text-[10px] uppercase font-sans tracking-[0.2em] text-action font-black bg-action/5 px-4 py-2 rounded-full border border-action/20">
+            ✨ Applied automatically in your order
+          </p>
+        </div>
+
         <div className="text-center pb-10 max-w-2xl mx-auto w-full">
-          <h2 className="text-4xl md:text-6xl font-serif italic mb-6 text-heading leading-tight">
+          <h2 className="text-4xl md:text-5xl font-serif italic mb-6 text-heading leading-tight">
             {campaign.tagline || campaign.title}
           </h2>
 
@@ -121,83 +167,62 @@ export default function CampaignModal({ campaign, businessMetaData }: CampaignMo
             {campaign.description}
           </p>
 
-          {/* Interaction Hub: Voucher Chips + Buttons Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-12 text-left">
-            {/* Column 1: Voucher Display (Literal Chip Parity) */}
-            <div className="flex flex-col items-center justify-center p-8 bg-surface border border-soft/20 rounded-[2rem] gap-6">
-              <div className="text-[10px] uppercase tracking-[0.3em] text-description/60 font-bold">
-                Available Vouchers
-              </div>
-              <div className="flex flex-wrap justify-center gap-3">
-                {campaign.vouchers && campaign.vouchers.length > 0 ? (
-                  campaign.vouchers.map((v) => (
-                    <button
-                      key={v.code}
-                      onClick={() => copyToClipboard(v.code)}
-                      className="group relative px-6 py-3 bg-heading border border-soft/20 rounded-full flex items-center gap-3 transition-all hover:bg-action active:scale-95"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-app group-hover:bg-white animate-pulse" />
-                      <span className="type-action text-app group-hover:text-white uppercase">
-                        {v.code}
-                      </span>
-                      {copied ? (
-                        <Check size={14} className="text-green-500 group-hover:text-white" />
-                      ) : (
-                        <Copy size={14} className="opacity-40 group-hover:opacity-100 text-app group-hover:text-white" />
-                      )}
-                    </button>
-                  ))
-                ) : (
-                  <button
-                    onClick={() => copyToClipboard(firstVoucher)}
-                    className="group relative px-6 py-3 bg-heading border border-soft/20 rounded-full flex items-center gap-3 transition-all hover:bg-action active:scale-95"
-                  >
-                     <div className="w-2 h-2 rounded-full bg-app group-hover:bg-white animate-pulse" />
-                    <span className="type-action text-app group-hover:text-white uppercase">
-                      {firstVoucher}
-                    </span>
-                    {copied ? (
-                      <Check size={14} className="text-green-500 group-hover:text-white" />
-                    ) : (
-                      <Copy size={14} className="opacity-40 group-hover:opacity-100 text-app group-hover:text-white" />
-                    )}
-                  </button>
-                )}
-              </div>
-              <p className="text-[10px] uppercase tracking-widest text-action font-bold">
-                Tap to copy
-              </p>
-            </div>
-
-            {/* Column 2: Action Stack */}
-            <div className="flex flex-col gap-4 md:gap-5 justify-between h-full">
+          {/* Action Stack */}
+          <div className="flex flex-col md:flex-row gap-4 md:gap-5 justify-center mb-12">
+            <button
+              onClick={handleClose}
+              className="flex-1 md:max-w-[240px] min-h-[64px] flex items-center justify-center rounded-[1.5rem] border-2 border-espresso text-heading font-bold uppercase tracking-widest text-[10px] md:text-xs hover:bg-espresso/5 transition-all py-6"
+            >
+              Start Shopping 🛋️
+            </button>
+            {campaign.buttonLink === "#signup" ? (
               <button
-                onClick={handleClose}
-                className="flex-1 min-h-[64px] flex items-center justify-center rounded-[1.5rem] border-2 border-espresso text-heading font-bold uppercase tracking-widest text-[10px] md:text-xs hover:bg-espresso/5 transition-all py-6"
+                onClick={() => {
+                  handleClose();
+                  setIsAccountModalOpen(true);
+                }}
+                className="flex-1 md:max-w-[240px] min-h-[64px] flex items-center justify-center rounded-[1.5rem] bg-action text-white font-bold uppercase tracking-widest text-[10px] md:text-xs shadow-lg shadow-accent/20 hover:bg-espresso transition-all py-6"
               >
-                Start Shopping 🛋️
+                {campaign.buttonText || "Sign Up Now! 🏮"}
               </button>
-              {campaign.buttonLink === "#signup" ? (
-                <button
-                  onClick={() => {
-                    handleClose();
-                    setIsAccountModalOpen(true);
-                  }}
-                  className="flex-1 min-h-[64px] flex items-center justify-center rounded-[1.5rem] bg-action text-white font-bold uppercase tracking-widest text-[10px] md:text-xs shadow-lg shadow-accent/20 hover:bg-espresso transition-all py-6"
-                >
-                  {campaign.buttonText || "Sign Up Now! 🏮"}
-                </button>
-              ) : (
-                <Link
-                  href={campaign.buttonLink || `/campaign/${campaign.slug}`}
-                  onClick={handleClose}
-                  className="flex-1 min-h-[64px] flex items-center justify-center rounded-[1.5rem] bg-action text-white font-bold uppercase tracking-widest text-[10px] md:text-xs shadow-lg shadow-accent/20 hover:bg-espresso transition-all py-6"
-                >
-                  {campaign.buttonText || "See Campaign Products 🏮"}
-                </Link>
-              )}
-            </div>
+            ) : (
+              <Link
+                href={campaign.buttonLink || `/campaign/${campaign.slug}`}
+                onClick={handleClose}
+                className="flex-1 md:max-w-[240px] min-h-[64px] flex items-center justify-center rounded-[1.5rem] bg-action text-white font-bold uppercase tracking-widest text-[10px] md:text-xs shadow-lg shadow-accent/20 hover:bg-espresso transition-all py-6"
+              >
+                {campaign.buttonText || "See Campaign Products 🏮"}
+              </Link>
+            )}
           </div>
+
+          {/* --- PRODUCT SHOWCASE CAROUSEL --- */}
+          {campaign.products && campaign.products.length > 0 && (
+            <div className="w-full text-left">
+              <div className="flex items-center justify-between px-2 mb-6">
+                 <div>
+                    <p className="text-[10px] uppercase font-black tracking-[0.2em] text-action mb-1">On Offer Now</p>
+                    <h3 className="type-product text-heading text-xl">Campaign Showcase</h3>
+                 </div>
+              </div>
+              <Carousel autoScroll={false}>
+                {campaign.products.map((product) => {
+                   const discPrice = Math.round(product.price * (1 - totalDiscountPercent / 100));
+                   return (
+                    <div key={product._id} className="w-[180px] md:w-[220px]">
+                      <ProductCard 
+                        product={product} 
+                        variant="campaign" 
+                        discountedPrice={discPrice} 
+                        businessMetaData={businessMetaData}
+                      />
+                    </div>
+                  );
+                })}
+              </Carousel>
+            </div>
+          )}
+        </div>
 
           <AnimatePresence>
             {isInApp && (
@@ -229,7 +254,6 @@ export default function CampaignModal({ campaign, businessMetaData }: CampaignMo
             )}
           </AnimatePresence>
         </div>
-      </div>
 
       <div className="w-full text-center py-6 text-[10px] uppercase tracking-widest text-label border-t border-soft/50 mt-10">
         Honest Craft, {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}

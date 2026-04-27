@@ -1,7 +1,7 @@
 import CategoryRibbon from "./CategoryRibbon";
 import Carousel from "./Carousel";
 import ProductCard from "./ProductCard";
-import type { Product, BusinessMetaData } from "../types";
+import type { Product, BusinessMetaData, Voucher } from "../types";
 
 type CategoryRowProps = {
   title: string;
@@ -9,7 +9,7 @@ type CategoryRowProps = {
   products: Product[];
   autoScroll?: boolean;
   subtitle?: string;
-  vouchers?: string[];
+  vouchers?: Voucher[];
   description?: string;
   businessMetaData?: BusinessMetaData | null;
 };

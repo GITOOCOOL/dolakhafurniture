@@ -37,7 +37,7 @@ const FloatingSearch = () => {
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.8 }}
-          className="fixed bottom-0 left-0 z-[9999999] p-6 md:p-10"
+          className="fixed bottom-0 left-0 z-[400] p-6 md:p-10"
         >
           <button
             onClick={() => setIsSearchOpen(true)}

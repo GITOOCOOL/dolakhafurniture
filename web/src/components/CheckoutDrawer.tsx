@@ -90,6 +90,7 @@ export default function CheckoutDrawer({
     "standard",
   );
   const [isAutoApplying, setIsAutoApplying] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   // Handle centralized scroll lock
   useEffect(() => {
@@ -126,10 +127,38 @@ export default function CheckoutDrawer({
         setVoucherError("");
         setHasPromptedVoucherReminder(false);
         setShowVoucherReminder(false);
+        setHasOverflow(false);
       }, 500); // Wait for slide-out animation
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
+
+  // Overflow Detection
+  useEffect(() => {
+    if (!isOpen || !contentRef.current) return;
+
+    const checkOverflow = () => {
+      if (contentRef.current) {
+        const isOverflowing = contentRef.current.scrollHeight > contentRef.current.clientHeight;
+        setHasOverflow(isOverflowing);
+      }
+    };
+
+    // Initial check
+    checkOverflow();
+
+    const observer = new ResizeObserver(() => {
+      checkOverflow();
+    });
+
+    observer.observe(contentRef.current);
+    // Also observe the children to catch content changes
+    if (contentRef.current.firstElementChild) {
+      observer.observe(contentRef.current.firstElementChild);
+    }
+
+    return () => observer.disconnect();
+  }, [isOpen, items.length, expressStep, activeStep, appliedVouchers.length]);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -861,6 +890,7 @@ export default function CheckoutDrawer({
                   isAutoApplying={isAutoApplying}
                   onSignUp={onSignUp}
                   step={expressStep}
+                  hasOverflow={hasOverflow}
                   onBack={() => {
                     setExpressStep(1);
                     contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });

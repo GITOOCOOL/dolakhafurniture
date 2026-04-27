@@ -15,11 +15,13 @@ const ProductCard = ({
   variant = "default",
   accentColor = "accent",
   businessMetaData,
+  discountedPrice,
 }: {
   product: Product;
-  variant?: "default" | "ribbon";
+  variant?: "default" | "ribbon" | "campaign";
   accentColor?: string;
   businessMetaData?: BusinessMetaData | null;
+  discountedPrice?: number;
 }) => {
   const { showToast } = useToast();
   const { addItem } = useCart();
@@ -92,9 +94,20 @@ const ProductCard = ({
           <h3 className="type-product text-heading group-hover:text-action transition-colors line-clamp-1 uppercase text-[6px] md:text-[7px] leading-tight tracking-[0.2em]">
             {product.title}
           </h3>
-          <p className="type-label text-action text-[7px] mt-0.5">
-            Rs. {product.price}
-          </p>
+          {variant === "campaign" && discountedPrice ? (
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <p className="type-label text-description text-[6px] line-through decoration-action/40 decoration-1">
+                Rs. {product.price}
+              </p>
+              <p className="type-label text-action text-[8px] font-black">
+                Rs. {discountedPrice}
+              </p>
+            </div>
+          ) : (
+            <p className="type-label text-action text-[7px] mt-0.5">
+              Rs. {product.price}
+            </p>
+          )}
         </div>
       </Link>
 

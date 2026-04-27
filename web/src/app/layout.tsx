@@ -7,11 +7,9 @@ import { bulletinQuery, activeCampaignsQuery, businessMetaDataQuery } from "@/li
 import { Bulletin, Campaign, BusinessMetaData } from "@/types";
 import { ToastProvider } from "@/components/Toast";
 import MetaPixel from "@/components/MetaPixel";
-import FloatingContact from "@/components/FloatingContact";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import BrowserBanner from "@/components/BrowserBanner";
 import CampaignModal from "@/components/CampaignModal";
-import FloatingSearch from "@/components/FloatingSearch";
 import FooterClient from "@/components/FooterClient";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
@@ -172,10 +170,8 @@ export default async function RootLayout({
 
             <BrowserBanner />
             <HeaderClient latestCampaign={latestCampaign} businessMetaData={businessMetaData} />
-            <main className="w-full relative flex-1">{children}</main>
+            <main className="w-full relative flex-1 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1920px] mx-auto">{children}</main>
             
-            <FloatingContact businessMetaData={businessMetaData} />
-            <FloatingSearch />
             <CampaignModal campaign={latestCampaign} businessMetaData={businessMetaData} />
             <FooterClient businessMetaData={businessMetaData} />
           </ToastProvider>

@@ -1,11 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import { Voucher } from "../types";
 
 type CategoryRibbonProps = {
   title: string;
   slug: string;
   subtitle?: string;
-  vouchers?: string[];
+  vouchers?: Voucher[];
   description?: string;
 };
 
@@ -35,6 +36,8 @@ const CategoryRibbon = ({
       ? `Ends on: ${new Date(subtitle).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
       : subtitle;
 
+  const totalDiscount = vouchers?.reduce((acc, v) => acc + (v.discountType === 'percentage' ? v.discountValue : 0), 0) || 0;
+
   return (
     <div
       className="relative group w-full flex flex-row items-center justify-between
@@ -57,16 +60,24 @@ const CategoryRibbon = ({
             )}
 
             {vouchers && vouchers.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {vouchers.map((code) => (
-                  <span
-                    key={code}
-                    className="type-label inline-block px-2 py-0.5 bg-surface border border-action/40 
-                               text-action rounded-sm tracking-tighter"
-                  >
-                    {code}
-                  </span>
-                ))}
+              <div className="flex flex-col gap-2 mt-2">
+                <div className="flex items-center gap-2">
+                   <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-description">Vouchers:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {vouchers.map((v) => (
+                      <span
+                        key={v.code}
+                        className="type-label inline-block px-2 py-0.5 bg-surface border border-action/40 
+                                   text-action rounded-sm tracking-tighter"
+                      >
+                        {v.code}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {totalDiscount > 0 && (
+                   <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-action">Total Discounts: {totalDiscount}%</p>
+                )}
               </div>
             )}
           </div>

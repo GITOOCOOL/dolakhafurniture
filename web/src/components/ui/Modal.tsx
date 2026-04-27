@@ -87,7 +87,7 @@ export default function Modal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className={`fixed inset-0 z-[9999999] flex ${positions[position]}`}>
+        <div className={`fixed inset-0 z-[600] flex ${positions[position]}`}>
           {/* Backdrop (Solid & Defined) */}
           <motion.div
             initial={{ opacity: 0 }}

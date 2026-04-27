@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const Carousel = ({ children }: { children: React.ReactNode }) => {
+const Carousel = ({ children, autoScroll = false }: { children: React.ReactNode, autoScroll?: boolean }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -42,6 +42,25 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
     
     return () => el.removeEventListener('scroll', handleNativeScroll);
   }, [hasUserScrolled]);
+
+  // AUTO-SCROLL EFFECT
+  useEffect(() => {
+    if (!autoScroll || hasUserScrolled) return;
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+          // Loop back to start
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollRef.current.scrollBy({ left: 1, behavior: 'auto' });
+        }
+      }
+    }, 40); // 40ms for gentle crawl
+
+    return () => clearInterval(interval);
+  }, [autoScroll, hasUserScrolled]);
 
   const scrollByAmount = (direction: 'left' | 'right') => {
     setHasUserScrolled(true);

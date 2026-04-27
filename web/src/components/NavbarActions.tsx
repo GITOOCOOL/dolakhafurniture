@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp, Sun, Moon, X, LayoutDashboard, MessageSquare, Gift, Menu } from "lucide-react";
+import { ShoppingBag, Leaf, User, Search, ArrowRight, ArrowUp, Sun, Moon, X, LayoutDashboard, MessageSquare, Gift, Menu, MessageCircle, Facebook, Phone } from "lucide-react";
 import AuthForm from "./AuthForm";
 import CheckoutDrawer from "./CheckoutDrawer";
 import { ThemeToggle } from "./ThemeToggle";
@@ -28,6 +28,8 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [avatarError, setAvatarError] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const contactDropdownRef = useRef<HTMLDivElement>(null);
   const { 
     isCheckoutDrawerOpen, 
     setIsCheckoutDrawerOpen,
@@ -40,6 +42,21 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
   const searchParams = useSearchParams();
   const items = useCart((state) => state.items);
   const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Click outside listener for contact dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (contactDropdownRef.current && !contactDropdownRef.current.contains(event.target as Node)) {
+        setIsContactOpen(false);
+      }
+    };
+    if (isContactOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isContactOpen]);
 
 
   useEffect(() => {
@@ -128,7 +145,17 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
 
 
   return (
-    <div className="flex items-center gap-3 md:gap-4 relative z-50 flex-shrink-0">
+    <div className="flex items-center gap-2 md:gap-3 relative z-50 flex-shrink-0">
+      {/* --- SEARCH TRIGGER --- */}
+      <button
+        type="button"
+        onClick={onSearchClick}
+        className="w-[38px] h-[38px] flex items-center justify-center bg-clay shadow-sm hover:bg-stone-muted/30 rounded-full transition-all text-heading cursor-pointer touch-manipulation group flex-shrink-0"
+        aria-label="Search"
+      >
+        <Search size={20} className="md:w-6 md:h-6" strokeWidth={1.5} />
+      </button>
+
       {/* --- OFFERS / GIFT ICON --- */}
       <button
         type="button"
@@ -303,7 +330,7 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
         </Modal>
       </div>
 
-      {/* Inquiry Modal Trigger */}
+      {/* Inquiry Hub Trigger */}
       <button
         type="button"
         onClick={() => setIsInquiryModalOpen(true)}
@@ -325,8 +352,6 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
         }}
       />
 
-      {/* Theme Switcher - Grouped at the rightmost position */}
-      <ThemeToggle />
 
       {/* Hamburger Menu - Unified into the utility stack */}
       <button

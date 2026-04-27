@@ -9,8 +9,9 @@ import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { client as sanityClient } from "@/lib/sanity";
 import { Order } from "@/types";
-import { ChevronDown, Package, Info, HelpCircle, Sparkles, Phone } from "lucide-react";
+import { ChevronDown, Package, Info, HelpCircle, Sparkles, Phone, MessageCircle, Facebook } from "lucide-react";
 import { trackEvent } from "./MetaPixel";
+import { BusinessMetaData } from "@/types";
 
 interface FAQ {
   _id: string;
@@ -22,6 +23,7 @@ interface FAQ {
 interface InquiryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  businessMetaData?: BusinessMetaData | null;
   initialData?: {
     name?: string;
     email?: string;
@@ -35,6 +37,7 @@ interface InquiryModalProps {
 export default function InquiryModal({
   isOpen,
   onClose,
+  businessMetaData,
   initialData,
   initialOrderReference,
   title = "Inquiry",
@@ -156,9 +159,55 @@ export default function InquiryModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} position="bottom" id="inquiry-modal">
-      <p className="type-label text-description mb-6 -mt-2">
+      <p className="type-label text-description mb-8 -mt-2">
         {subtitle}
       </p>
+
+      {/* QUICK CONNECT HUB */}
+      <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 mb-10">
+        {[
+          {
+            icon: <Phone size={18} className="text-app" strokeWidth={1.5} />,
+            label: "Call",
+            href: `tel:${businessMetaData?.phone || ""}`,
+            color: "bg-heading",
+            textColor: "text-app",
+          },
+          {
+            icon: <MessageCircle size={18} className="fill-[#128C7E] stroke-[0.5]" strokeWidth={1.5} />,
+            label: "WhatsApp",
+            href: `https://wa.me/${(businessMetaData?.whatsapp || "").replace(/[^0-9]/g, '')}`,
+            color: "bg-[#25D366]",
+            textColor: "text-white",
+          },
+          {
+            icon: <Facebook size={18} className="fill-[#0084FF] stroke-[0.5]" strokeWidth={1.5} />,
+            label: "Messenger",
+            href: businessMetaData?.messengerUrl || "#",
+            color: "bg-[#0084FF]",
+            textColor: "text-white",
+          }
+        ].map((btn, idx) => (
+          <a
+            key={idx}
+            href={btn.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-[1.5rem] shadow-sm ${btn.color} ${btn.textColor} hover:scale-[1.03] transition-all duration-300 border border-divider/10`}
+          >
+            {btn.icon}
+            <span className="text-[10px] font-sans font-bold uppercase tracking-widest leading-none">
+              {btn.label}
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-4 mb-8">
+        <div className="h-px flex-1 bg-soft/20" />
+        <span className="text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-description">Or Send a Message</span>
+        <div className="h-px flex-1 bg-soft/20" />
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">

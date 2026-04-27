@@ -25,6 +25,7 @@ interface ExpressCheckoutProps {
   isAutoApplying: boolean;
   onSignUp: () => void;
   step: number;
+  hasOverflow?: boolean;
   onBack: () => void;
 }
 
@@ -48,6 +49,7 @@ export default function ExpressCheckout({
   isAutoApplying,
   onSignUp,
   step,
+  hasOverflow,
   onBack,
 }: ExpressCheckoutProps) {
   return (
@@ -62,7 +64,7 @@ export default function ExpressCheckout({
         <div className="space-y-4">
           <div className="flex flex-col items-center justify-center py-4">
             <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-description underline underline-offset-4 decoration-description/30">
-              Scroll to review your order
+              {hasOverflow ? "Scroll to review your order" : "Review your order"}
             </h4>
           </div>
 

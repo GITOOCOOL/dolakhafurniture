@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import NavbarActions from "@/components/NavbarActions";
 import CategoryNav from "@/components/CategoryNav";
-import { Menu, X, Facebook, Instagram, Search, Leaf } from "lucide-react";
+import { Menu, X, Facebook, Instagram, Search, Leaf, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/store/useUIStore";
 import { trackEvent } from "./MetaPixel";
@@ -17,6 +18,7 @@ import CampaignModal from "./CampaignModal";
 import Modal from "./ui/Modal";
 import CategorySwitcher from "./CategorySwitcher";
 import ProductQuickView from "./ProductQuickView";
+import InquiryModal from "./InquiryModal";
 
 interface HeaderClientProps {
   latestCampaign?: Campaign | null;
@@ -27,12 +29,20 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const {
     lockScroll,
     unlockScroll,
     setCampaignModalOpen,
     isSearchOpen,
     setIsSearchOpen,
+    isInquiryModalOpen,
+    setIsInquiryModalOpen,
   } = useUIStore();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,10 +94,10 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
   }, [isSearchOpen]);
 
   useEffect(() => {
-    if (isMenuOpen || isSearchOpen) lockScroll("header-overlay");
+    if (isMenuOpen || isSearchOpen || isInquiryModalOpen) lockScroll("header-overlay");
     else unlockScroll("header-overlay");
     return () => unlockScroll("header-overlay");
-  }, [isMenuOpen, isSearchOpen, lockScroll, unlockScroll]);
+  }, [isMenuOpen, isSearchOpen, isInquiryModalOpen, lockScroll, unlockScroll]);
 
   if (isAdmin) return null;
 
@@ -161,7 +171,12 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
         </div>
 
         <CampaignModal campaign={latestCampaign || null} />
-      </header>
+        <InquiryModal 
+          isOpen={isInquiryModalOpen} 
+          onClose={() => setIsInquiryModalOpen(false)} 
+          businessMetaData={businessMetaData} 
+        />
+</header>
 
       {/* --- SEARCH TAKEOVER MODAL --- */}
       <AnimatePresence>
@@ -318,6 +333,52 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
           </div>
 
           <div className="flex-shrink-0 w-full border-t border-soft/20 pt-10 pb-6 mt-10">
+            {/* --- THEME SEGMENTED CONTROL --- */}
+            {mounted && (
+              <div className="mb-10">
+                <p className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-description mb-6 ml-2">
+                  Display Mode
+                </p>
+                <div className="grid grid-cols-2 p-1.5 bg-surface border border-soft rounded-[2rem] relative">
+                  <button
+                    onClick={() => setTheme("light")}
+                    className={`relative z-10 flex items-center justify-center gap-3 py-4 rounded-[1.5rem] transition-all duration-300 ${
+                      resolvedTheme === "light" ? "text-heading" : "text-description/60 hover:text-heading"
+                    }`}
+                  >
+                    <Sun size={18} strokeWidth={1.5} />
+                    <span className="type-action uppercase text-[10px]">Light Mode</span>
+                    {resolvedTheme === "light" && (
+                      <motion.div
+                        layoutId="active-theme"
+                        className="absolute inset-0 bg-app border border-soft shadow-sm rounded-[1.5rem] -z-10"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setTheme("dark")}
+                    className={`relative z-10 flex items-center justify-center gap-3 py-4 rounded-[1.5rem] transition-all duration-300 ${
+                      resolvedTheme === "dark" ? "text-white" : "text-description/60 hover:text-heading"
+                    }`}
+                  >
+                    <Moon size={18} strokeWidth={1.5} />
+                    <span className="type-action uppercase text-[10px]">Dark Mode</span>
+                    {resolvedTheme === "dark" && (
+                      <motion.div
+                        layoutId="active-theme"
+                        className="absolute inset-0 bg-heading border border-action/30 shadow-md rounded-[1.5rem] -z-10"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      >
+                         <div className="absolute inset-0 bg-action/10" />
+                      </motion.div>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="flex gap-8 mb-6">
               {businessMetaData?.facebookUrl && (
                 <a

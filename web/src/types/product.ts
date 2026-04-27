@@ -13,6 +13,7 @@ export type Product = {
     category?: {
         title: string;
         slug: string;
+        description?: string;
     };
     description?: string;
     stock?: number;
