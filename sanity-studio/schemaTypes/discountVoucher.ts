@@ -42,6 +42,13 @@ export default defineType({
             type: "number",
         }),
         defineField({
+            name: "minimumSpend",
+            title: "Minimum Spend Amount (NPR)",
+            type: "number",
+            initialValue: 0,
+            description: "The minimum order subtotal required to use this voucher.",
+        }),
+        defineField({
             name: "isActive",
             title: "Is Active",
             type: "boolean",

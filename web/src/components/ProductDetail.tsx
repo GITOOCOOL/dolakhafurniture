@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { urlFor } from "@/lib/sanity";
+import { urlFor, client } from "@/lib/sanity";
 import { useCart } from "@/store/useCart";
 import { Leaf, Minus, Plus, ShieldCheck, Truck, MessageCircle, MessageSquare } from "lucide-react";
 import Button from "./ui/Button";
@@ -14,7 +14,91 @@ import { useEffect } from "react";
 export default function ProductDetail({ product, variant = "default" }: { product: Product; variant?: "default" | "modal" }) {
   const [quantity, setQuantity] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [activeCampaign, setActiveCampaign] = useState<any>(null);
   const { showToast } = useToast();
+
+  // FETCH ACTIVE CAMPAIGNS AND GLOBAL VOUCHERS FOR REAL-TIME DISCOUNTING
+  useEffect(() => {
+    async function fetchPromotions() {
+      try {
+        // 1. Fetch Active Campaign and its vouchers
+        const campaign = await client.fetch(
+          `*[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
+            title,
+            "vouchers": vouchers[]->{code, details, discountType, discountValue, isFirstOrderVoucher, isOneTimePerCustomer, minimumSpend}
+          }`
+        );
+
+        // 2. Fetch Global Active Vouchers (including those not linked to a specific campaign)
+        const globalVouchers = await client.fetch(
+          `*[_type == "discountVoucher" && isActive == true] {
+            code, details, discountType, discountValue, isFirstOrderVoucher, isOneTimePerCustomer, minimumSpend
+          }`
+        );
+        
+        // Merge and filter for guest-eligible vouchers AND minimum spend threshold
+        const allVouchers = [
+          ...(campaign?.vouchers || []),
+          ...globalVouchers
+        ];
+
+        // Unique vouchers by code
+        const uniqueVouchers = Array.from(new Map(allVouchers.map(v => [v.code, v])).values());
+
+        const eligibleVouchers = uniqueVouchers.filter((v: any) => 
+          !v.isFirstOrderVoucher && 
+          !v.isOneTimePerCustomer && 
+          (!v.minimumSpend || product.price >= v.minimumSpend)
+        );
+
+        if (eligibleVouchers.length > 0) {
+          setActiveCampaign({ 
+            title: campaign?.title || "Active Promotions", 
+            vouchers: eligibleVouchers 
+          });
+        } else {
+          setActiveCampaign(null); // Reset if no vouchers qualify for this price point
+        }
+      } catch (error) {
+        console.error("Discovery: Failed to fetch promotion context:", error);
+      }
+    }
+    fetchPromotions();
+  }, []);
+
+  // CALCULATE DISCOUNTS (Finding the best guest-eligible discount)
+  const originalPrice = product.price;
+  let discountedPrice = originalPrice;
+  let activeDiscountEffect = null;
+
+  if (activeCampaign?.vouchers?.length > 0) {
+    // Find the most beneficial discount for the user
+    const bestVoucher = activeCampaign.vouchers.reduce((best: any, current: any) => {
+      let currentDiscount = 0;
+      if (current.discountType === 'percentage') {
+        currentDiscount = originalPrice * (current.discountValue / 100);
+      } else if (current.discountType === 'fixed') {
+        currentDiscount = current.discountValue;
+      }
+
+      let bestDiscount = 0;
+      if (best.discountType === 'percentage') {
+        bestDiscount = originalPrice * (best.discountValue / 100);
+      } else if (best.discountType === 'fixed') {
+        bestDiscount = best.discountValue;
+      }
+
+      return currentDiscount > bestDiscount ? current : best;
+    }, activeCampaign.vouchers[0]);
+
+    if (bestVoucher.discountType === 'percentage') {
+      discountedPrice = originalPrice - (originalPrice * (bestVoucher.discountValue / 100));
+      activeDiscountEffect = `${bestVoucher.discountValue}% OFF`;
+    } else if (bestVoucher.discountType === 'fixed') {
+      discountedPrice = Math.max(0, originalPrice - bestVoucher.discountValue);
+      activeDiscountEffect = `Rs. ${bestVoucher.discountValue} OFF`;
+    }
+  }
 
   // Tracking: ViewContent and AddToCart
   useEffect(() => {
@@ -156,11 +240,47 @@ export default function ProductDetail({ product, variant = "default" }: { produc
             )}
 
             <div className={`flex flex-col sm:grid sm:grid-cols-[auto,1fr] items-center gap-6 sm:gap-8 py-6 border-t border-divider/10 ${variant === 'modal' ? 'px-4 sm:px-6 bg-surface/50 backdrop-blur-sm' : ''}`}>
-              {/* COL 1: PRICE */}
+              {/* COL 1: PRICE READOUT */}
               <div className="w-full sm:w-auto text-center sm:text-left">
-                <p className="text-2xl sm:text-3xl font-sans font-extrabold text-action tracking-tighter">
-                  Rs. {product.price.toLocaleString()}
-                </p>
+                <div className="flex flex-col sm:items-start items-center">
+                  {/* TOP LINE: ORIGINAL PRICE BENCHMARK */}
+                  {activeDiscountEffect ? (
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-base sm:text-lg font-sans font-extrabold text-label/30 line-through">
+                        Rs. {originalPrice.toLocaleString()}
+                      </p>
+                      <span className="bg-action text-white text-[9px] font-sans font-black px-1.5 py-0.5 rounded-sm tracking-widest uppercase shadow-sm">
+                        {activeDiscountEffect}
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-[10px] sm:text-[11px] font-sans font-extrabold uppercase tracking-[0.2em] text-label opacity-40 mb-1">
+                      Archival Value
+                    </p>
+                  )}
+
+                  {/* SECOND LINE: ACTIVE OFFER PRICE */}
+                  <span className="text-4xl font-extrabold text-heading tracking-tight sm:text-5xl leading-none">
+                    Rs. {discountedPrice.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* VOUCHER DISCOVERY PILLS */}
+                {activeCampaign?.vouchers?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4 justify-center sm:justify-start">
+                    {activeCampaign.vouchers.map((v: any) => (
+                      <div 
+                        key={v.code}
+                        className="flex items-center gap-1.5 px-2.5 py-1 bg-action/5 border border-action/20 rounded-full group cursor-default transition-all hover:bg-action/10"
+                      >
+                        <div className="w-1 h-1 rounded-full bg-action animate-pulse" />
+                        <span className="text-[9px] font-sans font-black uppercase tracking-widest text-action">
+                          {v.code}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* COL 2: TACTICAL STACK (Multi-Row) */}

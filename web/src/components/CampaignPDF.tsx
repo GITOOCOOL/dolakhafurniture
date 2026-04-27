@@ -324,15 +324,17 @@ export const CampaignPDF = ({ campaign, firstOrderVoucher }: Props) => {
               </View>
             )}
 
-            <View style={[currentStyles.vouchersSection, { marginTop: 15 }]}>
-              <Text style={currentStyles.voucherHeading}>JOIN US</Text>
-              <Text style={currentStyles.promoText}>
-                Visit <Text style={currentStyles.promoCode}>dolakhafurniture.com</Text> and sign up for an account to receive an additional <Text style={currentStyles.promoCode}>{firstOrderVoucher?.discountValue || 5}% DISCOUNT</Text> on your first purchase!
-              </Text>
-              <Text style={[currentStyles.promoText, { marginTop: 6 }]}>
-                Use Voucher: <Text style={currentStyles.voucherCode}>{firstOrderVoucher?.code || 'FIRSTORDER'}</Text>
-              </Text>
-            </View>
+            {firstOrderVoucher && (
+              <View style={[currentStyles.vouchersSection, { marginTop: 15 }]}>
+                <Text style={currentStyles.voucherHeading}>JOIN US</Text>
+                <Text style={currentStyles.promoText}>
+                  Visit <Text style={currentStyles.promoCode}>dolakhafurniture.com</Text> and sign up for an account to receive an additional <Text style={currentStyles.promoCode}>{firstOrderVoucher.discountValue}{firstOrderVoucher.discountType === 'percentage' ? '%' : ''} DISCOUNT</Text> on your first purchase!
+                </Text>
+                <Text style={[currentStyles.promoText, { marginTop: 6 }]}>
+                  Use Voucher: <Text style={currentStyles.voucherCode}>{firstOrderVoucher.code}</Text>
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </Page>
