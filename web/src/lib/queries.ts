@@ -1,5 +1,5 @@
 export const productsForHomeQuery = `*[_type == "product" && isActive == true]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
+    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
 
 export const productsForCategoryQuery = `*[_type == "product" && category->slug.current == $category && isActive == true]{
@@ -97,7 +97,7 @@ export const facebookMelaProductsQuery = `*[_type == "campaign" && slug.current 
 }.products`
 
 export const featuredProductsQuery = `*[_type == "product" && isFeatured == true && isActive == true] | order(_createdAt desc){
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
+    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
 }`
 
 export const activeCampaignHomeQuery = `*[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
@@ -106,7 +106,7 @@ export const activeCampaignHomeQuery = `*[_type == "campaign" && status == "acti
     endDate,
     "vouchers": vouchers[]->code,
     "products": promotedProducts[@->isActive == true]-> {
-      _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
+      _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock
     }
 }`
 
@@ -125,7 +125,7 @@ export const activeVouchersQuery = `*[_type == "discountVoucher" && isActive == 
 }`
 
 export const searchProductsQuery = `*[_type == "product" && isActive == true && (title match $searchTerm || description match $searchTerm || material match $searchTerm || category->title match $searchTerm)] | order(_createdAt desc)[0...12]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
+    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, stock
 }`
 
 export const allMaterialsQuery = `*[_type == "material"] | order(title asc) {

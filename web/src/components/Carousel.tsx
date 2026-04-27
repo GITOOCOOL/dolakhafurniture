@@ -67,9 +67,9 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
     <div ref={containerRef} className="flex-1 relative group w-full px-0 overflow-visible flex flex-col gap-0 transition-all">
       <style>{`
         /* Card width injection for responsive sizing */
-        :root { --card-width: 30%; }
-        @media (min-width: 768px) { :root { --card-width: 9%; } }
-        @media (min-width: 1024px) { :root { --card-width: 9%; } }
+        :root { --card-width: 70%; }
+        @media (min-width: 768px) { :root { --card-width: 25%; } }
+        @media (min-width: 1024px) { :root { --card-width: 25%; } }
       `}</style>
         <div 
           ref={scrollRef}

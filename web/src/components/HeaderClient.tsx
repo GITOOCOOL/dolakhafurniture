@@ -16,6 +16,7 @@ import ProductCard from "@/components/ProductCard";
 import CampaignModal from "./CampaignModal";
 import Modal from "./ui/Modal";
 import CategorySwitcher from "./CategorySwitcher";
+import ProductQuickView from "./ProductQuickView";
 
 interface HeaderClientProps {
   latestCampaign?: Campaign | null;
@@ -152,6 +153,9 @@ export default function HeaderClient({ latestCampaign }: HeaderClientProps) {
             <CategorySwitcher />
           </div>
         )}
+        <div className="pointer-events-auto">
+          <ProductQuickView />
+        </div>
 
         <CampaignModal campaign={latestCampaign || null} />
       </header>

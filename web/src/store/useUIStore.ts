@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { Product } from "@/types";
 
 interface UIStore {
   activeLocks: Set<string>;
@@ -11,6 +12,7 @@ interface UIStore {
   isSearchOpen: boolean;
   isAdminSidebarOpen: boolean;
   isInquiryModalOpen: boolean;
+  viewingProduct: Product | null;
   lockScroll: (id: string) => void;
   unlockScroll: (id: string) => void;
   setCampaignModalOpen: (isOpen: boolean) => void;
@@ -19,6 +21,7 @@ interface UIStore {
   setIsSearchOpen: (isOpen: boolean) => void;
   setIsAdminSidebarOpen: (isOpen: boolean) => void;
   setIsInquiryModalOpen: (isOpen: boolean) => void;
+  setViewingProduct: (product: Product | null) => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -30,6 +33,7 @@ export const useUIStore = create<UIStore>((set) => ({
   isSearchOpen: false,
   isAdminSidebarOpen: true,
   isInquiryModalOpen: false,
+  viewingProduct: null,
 
   setCampaignModalOpen: (isOpen: boolean) =>
     set({ isCampaignModalOpen: isOpen }),
@@ -43,6 +47,8 @@ export const useUIStore = create<UIStore>((set) => ({
     set({ isAdminSidebarOpen: isOpen }),
   setIsInquiryModalOpen: (isOpen: boolean) =>
     set({ isInquiryModalOpen: isOpen }),
+  setViewingProduct: (product: Product | null) =>
+    set({ viewingProduct: product }),
 
   lockScroll: (id: string) =>
     set((state) => {
