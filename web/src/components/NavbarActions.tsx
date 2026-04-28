@@ -187,13 +187,12 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
       {/* --- ANIMATED CART SECTION --- */}
       <div className="relative flex-shrink-0">
         <motion.button
-          key={totalQuantity}
           type="button"
           onClick={() => setIsCheckoutDrawerOpen(true)}
-          initial={{ scale: 1 }}
+          initial={{ scale: 1, rotate: 0 }}
           animate={totalQuantity > 0 && !justAdded ? {
             rotate: [0, -15, 15, -15, 15, 0],
-          } : {}}
+          } : { rotate: 0 }}
           transition={{
             rotate: {
               duration: 1,
@@ -201,7 +200,7 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
               ease: "easeInOut"
             }
           }}
-          className={`relative flex items-center justify-center w-[38px] h-[38px] shadow-sm transition-all duration-500 cursor-pointer touch-manipulation flex-shrink-0 rounded-full
+          className={`relative flex items-center justify-center w-[38px] h-[38px] shadow-sm transition-colors duration-500 cursor-pointer touch-manipulation flex-shrink-0 rounded-full
             ${totalQuantity > 0
               ? 'bg-[#ea580c] text-white shadow-[0_0_25px_rgba(234,88,12,0.7)]'
                : 'bg-clay text-heading hover:bg-stone-muted/30 shadow-sm'}`}

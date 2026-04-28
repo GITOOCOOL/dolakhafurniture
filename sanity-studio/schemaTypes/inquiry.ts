@@ -31,12 +31,24 @@ export default defineType({
             type: "string",
             options: {
                 list: [
-                    { title: "📦 Order Update / Tracking", value: "tracking" },
-                    { title: "🪑 Product Information", value: "product" },
-                    { title: "❓ General Question", value: "general" },
-                    { title: "🏢 Business / Bulk Enquiry", value: "business" },
+                    { title: "📦 Order Inquiry", value: "order" },
+                    { title: "❓ Questions & FAQ", value: "general" },
+                    { title: "🪑 Product Customization", value: "custom" },
+                    { title: "🏢 Bulk / Corporate Inquiry", value: "bulk" },
                 ]
             }
+        }),
+        defineField({
+            name: "orderReference",
+            title: "Order Reference",
+            type: "string",
+            description: "The order number or ID associated with this inquiry."
+        }),
+        defineField({
+            name: "topic",
+            title: "Specific Topic",
+            type: "string",
+            description: "The specific FAQ topic or custom subject selected."
         }),
         defineField({
             name: "status",

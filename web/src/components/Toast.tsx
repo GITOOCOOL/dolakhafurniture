@@ -126,7 +126,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
 
       {mounted && createPortal(
-        <div className="fixed top-8 right-6 z-[1000] flex flex-col gap-3 items-end pointer-events-none w-[90vw] max-w-sm">
+        <div className="fixed top-24 right-4 sm:right-6 z-[1000] flex flex-col gap-3 items-end pointer-events-none w-[90vw] max-w-sm">
           <AnimatePresence mode="popLayout">
             {toasts.map((toast) => (
               <ToastItemComponent key={toast.id} toast={toast} />

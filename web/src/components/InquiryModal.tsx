@@ -90,6 +90,12 @@ export default function InquiryModal({
           setFaqs(fetchedFaqs);
 
           if (user) {
+            setInquiryData((prev) => ({
+              ...prev,
+              email: prev.email || user.email || "",
+              name: prev.name || user.user_metadata?.full_name || prev.name,
+            }));
+            
             setIsLoadingOrders(true);
             const orders = await sanityClient.fetch(
               `*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email)] | order(_createdAt desc)[0...5]`,
@@ -164,15 +170,8 @@ export default function InquiryModal({
       </p>
 
       {/* QUICK CONNECT HUB */}
-      <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 mb-10">
+      <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-8">
         {[
-          {
-            icon: <Phone size={18} className="text-app" strokeWidth={1.5} />,
-            label: "Call",
-            href: `tel:${businessMetaData?.phone || ""}`,
-            color: "bg-heading",
-            textColor: "text-app",
-          },
           {
             icon: <MessageCircle size={18} className="fill-[#128C7E] stroke-[0.5]" strokeWidth={1.5} />,
             label: "WhatsApp",
@@ -186,6 +185,13 @@ export default function InquiryModal({
             href: businessMetaData?.messengerUrl || "#",
             color: "bg-[#0084FF]",
             textColor: "text-white",
+          },
+          {
+            icon: <Phone size={18} className="text-app" strokeWidth={1.5} />,
+            label: "Call Us",
+            href: `tel:${businessMetaData?.phone || ""}`,
+            color: "bg-heading",
+            textColor: "text-app",
           }
         ].map((btn, idx) => (
           <a
@@ -193,10 +199,10 @@ export default function InquiryModal({
             href={btn.href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-[1.5rem] shadow-sm ${btn.color} ${btn.textColor} hover:scale-[1.03] transition-all duration-300 border border-divider/10`}
+            className={`flex flex-1 items-center justify-center gap-2 py-3 px-1 sm:px-3 rounded-full shadow-sm ${btn.color} ${btn.textColor} hover:scale-[1.03] transition-all duration-300 border border-divider/10`}
           >
             {btn.icon}
-            <span className="text-[10px] font-sans font-bold uppercase tracking-widest leading-none">
+            <span className="text-[9px] sm:text-[10px] font-sans font-bold uppercase tracking-widest leading-none truncate">
               {btn.label}
             </span>
           </a>
@@ -363,6 +369,20 @@ export default function InquiryModal({
             </div>
           )}
 
+          <textarea
+            required
+            name="message"
+            rows={4}
+            placeholder={
+              inquiryData.inquiryType === "order"
+                ? "Details about your order or tracking request..."
+                : "How can we help you today?"
+            }
+            value={inquiryData.message}
+            onChange={handleInputChange}
+            className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all resize-none font-sans text-heading placeholder:text-heading/40"
+          />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               required
@@ -391,20 +411,6 @@ export default function InquiryModal({
             value={inquiryData.email}
             // @ts-ignore
             onChange={(e: any) => handleInputChange(e)}
-          />
-
-          <textarea
-            required
-            name="message"
-            rows={4}
-            placeholder={
-              inquiryData.inquiryType === "order"
-                ? "Details about your order or tracking request..."
-                : "How can we help you today?"
-            }
-            value={inquiryData.message}
-            onChange={handleInputChange}
-            className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all resize-none font-sans text-heading placeholder:text-heading/40"
           />
         </div>
 
