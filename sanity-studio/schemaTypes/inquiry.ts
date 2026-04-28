@@ -32,7 +32,7 @@ export default defineType({
             options: {
                 list: [
                     { title: "📦 Order Inquiry", value: "order" },
-                    { title: "❓ Questions & FAQ", value: "general" },
+                    { title: "❓ General Inquiry", value: "general" },
                     { title: "🪑 Product Customization", value: "custom" },
                     { title: "🏢 Bulk / Corporate Inquiry", value: "bulk" },
                 ]
