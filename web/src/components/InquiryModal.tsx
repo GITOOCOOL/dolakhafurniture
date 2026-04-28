@@ -48,7 +48,7 @@ export default function InquiryModal({
     email: initialData?.email || "",
     phone: initialData?.phone || "",
     message: "",
-    inquiryType: "order",
+    inquiryType: initialOrderReference ? "order" : "general",
     orderReference: initialOrderReference || "",
     topic: "delivery",
   });
