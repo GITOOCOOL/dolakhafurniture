@@ -35,6 +35,9 @@ export async function submitInquiry(data: {
       email: data.email,
       phone: data.phone,
       message: data.message,
+      inquiryType: data.inquiryType,
+      orderReference: data.orderReference,
+      topic: data.topic,
       createdAt: new Date().toISOString(),
     };
 

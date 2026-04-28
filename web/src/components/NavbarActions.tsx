@@ -43,6 +43,19 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
   const items = useCart((state) => state.items);
   const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
 
+  const [justAdded, setJustAdded] = useState(false);
+  const prevQuantityRef = useRef(totalQuantity);
+
+  useEffect(() => {
+    if (totalQuantity > prevQuantityRef.current) {
+      setJustAdded(true);
+      const timer = setTimeout(() => setJustAdded(false), 1000);
+      prevQuantityRef.current = totalQuantity;
+      return () => clearTimeout(timer);
+    }
+    prevQuantityRef.current = totalQuantity;
+  }, [totalQuantity]);
+
   // Click outside listener for contact dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -150,7 +163,7 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
 
 
   return (
-    <div className="flex items-center gap-2 md:gap-3 relative z-50 flex-shrink-0">
+    <div className="flex items-center gap-4 md:gap-5 lg:gap-6 relative z-50 flex-shrink-0">
       {/* --- SEARCH TRIGGER --- */}
       <button
         type="button"
@@ -174,13 +187,12 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
       {/* --- ANIMATED CART SECTION --- */}
       <div className="relative flex-shrink-0">
         <motion.button
-          key={totalQuantity}
           type="button"
           onClick={() => setIsCheckoutDrawerOpen(true)}
-          initial={{ scale: 1 }}
-          animate={totalQuantity > 0 ? {
+          initial={{ scale: 1, rotate: 0 }}
+          animate={totalQuantity > 0 && !justAdded ? {
             rotate: [0, -15, 15, -15, 15, 0],
-          } : {}}
+          } : { rotate: 0 }}
           transition={{
             rotate: {
               duration: 1,
@@ -188,20 +200,44 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
               ease: "easeInOut"
             }
           }}
-          className={`relative flex items-center justify-center w-[38px] h-[38px] shadow-sm transition-all cursor-pointer touch-manipulation flex-shrink-0 rounded-full
+          className={`relative flex items-center justify-center w-[38px] h-[38px] shadow-sm transition-colors duration-500 cursor-pointer touch-manipulation flex-shrink-0 rounded-full
             ${totalQuantity > 0
-              ? 'bg-app-invert text-action-success shadow-[0_0_15px_rgba(74,222,128,0.3)]'
+              ? 'bg-[#ea580c] text-white shadow-[0_0_25px_rgba(234,88,12,0.7)]'
                : 'bg-clay text-heading hover:bg-stone-muted/30 shadow-sm'}`}
         >
-          <div className="flex items-center gap-1">
-            <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
+          <div className="flex items-center justify-center relative w-[22px] h-[22px] md:w-7 md:h-7">
+            <AnimatePresence mode="popLayout">
+              {justAdded ? (
+                <motion.div
+                  key="arrow"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <ArrowUp size={22} className="md:w-7 md:h-7" strokeWidth={1.5} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="bag"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <ShoppingBag size={22} className="md:w-7 md:h-7" strokeWidth={1.2} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {totalQuantity > 0 && (
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 bg-action-success text-app-invert text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-app-invert"
+              className="absolute -top-1 -right-1 bg-heading text-app text-[9px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-[1.5px] border-[#ea580c]"
             >
               {totalQuantity}
             </motion.span>

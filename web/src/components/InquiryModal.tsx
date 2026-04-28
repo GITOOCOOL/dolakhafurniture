@@ -4,6 +4,7 @@ import { useState } from "react";
 import { submitInquiry } from "@/app/actions/inquiry";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
+import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
@@ -48,9 +49,8 @@ export default function InquiryModal({
     email: initialData?.email || "",
     phone: initialData?.phone || "",
     message: "",
-    inquiryType: "order",
+    inquiryType: initialOrderReference ? "order" : "general",
     orderReference: initialOrderReference || "",
-    topic: "delivery",
   });
   const [inquiryStatus, setInquiryStatus] = useState<
     "idle" | "submitting" | "success" | "error"
@@ -90,6 +90,12 @@ export default function InquiryModal({
           setFaqs(fetchedFaqs);
 
           if (user) {
+            setInquiryData((prev) => ({
+              ...prev,
+              email: prev.email || user.email || "",
+              name: prev.name || user.user_metadata?.full_name || prev.name,
+            }));
+            
             setIsLoadingOrders(true);
             const orders = await sanityClient.fetch(
               `*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email)] | order(_createdAt desc)[0...5]`,
@@ -122,12 +128,6 @@ export default function InquiryModal({
   ) => {
     const { name, value } = e.target;
     setInquiryData((prev) => ({ ...prev, [name]: value }));
-
-    // Update selected FAQ if topic changes
-    if (name === "topic") {
-      const faq = faqs.find((f) => f.question === value);
-      setSelectedFaq(faq || null);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -138,7 +138,6 @@ export default function InquiryModal({
       if (result.success) {
         trackEvent("Contact", {
           inquiry_type: inquiryData.inquiryType,
-          topic: inquiryData.topic
         });
         setInquiryStatus("success");
         setTimeout(() => {
@@ -164,15 +163,8 @@ export default function InquiryModal({
       </p>
 
       {/* QUICK CONNECT HUB */}
-      <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 mb-10">
+      <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-8">
         {[
-          {
-            icon: <Phone size={18} className="text-app" strokeWidth={1.5} />,
-            label: "Call",
-            href: `tel:${businessMetaData?.phone || ""}`,
-            color: "bg-heading",
-            textColor: "text-app",
-          },
           {
             icon: <MessageCircle size={18} className="fill-[#128C7E] stroke-[0.5]" strokeWidth={1.5} />,
             label: "WhatsApp",
@@ -186,6 +178,13 @@ export default function InquiryModal({
             href: businessMetaData?.messengerUrl || "#",
             color: "bg-[#0084FF]",
             textColor: "text-white",
+          },
+          {
+            icon: <Phone size={18} className="text-app" strokeWidth={1.5} />,
+            label: "Call Us",
+            href: `tel:${businessMetaData?.phone || ""}`,
+            color: "bg-heading",
+            textColor: "text-app",
           }
         ].map((btn, idx) => (
           <a
@@ -193,19 +192,71 @@ export default function InquiryModal({
             href={btn.href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-[1.5rem] shadow-sm ${btn.color} ${btn.textColor} hover:scale-[1.03] transition-all duration-300 border border-divider/10`}
+            className={`flex flex-1 items-center justify-center gap-2 py-3 px-1 sm:px-3 rounded-full shadow-sm ${btn.color} ${btn.textColor} hover:scale-[1.03] transition-all duration-300 border border-divider/10`}
           >
             {btn.icon}
-            <span className="text-[10px] font-sans font-bold uppercase tracking-widest leading-none">
+            <span className="text-[9px] sm:text-[10px] font-sans font-bold uppercase tracking-widest leading-none truncate">
               {btn.label}
             </span>
           </a>
         ))}
       </div>
 
+      {/* FREQUENTLY ASKED QUESTIONS */}
+      {faqs.length > 0 && (
+        <div className="mb-8">
+          <h3 className="text-[10px] font-sans font-bold uppercase tracking-widest text-description mb-4 ml-4">
+            Frequently Asked Questions
+          </h3>
+          <div className="space-y-2">
+            {faqs.map((faq) => (
+              <div 
+                key={faq._id} 
+                className="bg-app border border-soft/20 rounded-[1.5rem] overflow-hidden shadow-sm hover:border-soft/40 transition-colors"
+              >
+                <button
+                  type="button"
+                  onClick={() => setSelectedFaq(selectedFaq?._id === faq._id ? null : faq)}
+                  className="w-full px-6 py-4 flex items-center justify-between text-left focus:outline-none touch-manipulation cursor-pointer"
+                >
+                  <span className="font-sans font-bold text-sm text-heading pr-4">{faq.question}</span>
+                  <ChevronDown 
+                    size={16} 
+                    className={`text-action transition-transform duration-300 flex-shrink-0 ${selectedFaq?._id === faq._id ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+                
+                <AnimatePresence initial={false}>
+                  {selectedFaq?._id === faq._id && (
+                    <motion.div
+                      key="content"
+                      initial="collapsed"
+                      animate="open"
+                      exit="collapsed"
+                      variants={{
+                        open: { opacity: 1, height: "auto" },
+                        collapsed: { opacity: 0, height: 0 }
+                      }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="px-6 pb-5 flex gap-3 items-start">
+                        <Sparkles size={14} className="text-action mt-1 flex-shrink-0" />
+                        <p className="text-sm text-heading leading-relaxed italic font-serif">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-4 mb-8">
         <div className="h-px flex-1 bg-soft/20" />
-        <span className="text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-description">Or Send a Message</span>
+        <span className="text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-description text-center">Still need help? Send a message</span>
         <div className="h-px flex-1 bg-soft/20" />
       </div>
 
@@ -223,7 +274,7 @@ export default function InquiryModal({
                 onChange={handleInputChange}
                 className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all appearance-none font-sans text-heading font-medium"
               >
-                <option value="general">❓ Questions & FAQ</option>
+                <option value="general">❓ General Inquiry</option>
                 <option value="order">📦 Order Inquiry</option>
                 <option value="custom">🪑 Product Customization</option>
                 <option value="bulk">🏢 Bulk / Corporate Inquiry</option>
@@ -317,51 +368,21 @@ export default function InquiryModal({
             </div>
           )}
 
-          {/* CONDITIONAL: FAQ TOPICS */}
-          {inquiryData.inquiryType === "general" && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
-              <div className="space-y-2">
-                <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-description ml-4">
-                  Inquiry Topic
-                </label>
-                <div className="relative">
-                  <select
-                    name="topic"
-                    value={inquiryData.topic}
-                    onChange={handleInputChange}
-                    className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all appearance-none font-sans font-bold"
-                  >
-                    <option value="">Select a topic...</option>
-                    {faqs.map((faq) => (
-                      <option key={faq._id} value={faq.question}>
-                        {faq.question}
-                      </option>
-                    ))}
-                    <option value="other">💬 Other Question</option>
-                  </select>
-                  <ChevronDown
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-label pointer-events-none"
-                    size={16}
-                  />
-                </div>
-              </div>
 
-              {/* INSTANT RESPONSE */}
-              {selectedFaq && (
-                <div className="p-6 bg-surface/50 border border-dashed border-action/20 rounded-[1.5rem] animate-in zoom-in-95 duration-700">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles size={14} className="text-action" />
-                    <span className="text-[9px] font-sans font-bold uppercase tracking-widest text-action">
-                      Quick Answer
-                    </span>
-                  </div>
-                  <p className="text-xs text-heading leading-relaxed italic font-serif">
-                    "{selectedFaq.answer}"
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+
+          <textarea
+            required
+            name="message"
+            rows={4}
+            placeholder={
+              inquiryData.inquiryType === "order"
+                ? "Details about your order or tracking request..."
+                : "How can we help you today?"
+            }
+            value={inquiryData.message}
+            onChange={handleInputChange}
+            className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all resize-none font-sans text-heading placeholder:text-heading/40"
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
@@ -391,20 +412,6 @@ export default function InquiryModal({
             value={inquiryData.email}
             // @ts-ignore
             onChange={(e: any) => handleInputChange(e)}
-          />
-
-          <textarea
-            required
-            name="message"
-            rows={4}
-            placeholder={
-              inquiryData.inquiryType === "order"
-                ? "Details about your order or tracking request..."
-                : "How can we help you today?"
-            }
-            value={inquiryData.message}
-            onChange={handleInputChange}
-            className="w-full bg-app border border-soft/20 px-8 py-4 rounded-[1.5rem] text-sm focus:outline-none focus:ring-1 focus:ring-action transition-all resize-none font-sans text-heading placeholder:text-heading/40"
           />
         </div>
 

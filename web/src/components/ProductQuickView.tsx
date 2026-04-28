@@ -5,7 +5,9 @@ import Modal from "./ui/Modal";
 import ProductDetail from "./ProductDetail";
 import { X } from "lucide-react";
 
-export default function ProductQuickView() {
+import { BusinessMetaData } from "@/types";
+
+export default function ProductQuickView({ businessMetaData }: { businessMetaData?: BusinessMetaData | null }) {
   const { viewingProduct, setViewingProduct } = useUIStore();
 
   if (!viewingProduct) return null;
@@ -20,7 +22,7 @@ export default function ProductQuickView() {
       noPadding
     >
       <div className="relative w-full h-full bg-app/80 backdrop-blur-3xl">
-        <ProductDetail product={viewingProduct} variant="modal" />
+        <ProductDetail product={viewingProduct} variant="modal" businessMetaData={businessMetaData} />
       </div>
     </Modal>
   );
