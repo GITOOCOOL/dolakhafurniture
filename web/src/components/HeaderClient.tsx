@@ -124,7 +124,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
       <header id="main-site-header" className="sticky top-0 z-[100] w-full pointer-events-none transition-all duration-300">
         {/* Main Header Surface */}
         <div className="bg-app border-b border-soft shadow-[0_2px_10px_rgba(0,0,0,0.02)] pointer-events-auto">
-          <div className="w-full flex items-center justify-between py-3 md:py-4 px-3 gap-2 md:gap-0">
+          <div className="w-full flex items-center justify-between py-3 md:py-4 px-6 md:px-10 lg:px-16 gap-2 md:gap-0">
             {/* Hidden Spacer for Desktop - Ensures Logo stays centered */}
             <div className="hidden md:flex flex-1 basis-0" />
 
@@ -185,7 +185,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
           </div>
         )}
         <div className="pointer-events-auto">
-          <ProductQuickView />
+          <ProductQuickView businessMetaData={businessMetaData} />
         </div>
 
         <CampaignModal campaign={latestCampaign || null} />
@@ -196,23 +196,17 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
         />
 </header>
 
-      {/* --- SEARCH TAKEOVER MODAL --- */}
-      <AnimatePresence>
-        {isSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-app z-[200] flex flex-col items-center pt-20 px-6 backdrop-blur-xl overflow-y-auto pb-32"
-          >
-            <button
-              type="button"
-              onClick={() => setIsSearchOpen(false)}
-              className="fixed top-8 right-8 z-[210] p-3 text-heading hover:text-action transition-colors cursor-pointer touch-manipulation bg-app/50 backdrop-blur-md rounded-full border border-soft shadow-lg"
-            >
-              <X size={32} strokeWidth={1.2} />
-            </button>
-            <div className="w-full max-w-4xl space-y-8">
+      {/* --- SEARCH MODAL --- */}
+      <Modal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        title="Search Catalog"
+        position="bottom"
+        className="sm:max-w-7xl !p-0 sm:h-[calc(100dvh-var(--header-height,5rem))]"
+        noPadding
+      >
+        <div className="relative w-full h-full bg-app/80 backdrop-blur-3xl overflow-y-auto pt-6 px-6 sm:pt-10 sm:px-10 pb-32">
+            <div className="w-full max-w-4xl mx-auto space-y-8">
               <div className="relative group">
                 <input
                   autoFocus
@@ -307,9 +301,8 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
                 )}
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={isMenuOpen}
