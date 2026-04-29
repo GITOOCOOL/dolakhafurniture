@@ -85,6 +85,7 @@ Current priority is stabilizing the live environment. All active bugs, security 
   - **Artisan Leads CRM**: Sales intelligence pipeline with 'Elevation' workflow, deal status tracking, and priority management.
   - **Inventory Center**: Quick restocking tool, direct price/stock management, and visibility toggles.
   - **Content Central**: High-density dashboard for managing Bulletins and Campaigns.
+  - **System Documentations**: Built-in interactive manuals (`DOLAKHA_FURNITURE_MANUAL.md` and `DOLAKHA_ADMIN_DASHBOARD_MANUAL.md`) parsed with `react-markdown` directly inside the admin dashboard.
   - [Detailed Design & Logs](file:///Users/suraj/Developer/dolakha-mac/dolakhafurniture/AdminDashboardFeature.md)
 - **Marketing & Catalog Hub**:
   - **Facebook Data Feed**: Automated RSS 2.0 XML feed for Meta Commerce Manager (NPR Currency).

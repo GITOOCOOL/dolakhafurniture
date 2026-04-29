@@ -18,7 +18,8 @@ import {
   Store,
   Box,
   X,
-  Activity
+  Activity,
+  BookOpen
 } from "lucide-react";
 
 const navItems = [
@@ -29,6 +30,7 @@ const navItems = [
   { label: "Service Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { label: "Sales Leads", href: "/admin/leads", icon: TrendingUp },
   { label: "User Roles", href: "/admin/users", icon: Users },
+  { label: "Documentations", href: "/admin/documentations", icon: BookOpen },
 ];
 
 export default function AdminSidebar() {
