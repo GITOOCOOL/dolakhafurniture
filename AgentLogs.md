@@ -51,7 +51,13 @@ This file tracks the operational history of the AI assistant for Projekt-Dolakha
 - **[Codebase/Feature Updates]**: Added an explicit 'Applied' tag with a checkmark icon to active vouchers in the Sentinel Row, providing unambiguous confirmation of which deals are currently active in the checkout session.
 - **[prompt/response]**: Streamlined the financials summary by removing redundant voucher pills from the 'To Pay' section, keeping the pricing row focused and professional while offloading status confirmation to the dedicated management row above.
 
+## 📅 2026-04-29
 
+- **[prompt/response]**: Refactored the InquiryModal to replace the inquiry topic dropdown with a frictionless text-first approach and an interactive FAQ accordion. Addressed modal scroll jump on iOS by implementing a requestAnimationFrame deferred jump. Created a comprehensive staff manual and a specialized Admin Dashboard manual, integrating both directly into the Admin Sidebar via a new `/admin/documentations` route.
+- **[Codebase/Feature Updates]**: 
+    - **Inquiry & FAQ Refactor**: Replaced CSS grid transitions with Framer Motion `AnimatePresence` for butter-smooth accordion heights. Defaulted all tickets to `General Inquiry`.
+    - **Scroll Restitution**: Hardened the iOS `position: fixed` modal hack by deferring the `window.scrollTo` restoration via `requestAnimationFrame` to prevent 0-height coordinate calculation bugs, and temporarily disabled smooth-scrolling to eliminate messy visual jumps.
+    - **Admin Documentations**: Added `react-markdown` to parse project root `.md` files directly inside a new `/admin/documentations` route with a tabbed interface.
 
 
 
