@@ -19,18 +19,22 @@ import {
   Box,
   X,
   Activity,
-  BookOpen
+  BookOpen,
+  Lightbulb,
+  Shield
 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Pulse", href: "/admin/pulse", icon: Activity },
   { label: "Inventory", href: "/admin/inventory", icon: Box },
   { label: "Orders", href: "/admin/orders", icon: Package },
-  { label: "Admin Brain", href: "/admin/logs", icon: Activity },
+  { label: "Admin Brain", href: "/admin/logs", icon: Shield },
   { label: "Service Inquiries", href: "/admin/inquiries", icon: MessageSquare },
   { label: "Sales Leads", href: "/admin/leads", icon: TrendingUp },
   { label: "User Roles", href: "/admin/users", icon: Users },
-  { label: "Documentations", href: "/admin/documentations", icon: BookOpen },
+  { label: "Content Ideas", href: "/admin/ideas", icon: Lightbulb },
+  { label: "Docs", href: "/admin/documentations", icon: BookOpen },
 ];
 
 export default function AdminSidebar() {

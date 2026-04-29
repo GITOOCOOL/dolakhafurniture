@@ -12,6 +12,7 @@ export default async function AdminDocumentationsPage() {
   
   let storeManual = "Error: DOLAKHA_FURNITURE_MANUAL.md not found.";
   let adminManual = "Error: DOLAKHA_ADMIN_DASHBOARD_MANUAL.md not found.";
+  let engineManual = "Error: DOLAKHA_CONTENT_ENGINE_MANUAL.md not found.";
 
   try {
     storeManual = fs.readFileSync(path.join(rootDir, "..", "DOLAKHA_FURNITURE_MANUAL.md"), "utf-8");
@@ -23,6 +24,12 @@ export default async function AdminDocumentationsPage() {
     adminManual = fs.readFileSync(path.join(rootDir, "..", "DOLAKHA_ADMIN_DASHBOARD_MANUAL.md"), "utf-8");
   } catch (error) {
     console.error("Could not read admin manual:", error);
+  }
+
+  try {
+    engineManual = fs.readFileSync(path.join(rootDir, "..", "DOLAKHA_CONTENT_ENGINE_MANUAL.md"), "utf-8");
+  } catch (error) {
+    console.error("Could not read content engine manual:", error);
   }
 
   return (
@@ -39,7 +46,11 @@ export default async function AdminDocumentationsPage() {
         </div>
       </div>
 
-      <DocumentationTabs storeManual={storeManual} adminManual={adminManual} />
+      <DocumentationTabs 
+        storeManual={storeManual} 
+        adminManual={adminManual} 
+        engineManual={engineManual}
+      />
     </div>
   );
 }

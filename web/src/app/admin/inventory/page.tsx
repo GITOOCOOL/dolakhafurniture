@@ -12,6 +12,7 @@ export default async function AdminInventoryPage() {
         _id,
         title,
         price,
+        costPrice,
         stock,
         isActive,
         syncToFacebook,
@@ -21,7 +22,8 @@ export default async function AdminInventoryPage() {
         description,
         "category": category->title,
         "categoryId": category->_id,
-        "imageUrl": mainImage.asset->url
+        "imageUrl": mainImage.asset->url,
+        "galleryImages": images[].asset->url
       }`,
       {},
       { useCdn: false }

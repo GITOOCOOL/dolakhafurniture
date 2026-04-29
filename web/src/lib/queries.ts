@@ -251,4 +251,41 @@ export const businessMetaDataQuery = `*[_type == "businessMetaData"][0] {
   businessUrl,
   messengerUrl,
   facebookPixelId
+}
+`
+
+export const adminContentIdeasQuery = `*[_type == "contentIdea"] | order(createdAt desc) {
+  _id,
+  title,
+  contentType,
+  description,
+  platform,
+  priority,
+  status,
+  mediaType,
+  "imageUrl": referenceImage.asset->url,
+  "videoUrl": referenceVideo.asset->url,
+  script,
+  inspirations,
+  "linkedProducts": linkedProducts[]-> {
+    title,
+    "slug": slug.current
+  },
+  notes,
+  createdAt
+}`
+
+export const adminPulseQuery = `*[_type == "trafficPulse"] | order(timestamp desc) [0...100] {
+  _id,
+  timestamp,
+  path,
+  sessionID,
+  referrer,
+  location,
+  product-> {
+    _id,
+    title,
+    "slug": slug.current,
+    "imageUrl": mainImage.asset->url
+  }
 }`

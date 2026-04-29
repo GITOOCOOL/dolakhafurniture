@@ -50,6 +50,7 @@ export default defineType({
             title: 'Main/Cover Photo (for cards)',
             type: 'image',
             options: {hotspot: true},
+            description: 'Best Ratio: 4:5 (1200x1500px) or 1:1 (1200x1200px). Use 4:5 for a taller, premium look.',
             validation: (Rule) => Rule.required(),
         }),
         defineField({

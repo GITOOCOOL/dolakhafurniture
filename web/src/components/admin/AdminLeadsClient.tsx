@@ -45,11 +45,36 @@ interface Lead {
   };
 }
 
-export default function AdminLeadsClient({ initialLeads }: { initialLeads: Lead[] }) {
+interface ProductRef {
+  _id: string;
+  title: string;
+}
+
+export default function AdminLeadsClient({ 
+  initialLeads,
+  products = []
+}: { 
+  initialLeads: Lead[],
+  products?: ProductRef[]
+}) {
   const [leads, setLeads] = useState(initialLeads);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [tempNotes, setTempNotes] = useState("");
+  
+  // ADD LEAD STATE
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [addLeadData, setAddLeadData] = useState({
+    customerName: "",
+    email: "",
+    phone: "",
+    status: "new",
+    priority: "medium",
+    source: "manual",
+    internalNotes: "",
+    productReferenceId: ""
+  });
   
   // FILTER STATE
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,6 +148,27 @@ export default function AdminLeadsClient({ initialLeads }: { initialLeads: Lead[
     }
   };
 
+  const handleAddLead = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const { createLead } = await import("@/app/actions/adminLeads");
+      const result = await createLead(addLeadData);
+      if (result.success) {
+        // Since we are using revalidatePath, it's better to just refresh or update local state
+        // For simplicity in this SPA-like feel, let's just reload or wait for refresh
+        window.location.reload();
+      } else {
+        alert(result.error || "Failed to create lead");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const statusConfigs: Record<string, { color: string; icon: any; label: string }> = {
     new: { color: "bg-blue-500/10 text-blue-600", icon: Clock, label: "New Lead" },
     contacted: { color: "bg-indigo-500/10 text-indigo-600", icon: MessageSquare, label: "Contacted" },
@@ -141,6 +187,29 @@ export default function AdminLeadsClient({ initialLeads }: { initialLeads: Lead[
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
+      
+      {/* HEADER ACTIONS */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-soft pb-8">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-action/10 rounded-2xl">
+            <TrendingUp size={24} className="text-action" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-serif italic text-heading">Sales Leads</h1>
+            <p className="text-sm font-sans text-description mt-1">
+              Manage your sales pipeline and deal closures.
+            </p>
+          </div>
+        </div>
+
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="flex items-center gap-3 px-8 py-4 bg-heading text-app rounded-full text-[10px] font-sans font-bold uppercase tracking-widest hover:bg-action transition-all shadow-xl group"
+        >
+           <TrendingUp size={16} className="group-hover:translate-y-[-2px] transition-transform" />
+           Add New Lead
+        </button>
+      </div>
       
       {/* KPI STRIP */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -489,6 +558,127 @@ export default function AdminLeadsClient({ initialLeads }: { initialLeads: Lead[
              </div>
           </div>
         )}
+      </Modal>
+      {/* ADD LEAD MODAL */}
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => !isSubmitting && setIsAddModalOpen(false)}
+        title="Register New Sales Lead"
+      >
+        <form onSubmit={handleAddLead} className="space-y-8 py-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Customer Name</label>
+              <input 
+                required
+                type="text" 
+                placeholder="e.g. John Doe"
+                className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action"
+                value={addLeadData.customerName}
+                onChange={(e) => setAddLeadData({...addLeadData, customerName: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Source</label>
+              <select 
+                className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action appearance-none"
+                value={addLeadData.source}
+                onChange={(e) => setAddLeadData({...addLeadData, source: e.target.value})}
+              >
+                {Object.entries(sourceLabels).map(([val, label]) => (
+                  <option key={val} value={val}>{label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Email Address</label>
+              <input 
+                type="email" 
+                placeholder="john@example.com"
+                className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action"
+                value={addLeadData.email}
+                onChange={(e) => setAddLeadData({...addLeadData, email: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Phone Number</label>
+              <input 
+                type="tel" 
+                placeholder="+977 98..."
+                className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none focus:ring-1 focus:ring-action"
+                value={addLeadData.phone}
+                onChange={(e) => setAddLeadData({...addLeadData, phone: e.target.value})}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Initial Status</label>
+              <select 
+                className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading appearance-none focus:outline-none"
+                value={addLeadData.status}
+                onChange={(e) => setAddLeadData({...addLeadData, status: e.target.value})}
+              >
+                {Object.entries(statusConfigs).map(([val, config]) => (
+                  <option key={val} value={val}>{config.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Priority</label>
+              <div className="flex gap-2">
+                {['low', 'medium', 'high'].map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setAddLeadData({...addLeadData, priority: p})}
+                    className={`flex-1 py-4 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all ${addLeadData.priority === p ? 'bg-invert text-app shadow-lg' : 'bg-soft text-label border border-divider'}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Interested Product</label>
+            <select 
+              className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading appearance-none focus:outline-none"
+              value={addLeadData.productReferenceId}
+              onChange={(e) => setAddLeadData({...addLeadData, productReferenceId: e.target.value})}
+            >
+              <option value="">No specific product</option>
+              {products.map(p => (
+                <option key={p._id} value={p._id}>{p.title}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">Initial Notes</label>
+            <textarea 
+              rows={4}
+              placeholder="Any details about the lead..."
+              className="w-full bg-surface border border-soft rounded-[2rem] px-8 py-6 text-sm font-medium text-heading focus:outline-none focus:ring-1 focus:ring-action resize-none italic"
+              value={addLeadData.internalNotes}
+              onChange={(e) => setAddLeadData({...addLeadData, internalNotes: e.target.value})}
+            />
+          </div>
+
+          <Button 
+            fullWidth 
+            type="submit" 
+            isLoading={isSubmitting}
+            leftIcon={<TrendingUp size={16} />}
+          >
+            Create Sales Lead
+          </Button>
+        </form>
       </Modal>
     </div>
   );

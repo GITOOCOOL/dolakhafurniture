@@ -127,8 +127,8 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
            <div>
               <h3 className="text-sm font-bold text-heading mb-1 uppercase tracking-widest">Team Management</h3>
               <p className="text-xs text-label leading-relaxed font-serif italic max-w-2xl">
-                To onboard new staff, you can either wait for their signup or directly recruit them using the 
-                <span className="text-action font-bold mx-1">Artisan Direct</span> tool.
+                To add new staff, you can either wait for their signup or directly invite them using the 
+                <span className="text-action font-bold mx-1">Direct Invite</span> tool.
               </p>
            </div>
         </div>
@@ -141,7 +141,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
           className="flex items-center gap-3 px-10 py-5 bg-heading text-app rounded-full text-[10px] font-sans font-bold uppercase tracking-[0.2em] hover:bg-action transition-all shadow-2xl shadow-heading/20 group"
         >
            <UserPlus size={16} className="group-hover:rotate-12 transition-transform" />
-           Add New Artisan
+           Add Team Member
         </button>
       </div>
 
@@ -149,7 +149,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
       <div className="space-y-6">
         <div className="flex items-center gap-3 px-2">
           <ShieldAlert size={18} className="text-red-500" />
-          <h2 className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-heading">The Team Registry</h2>
+          <h2 className="text-[10px] font-sans font-bold uppercase tracking-[0.4em] text-heading">Team Members</h2>
           <div className="h-px bg-soft flex-1 ml-4" />
         </div>
 
@@ -158,7 +158,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-soft border-dotted">
-                  <th className="px-10 py-8 text-[9px] font-sans font-bold uppercase tracking-widest text-label">Artisan</th>
+                  <th className="px-10 py-8 text-[9px] font-sans font-bold uppercase tracking-widest text-label">Member</th>
                   <th className="px-10 py-8 text-[9px] font-sans font-bold uppercase tracking-widest text-label font-serif italic text-right">Access Level</th>
                 </tr>
               </thead>
@@ -170,7 +170,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
                       key={profile.id} 
                       onClick={() => {
                         setSelectedIntelEmail(profile.email);
-                        setSelectedIntelName(profile.full_name || "Artisan Member");
+                        setSelectedIntelName(profile.full_name || "Team Member");
                         setIsDrawerOpen(true);
                       }}
                       className="group hover:bg-soft/20 transition-all cursor-pointer border-l-2 border-transparent hover:border-action"
@@ -185,7 +185,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
                             )}
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-heading mb-1">{profile.full_name || "Artisan Member"}</p>
+                            <p className="text-sm font-bold text-heading mb-1">{profile.full_name || "Team Member"}</p>
                             <div className="flex items-center gap-2 text-label">
                               <Mail size={12} className="opacity-40" />
                               <span className="text-[10px] font-medium tracking-widest">{profile.email}</span>
@@ -322,7 +322,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
       
       {profiles.length === 0 && (
         <div className="text-center py-24 italic font-serif text-label opacity-40 uppercase tracking-widest text-[10px]">
-          Waiting for users to explore the atelier...
+          Waiting for users to visit the store...
         </div>
       )}
 
@@ -330,7 +330,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => !isSubmitting && setIsAddModalOpen(false)}
-        title="Artisan Direct Recruitment"
+        title="Add Team Member"
         noPadding
       >
         {!successData ? (
@@ -385,10 +385,10 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
 
              <div className="pt-6">
                 <Button fullWidth type="submit" isLoading={isSubmitting}>
-                   Confirm Recruitment
+                   Add Member
                 </Button>
                 <p className="text-[9px] text-center mt-6 text-label font-serif italic opacity-60">
-                   A temporary password will be generated for the new artisan.
+                   A temporary password will be generated for the new member.
                 </p>
              </div>
           </form>
@@ -399,7 +399,7 @@ export default function AdminUsersClient({ initialProfiles }: { initialProfiles:
                    <ShieldPlus size={40} />
                 </div>
                 <div>
-                   <h3 className="type-section text-xl">Recruitment Successful</h3>
+                   <h3 className="type-section text-xl">Member Added</h3>
                    <p className="type-label text-label normal-case italic font-serif mt-2">
                      Account created for {successData.email}
                    </p>

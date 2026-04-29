@@ -19,6 +19,7 @@ import blockContent from './blockContent'
 import checkoutSettings from './checkoutSettings'
 import { broadcastType } from './broadcast'
 import { businessMetaData } from './businessMetaData'
+import contentIdea from './contentIdea'
 
 export const schemaTypes = [
   broadcastType,
@@ -41,5 +42,6 @@ export const schemaTypes = [
   campaign, 
   faq,
   checkoutSettings,
-  businessMetaData
+  businessMetaData,
+  contentIdea
 ]

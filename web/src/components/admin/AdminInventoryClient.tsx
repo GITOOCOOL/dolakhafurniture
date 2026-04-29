@@ -16,6 +16,8 @@ import {
   RefreshCcw,
   Edit3,
   CheckCircle2,
+  Maximize2,
+  Layers
 } from "lucide-react";
 import Image from "next/image";
 import Modal from "@/components/ui/Modal";
@@ -27,6 +29,7 @@ interface Product {
   _id: string;
   title: string;
   price: number;
+  costPrice?: number;
   stock: number;
   isActive: boolean;
   syncToFacebook: boolean;
@@ -62,9 +65,11 @@ export default function AdminInventoryClient({
   // Column Visibility State
   const [visibleColumns, setVisibleColumns] = useState({
     price: true,
+    costPrice: true,
     specs: true,
     stock: true,
-    status: true,
+    visibility: true,
+    metaSync: true,
   });
 
   const toggleColumn = (column: keyof typeof visibleColumns) => {
@@ -179,10 +184,10 @@ export default function AdminInventoryClient({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
           <h2 className="text-3xl font-serif italic text-heading leading-tight">
-            Collection Ledger
+            Inventory
           </h2>
-          <p className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-label opacity-60">
-            Inventory & Piece Management
+          <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-label opacity-60">
+            Manage your products and stock
           </p>
         </div>
         <Button
@@ -324,9 +329,11 @@ export default function AdminInventoryClient({
             <div className="flex flex-wrap items-center gap-4">
               {Object.entries({
                 price: "Price",
+                costPrice: "Cost",
                 specs: "Specs",
                 stock: "Stock",
-                status: "Status",
+                visibility: "Visible",
+                metaSync: "Meta Sync",
               }).map(([key, label]) => (
                 <label
                   key={key}
@@ -359,16 +366,22 @@ export default function AdminInventoryClient({
 
       {/* INVENTORY LIST */}
       <div className="bg-app border border-soft rounded-[3rem] overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[900px]">
+        {/* DESKTOP TABLE VIEW */}
+        <div className="hidden lg:block overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
               <tr className="border-b border-soft border-dotted bg-soft/10">
-                <th className="px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label">
+                <th className="sticky left-0 bg-app z-10 px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                   Product
                 </th>
                 {visibleColumns.price && (
                   <th className="px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label w-40">
                     Price (Rs.)
+                  </th>
+                )}
+                {visibleColumns.costPrice && (
+                  <th className="px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label w-40">
+                    Cost (Rs.)
                   </th>
                 )}
                 {visibleColumns.specs && (
@@ -381,9 +394,14 @@ export default function AdminInventoryClient({
                     Stock
                   </th>
                 )}
-                {visibleColumns.status && (
-                  <th className="px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label text-center w-32">
-                    Status
+                {visibleColumns.visibility && (
+                  <th className="px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label text-center w-24">
+                    Store
+                  </th>
+                )}
+                {visibleColumns.metaSync && (
+                  <th className="px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label text-center w-24">
+                    Meta
                   </th>
                 )}
                 <th className="px-8 py-6 text-[9px] font-sans font-bold uppercase tracking-widest text-label text-center w-24">
@@ -397,7 +415,7 @@ export default function AdminInventoryClient({
                   key={product._id}
                   className="hover:bg-soft/5 transition-colors group"
                 >
-                  <td className="px-8 py-6">
+                  <td className="sticky left-0 bg-white group-hover:bg-soft/5 z-10 px-8 py-6 shadow-[2px_0_5px_rgba(0,0,0,0.02)] transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="relative w-12 h-12 bg-surface rounded-lg overflow-hidden border border-soft shrink-0">
                         {product.imageUrl ? (
@@ -414,9 +432,9 @@ export default function AdminInventoryClient({
                           />
                         )}
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p
-                          className="text-sm font-bold text-heading truncate max-w-[250px]"
+                          className="text-sm font-bold text-heading truncate max-w-[200px]"
                           title={product.title}
                         >
                           {product.title}
@@ -433,6 +451,21 @@ export default function AdminInventoryClient({
                       <p className="text-sm font-bold text-heading">
                         रू {product.price?.toLocaleString()}
                       </p>
+                    </td>
+                  )}
+
+                  {visibleColumns.costPrice && (
+                    <td className="px-8 py-6">
+                      <div className="space-y-1">
+                        <p className="text-sm font-bold text-description">
+                          रू {product.costPrice?.toLocaleString() || "0"}
+                        </p>
+                        {product.price && product.costPrice && (
+                          <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">
+                            Margin: {Math.round(((product.price - product.costPrice) / product.price) * 100)}%
+                          </p>
+                        )}
+                      </div>
                     </td>
                   )}
 
@@ -480,7 +513,7 @@ export default function AdminInventoryClient({
                             setRestockAmount(1);
                           }}
                           className="absolute right-2 p-1.5 bg-action text-white rounded-md opacity-0 group-hover/stock:opacity-100 hover:bg-heading transition-all shadow-lg scale-90"
-                          title="Quick Restock"
+                          title="Restock"
                         >
                           <Plus size={12} />
                         </button>
@@ -494,31 +527,24 @@ export default function AdminInventoryClient({
                     </td>
                   )}
 
-                  {visibleColumns.status && (
+                  {visibleColumns.visibility && (
                     <td className="px-8 py-6 text-center">
-                      <div className="flex items-center justify-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${product.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-600 opacity-40"}`}
-                          title={
-                            product.isActive
-                              ? "Visible on Web"
-                              : "Hidden from Web"
-                          }
-                        >
-                          {product.isActive ? (
-                            <CheckCircle2 size={14} />
-                          ) : (
-                            <EyeOff size={14} />
-                          )}
-                        </div>
-                        {product.syncToFacebook && (
-                          <div
-                            className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center"
-                            title="Synced to Meta"
-                          >
-                            <Facebook size={14} />
-                          </div>
-                        )}
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all mx-auto ${product.isActive ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-600 opacity-40"}`}
+                        title={product.isActive ? "Visible on Storefront" : "Hidden from Storefront"}
+                      >
+                        {product.isActive ? <CheckCircle2 size={16} /> : <EyeOff size={16} />}
+                      </div>
+                    </td>
+                  )}
+
+                  {visibleColumns.metaSync && (
+                    <td className="px-8 py-6 text-center">
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all mx-auto ${product.syncToFacebook ? "bg-blue-500/10 text-blue-600" : "bg-soft text-label opacity-20"}`}
+                        title={product.syncToFacebook ? "Synced to Meta Catalog" : "Meta Sync Disabled"}
+                      >
+                        <Facebook size={16} />
                       </div>
                     </td>
                   )}
@@ -530,7 +556,7 @@ export default function AdminInventoryClient({
                         setIsDrawerOpen(true);
                       }}
                       className="w-10 h-10 bg-surface border border-soft text-heading rounded-xl flex items-center justify-center hover:bg-action hover:text-white hover:border-action transition-all shadow-sm mx-auto"
-                      title="Edit Full Specifications"
+                      title="Edit Product Details"
                     >
                       <Edit3 size={16} />
                     </button>
@@ -539,20 +565,126 @@ export default function AdminInventoryClient({
               ))}
             </tbody>
           </table>
-
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-24 italic font-serif text-label opacity-40 uppercase tracking-widest text-[10px]">
-              No items match your filter criteria.
-            </div>
-          )}
         </div>
+
+        {/* MOBILE CARD VIEW */}
+        <div className="lg:hidden divide-y divide-soft divide-dotted">
+          {filteredProducts.map((product) => (
+            <div key={product._id} className="p-6 space-y-6 bg-white hover:bg-soft/5 transition-all">
+              {/* Card Header: Product & Basic Info */}
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative w-14 h-14 bg-surface rounded-2xl overflow-hidden border border-soft shrink-0 shadow-sm">
+                    {product.imageUrl ? (
+                      <Image src={product.imageUrl} alt={product.title} fill className="object-cover" />
+                    ) : (
+                      <Box className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-label opacity-20" size={18} />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-heading leading-tight">{product.title}</h3>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-label mt-1">{product.category || "Uncategorized"}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setIsDrawerOpen(true);
+                  }}
+                  className="w-10 h-10 bg-soft text-heading rounded-xl flex items-center justify-center hover:bg-action hover:text-white transition-all shadow-sm"
+                >
+                  <Edit3 size={14} />
+                </button>
+              </div>
+
+              {/* Card Content Grid: Tabular attributes stacked intelligently */}
+              <div className="grid grid-cols-2 gap-4 bg-app/50 p-5 rounded-[1.5rem] border border-soft/50">
+                {visibleColumns.price && (
+                  <div className="space-y-1">
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-label opacity-60">Price</p>
+                    <p className="text-xs font-bold text-heading">रू {product.price?.toLocaleString()}</p>
+                  </div>
+                )}
+                {visibleColumns.costPrice && (
+                  <div className="space-y-1">
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-label opacity-60">Cost</p>
+                    <div className="flex flex-col">
+                      <p className="text-xs font-bold text-description">रू {product.costPrice?.toLocaleString() || "0"}</p>
+                      {product.price && product.costPrice && (
+                        <p className="text-[8px] font-bold text-emerald-600">
+                          {Math.round(((product.price - product.costPrice) / product.price) * 100)}% Margin
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {visibleColumns.specs && (
+                  <div className="space-y-1">
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-label opacity-60">Specs (in)</p>
+                    <p className="text-[10px] font-bold text-heading">
+                      {product.length || "—"} × {product.breadth || "—"} × {product.height || "—"}
+                    </p>
+                  </div>
+                )}
+                {visibleColumns.stock && (
+                  <div className="col-span-2 pt-2 border-t border-soft/30 flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-label opacity-60">Current Stock</p>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-bold ${product.stock <= 0 ? "text-red-500" : product.stock < 3 ? "text-orange-500" : "text-heading"}`}>
+                          {product.stock} units
+                        </span>
+                        {product.stock <= 0 && <AlertTriangle size={10} className="text-red-500" />}
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setProductToRestock(product);
+                        setRestockAmount(1);
+                      }}
+                      className="px-4 py-2 bg-action text-white rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-sm flex items-center gap-2"
+                    >
+                      <Plus size={12} /> Restock
+                    </button>
+                  </div>
+                )}
+                {(visibleColumns.visibility || visibleColumns.metaSync) && (
+                  <div className="col-span-2 pt-4 border-t border-soft/30 flex items-center justify-between">
+                     <div className="space-y-1">
+                        <p className="text-[8px] font-bold uppercase tracking-widest text-label opacity-60">System Status</p>
+                        <div className="flex items-center gap-3">
+                          {visibleColumns.visibility && (
+                            <div className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest ${product.isActive ? "text-emerald-600" : "text-red-500 opacity-60"}`}>
+                              {product.isActive ? <CheckCircle2 size={10} /> : <EyeOff size={10} />}
+                              {product.isActive ? "Store Active" : "Store Hidden"}
+                            </div>
+                          )}
+                          {visibleColumns.metaSync && (
+                            <div className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest ${product.syncToFacebook ? "text-blue-600" : "text-label opacity-20"}`}>
+                              <Facebook size={10} /> {product.syncToFacebook ? "Meta Synced" : "Meta Off"}
+                            </div>
+                          )}
+                        </div>
+                     </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-24 italic font-serif text-label opacity-40 uppercase tracking-widest text-[10px]">
+            No items match your filter criteria.
+          </div>
+        )}
       </div>
 
       {/* RESTOCK MODAL */}
       <Modal
         isOpen={!!productToRestock}
         onClose={() => !isRestockSubmitting && setProductToRestock(null)}
-        title="Arrival of New Inventory"
+        title="Add New Inventory"
       >
         {productToRestock && (
           <div className="space-y-8 py-4">

@@ -13,6 +13,7 @@ import CampaignModal from "@/components/CampaignModal";
 import FooterClient from "@/components/FooterClient";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
+import PulseTracker from "@/components/PulseTracker";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Metadata } from "next";
 
@@ -166,6 +167,7 @@ export default async function RootLayout({
           <ToastProvider>
             <Suspense fallback={null}>
               <MetaPixel pixelId={businessMetaData?.facebookPixelId} />
+              <PulseTracker />
             </Suspense>
 
             <BrowserBanner />

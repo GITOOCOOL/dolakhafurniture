@@ -1,7 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Camera, Ruler, Type, Tag, Package, Save, PlusCircle, CheckCircle2, AlertCircle, EyeOff, Facebook, RefreshCw } from "lucide-react";
+import { 
+  X, 
+  Camera, 
+  Ruler, 
+  Type, 
+  Tag, 
+  Package, 
+  Save, 
+  PlusCircle, 
+  CheckCircle2, 
+  AlertCircle, 
+  EyeOff, 
+  Facebook, 
+  RefreshCw,
+  Image as ImageIcon,
+  Trash2,
+  Plus
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { uploadArtisanImage } from "@/app/actions/adminOrders";
@@ -16,6 +33,7 @@ interface Product {
   _id: string;
   title: string;
   price: number;
+  costPrice?: number;
   stock: number;
   isActive: boolean;
   syncToFacebook: boolean;
@@ -25,12 +43,13 @@ interface Product {
   description?: string;
   categoryId?: string;
   imageUrl?: string;
+  galleryImages?: string[];
 }
 
 interface ProductStudioDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  product: Product | null; // null means "Create Mode"
+  product: Product | null;
   categories: Category[];
   onSuccess: () => void;
 }
@@ -45,12 +64,14 @@ export default function ProductStudioDrawer({
   const isEdit = !!product;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
     price: "",
+    costPrice: "",
     stock: "",
     categoryId: "",
     length: "",
@@ -59,6 +80,8 @@ export default function ProductStudioDrawer({
     description: "",
     imageAssetId: "",
     imageUrl: "",
+    galleryAssetIds: [] as string[],
+    galleryUrls: [] as string[],
     isActive: true,
     syncToFacebook: true
   });
@@ -68,6 +91,7 @@ export default function ProductStudioDrawer({
       setFormData({
         title: product.title || "",
         price: product.price?.toString() || "",
+        costPrice: product.costPrice?.toString() || "",
         stock: product.stock?.toString() || "0",
         categoryId: product.categoryId || "",
         length: product.length?.toString() || "",
@@ -76,6 +100,8 @@ export default function ProductStudioDrawer({
         description: product.description || "",
         imageAssetId: "",
         imageUrl: product.imageUrl || "",
+        galleryAssetIds: [], // We don't have asset IDs for existing images easily, but we can handle it
+        galleryUrls: product.galleryImages || [],
         isActive: product.isActive,
         syncToFacebook: product.syncToFacebook || false
       });
@@ -83,6 +109,7 @@ export default function ProductStudioDrawer({
       setFormData({
         title: "",
         price: "",
+        costPrice: "",
         stock: "0",
         categoryId: categories[0]?._id || "",
         length: "",
@@ -91,6 +118,8 @@ export default function ProductStudioDrawer({
         description: "",
         imageAssetId: "",
         imageUrl: "",
+        galleryAssetIds: [],
+        galleryUrls: [],
         isActive: true,
         syncToFacebook: true
       });
@@ -125,6 +154,52 @@ export default function ProductStudioDrawer({
     }
   };
 
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploadingGallery(true);
+    
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const uploadData = new FormData();
+        uploadData.append("image", files[i]);
+        const result = await uploadArtisanImage(uploadData);
+        if (result.success && result.assetId) {
+          setFormData(prev => ({
+            ...prev,
+            galleryAssetIds: [...prev.galleryAssetIds, result.assetId!],
+            galleryUrls: [...prev.galleryUrls, result.url!]
+          }));
+        }
+      }
+    } catch (err) {
+      setError("Gallery upload failed.");
+    } finally {
+      setIsUploadingGallery(false);
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setFormData(prev => {
+      const newUrls = [...prev.galleryUrls];
+      const newAssetIds = [...prev.galleryAssetIds];
+      
+      // If it's a new upload (we have assetId), remove it from assetIds too
+      // This is simplified; in a real app you'd need to map url -> assetId
+      newUrls.splice(index, 1);
+      if (newAssetIds.length > index) {
+          newAssetIds.splice(index, 1);
+      }
+      
+      return {
+        ...prev,
+        galleryUrls: newUrls,
+        galleryAssetIds: newAssetIds
+      };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -145,7 +220,7 @@ export default function ProductStudioDrawer({
           onClose();
         }, 1500);
       } else {
-        setError(result.error || "Forge failed.");
+        setError(result.error || "Failed to save.");
       }
     } catch (err) {
       setError("System interruption.");
@@ -158,7 +233,6 @@ export default function ProductStudioDrawer({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -167,7 +241,6 @@ export default function ProductStudioDrawer({
             className="fixed inset-0 bg-heading/40 backdrop-blur-sm z-[100]"
           />
 
-          {/* Drawer */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -180,10 +253,10 @@ export default function ProductStudioDrawer({
               <div>
                 <h2 className="text-2xl font-serif italic text-heading flex items-center gap-3">
                   {isEdit ? <Package size={24} className="text-action" /> : <PlusCircle size={24} className="text-action" />}
-                  {isEdit ? "Refine Product" : "Forge New Piece"}
+                  {isEdit ? "Edit Product" : "Add New Product"}
                 </h2>
                 <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-label mt-1">
-                   Artisan Studio Suite
+                   Product Management
                 </p>
               </div>
               <button onClick={onClose} className="p-3 hover:bg-soft rounded-full transition-colors">
@@ -192,12 +265,12 @@ export default function ProductStudioDrawer({
             </div>
 
             {/* Form Body */}
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-10 space-y-12">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-10 space-y-12 pb-32">
               
-              {/* IMAGE SECTION */}
+              {/* MAIN IMAGE SECTION */}
               <div className="space-y-4">
                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-label flex items-center gap-2">
-                  <Camera size={14} /> Product Portrait
+                  <Camera size={14} /> Product Image
                 </h3>
                 <div className="relative group aspect-video bg-soft/30 rounded-[2rem] border-2 border-dashed border-soft overflow-hidden flex items-center justify-center transition-all hover:border-action">
                   {formData.imageUrl ? (
@@ -221,6 +294,32 @@ export default function ProductStudioDrawer({
                       <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
                     </label>
                   )}
+                </div>
+              </div>
+
+              {/* GALLERY SECTION */}
+              <div className="space-y-4">
+                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-label flex items-center gap-2">
+                  <ImageIcon size={14} /> Gallery / Carousel Images
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {formData.galleryUrls.map((url, idx) => (
+                    <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-soft group">
+                      <img src={url} alt={`gallery-${idx}`} className="w-full h-full object-cover" />
+                      <button 
+                        type="button"
+                        onClick={() => removeGalleryImage(idx)}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  ))}
+                  <label className="aspect-square bg-soft/30 rounded-2xl border-2 border-dashed border-soft flex flex-col items-center justify-center cursor-pointer hover:border-action transition-all">
+                    {isUploadingGallery ? <RefreshCw className="animate-spin text-action" size={20} /> : <Plus size={20} className="text-label" />}
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-label mt-2">{isUploadingGallery ? "Uploading" : "Add More"}</span>
+                    <input type="file" multiple className="hidden" onChange={handleGalleryUpload} accept="image/*" />
+                  </label>
                 </div>
               </div>
 
@@ -256,10 +355,10 @@ export default function ProductStudioDrawer({
               </div>
 
               {/* VALUE & STOCK SECTION */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-3">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4 flex items-center gap-2">
-                    Price (Rs.)
+                    Selling Price (Rs.)
                   </label>
                   <input 
                     type="number"
@@ -267,7 +366,19 @@ export default function ProductStudioDrawer({
                     value={formData.price}
                     onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
                     className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none"
-                    placeholder="0.00"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4 flex items-center gap-2">
+                    Cost Price (Rs.)
+                  </label>
+                  <input 
+                    type="number"
+                    value={formData.costPrice}
+                    onChange={(e) => setFormData(prev => ({ ...prev, costPrice: e.target.value }))}
+                    className="w-full bg-surface border border-soft rounded-2xl px-6 py-4 text-sm font-bold text-heading focus:outline-none"
+                    placeholder="0"
                   />
                 </div>
                 <div className="space-y-3">
@@ -288,7 +399,7 @@ export default function ProductStudioDrawer({
               {/* SPECIFICATIONS SECTION */}
               <div className="space-y-6">
                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-label flex items-center gap-2">
-                  <Ruler size={14} /> Dimensional Registry (inches)
+                  <Ruler size={14} /> Dimensions (inches)
                 </h3>
                 <div className="grid grid-cols-3 gap-6">
                    <div className="space-y-2">
@@ -327,7 +438,7 @@ export default function ProductStudioDrawer({
               {/* STORY SECTION */}
               <div className="space-y-3">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-label ml-4">
-                   Artisan Narrative (Description)
+                   Description
                 </label>
                 <textarea 
                   rows={6}
@@ -376,7 +487,7 @@ export default function ProductStudioDrawer({
               )}
               {success && (
                 <div className="flex items-center gap-2 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-600 text-xs font-bold uppercase tracking-widest">
-                  <CheckCircle2 size={14} /> Product successfully {isEdit ? "Refined" : "Forged"}
+                  <CheckCircle2 size={14} /> Product successfully {isEdit ? "Updated" : "Added"}
                 </div>
               )}
 
@@ -391,7 +502,7 @@ export default function ProductStudioDrawer({
                   isLoading={isSubmitting}
                   leftIcon={<Save size={16} />}
                 >
-                  {isEdit ? "Commit Refinements" : "Launch in Collection"}
+                  {isEdit ? "Save Changes" : "Add Product"}
                 </Button>
               </div>
             </div>
@@ -401,5 +512,3 @@ export default function ProductStudioDrawer({
     </AnimatePresence>
   );
 }
-
-
