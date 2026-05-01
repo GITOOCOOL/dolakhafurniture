@@ -15,9 +15,11 @@ type Category = {
 export default function CategoryNav({
   isMobile = false,
   onItemClick,
+  campaign,
 }: {
   isMobile?: boolean;
   onItemClick?: () => void;
+  campaign?: any;
 }) {
   const pathname = usePathname();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -61,7 +63,7 @@ export default function CategoryNav({
 
   if (!mounted || loading) {
     return isMobile ? (
-      <nav className="flex flex-col items-start justify-start flex-grow gap-8 w-full opacity-50 pt-2 h-full overflow-hidden pb-20">
+      <nav className="flex flex-col items-start justify-start gap-8 w-full opacity-50 pt-2 overflow-hidden">
         {[1, 2, 3, 4, 5].map(i => (
           <div key={i} className="h-12 md:h-14 w-64 border-soft animate-pulse rounded-2xl"></div>
         ))}
@@ -83,7 +85,34 @@ export default function CategoryNav({
 
   if (isMobile) {
     return (
-      <nav className="flex flex-col items-start justify-start flex-grow gap-8 overflow-y-auto no-scrollbar pb-20 w-full h-full pt-2">
+      <nav className="flex flex-col items-start justify-start gap-8 w-full pt-2">
+        {/* Campaign Promo inside Scroll View */}
+        {campaign && (
+          <button
+            onClick={() => {
+              onItemClick?.();
+              // Trigger campaign modal - we'll handle this in the parent or via a store
+              window.dispatchEvent(new CustomEvent('open-campaign-modal'));
+            }}
+            className="w-full mb-4 p-5 rounded-[2rem] bg-surface border border-divider flex items-center justify-between group overflow-hidden relative shadow-sm"
+          >
+            <div className="relative z-10 flex items-center gap-4">
+              <span className="text-2xl animate-bounce-slow">🏮</span>
+              <div className="text-left">
+                <p className="type-label text-description uppercase tracking-[0.2em] text-[8px] mb-0.5">
+                  Limited Offer
+                </p>
+                <p className="type-product text-heading group-hover:text-action transition-colors text-sm">
+                  {campaign.title}
+                </p>
+              </div>
+            </div>
+            <div className="relative z-10 w-8 h-8 rounded-full border border-divider flex items-center justify-center text-heading group-hover:bg-action group-hover:text-app transition-all text-xs">
+              →
+            </div>
+          </button>
+        )}
+
         {allLinks.map((link) => {
           const isActive = checkActive(link.href);
           return (

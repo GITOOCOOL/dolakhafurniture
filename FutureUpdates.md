@@ -21,6 +21,16 @@ This document serves as the repository for all future concepts, feature ideas, a
 
 ---
 
+## 🔒 Infrastructure & Security Hardening
+
+- **Supabase Traffic Sentinel (Anti-Spam)**:
+  - **Goal**: Prevent malicious "anon" key exploitation or pulse-flooding.
+  - **Strategy**: Implement a PostgreSQL function and trigger on the `traffic_pulse` table to rate-limit insertions by IP address.
+  - **Protection**: If an IP sends more than X pulses per minute, the database will temporarily reject the `INSERT` request, protecting your storage and performance.
+
+
+---
+
 ## 📈 Roadmap & Pipeline
 *Items added here should be moved to implementation status in `context.md` once completed.*
 

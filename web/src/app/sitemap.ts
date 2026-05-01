@@ -2,9 +2,8 @@ import { MetadataRoute } from 'next'
 import { client } from '@/lib/sanity'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // 0. Fetch business URL
-  const businessMetaData = await client.fetch(`*[_type == "businessMetaData"][0]{ businessUrl }`);
-  const BASE_URL = businessMetaData?.businessUrl || 'https://undefined_setmetadata_in_studio.com';
+  // Use Apex domain for SEO consistency
+  const BASE_URL = 'https://dolakhafurniture.com';
 
   // 1. Fetch all product slugs
   const products = await client.fetch(`*[_type == "product" && isActive == true]{ "slug": slug.current, _updatedAt }`)

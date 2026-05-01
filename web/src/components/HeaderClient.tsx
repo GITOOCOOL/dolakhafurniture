@@ -96,8 +96,15 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
   useEffect(() => {
     if (isMenuOpen || isSearchOpen || isInquiryModalOpen) lockScroll("header-overlay");
     else unlockScroll("header-overlay");
-    return () => unlockScroll("header-overlay");
-  }, [isMenuOpen, isSearchOpen, isInquiryModalOpen, lockScroll, unlockScroll]);
+
+    const handleOpenCampaign = () => setCampaignModalOpen(true);
+    window.addEventListener('open-campaign-modal', handleOpenCampaign);
+
+    return () => {
+      unlockScroll("header-overlay");
+      window.removeEventListener('open-campaign-modal', handleOpenCampaign);
+    };
+  }, [isMenuOpen, isSearchOpen, isInquiryModalOpen, lockScroll, unlockScroll, setCampaignModalOpen]);
 
   // Track Header Height dynamically to allow modals to dock perfectly below it
   useEffect(() => {
@@ -311,58 +318,32 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
         title="Navigation"
       >
         <div className="w-full h-full flex flex-col">
-          <div className="w-full flex-1">
-            {latestCampaign && (
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setCampaignModalOpen(true);
-                }}
-                className="w-full mb-10 p-6 rounded-[2rem] bg-surface border border-divider flex items-center justify-between group overflow-hidden relative"
-              >
-                <div className="relative z-10 flex items-center gap-5">
-                  <span className="text-3xl animate-bounce-slow">🏮</span>
-                  <div className="text-left">
-                    <p className="type-label text-description uppercase tracking-[0.2em] text-[9px] mb-1">
-                      Limited Time Offer
-                    </p>
-                    <p className="type-product text-heading group-hover:text-action transition-colors">
-                      {latestCampaign.title}
-                    </p>
-                  </div>
-                </div>
-                <div className="relative z-10 w-10 h-10 rounded-full border border-divider flex items-center justify-center text-heading group-hover:bg-action group-hover:text-app transition-all">
-                  →
-                </div>
-              </button>
-            )}
-
+          {/* Scrollable Navigation Area */}
+          <div className="flex-1 overflow-y-auto pb-10 scrollbar-hide">
             <CategoryNav
               isMobile={true}
               onItemClick={() => setIsMenuOpen(false)}
+              campaign={latestCampaign}
             />
           </div>
 
-          <div className="flex-shrink-0 w-full border-t border-soft/20 pt-10 pb-6 mt-10">
-            {/* --- THEME SEGMENTED CONTROL --- */}
-            {mounted && (
-              <div className="mb-10">
-                <p className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-description mb-6 ml-2">
-                  Display Mode
-                </p>
-                <div className="grid grid-cols-2 p-1.5 bg-surface border border-soft rounded-[2rem] relative">
+          {/* Sticky Footer Area */}
+          <div className="flex-shrink-0 w-full border-t border-soft/20 py-3 mt-auto sticky bottom-0 bg-app/90 backdrop-blur-xl z-30 px-4">
+            <div className="flex items-center justify-between gap-6">
+              {/* --- COMPACT THEME TOGGLE --- */}
+              {mounted && (
+                <div className="flex-1 flex p-1 bg-surface border border-soft rounded-full relative max-w-[130px] items-center">
                   <button
                     onClick={() => setTheme("light")}
-                    className={`relative z-10 flex items-center justify-center gap-3 py-4 rounded-[1.5rem] transition-all duration-300 ${
-                      resolvedTheme === "light" ? "text-heading" : "text-description/60 hover:text-heading"
+                    className={`relative z-10 flex-1 flex items-center justify-center py-2.5 rounded-full transition-all duration-300 ${
+                      resolvedTheme === "light" ? "text-heading" : "text-description/40 hover:text-heading"
                     }`}
                   >
-                    <Sun size={18} strokeWidth={1.5} />
-                    <span className="type-action uppercase text-[10px]">Light Mode</span>
+                    <Sun size={14} strokeWidth={2} />
                     {resolvedTheme === "light" && (
                       <motion.div
                         layoutId="active-theme"
-                        className="absolute inset-0 bg-app border border-soft shadow-sm rounded-[1.5rem] -z-10"
+                        className="absolute inset-0 bg-app border border-soft shadow-sm rounded-full -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -370,16 +351,15 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
 
                   <button
                     onClick={() => setTheme("dark")}
-                    className={`relative z-10 flex items-center justify-center gap-3 py-4 rounded-[1.5rem] transition-all duration-300 ${
-                      resolvedTheme === "dark" ? "text-white" : "text-description/60 hover:text-heading"
+                    className={`relative z-10 flex-1 flex items-center justify-center py-2.5 rounded-full transition-all duration-300 ${
+                      resolvedTheme === "dark" ? "text-white" : "text-description/40 hover:text-heading"
                     }`}
                   >
-                    <Moon size={18} strokeWidth={1.5} />
-                    <span className="type-action uppercase text-[10px]">Dark Mode</span>
+                    <Moon size={14} strokeWidth={2} />
                     {resolvedTheme === "dark" && (
                       <motion.div
                         layoutId="active-theme"
-                        className="absolute inset-0 bg-heading border border-action/30 shadow-md rounded-[1.5rem] -z-10"
+                        className="absolute inset-0 bg-heading border border-action/30 shadow-md rounded-full -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       >
                          <div className="absolute inset-0 bg-action/10" />
@@ -387,46 +367,32 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
                     )}
                   </button>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="flex gap-8 mb-6">
-              {businessMetaData?.facebookUrl && (
-                <a
-                  href={businessMetaData.facebookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-heading/40 hover:text-action transition-all"
-                >
-                  <Facebook size={22} strokeWidth={1.5} />
-                </a>
-              )}
-              {businessMetaData?.instagramUrl && (
-                <a
-                  href={businessMetaData.instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-heading/40 hover:text-action transition-all"
-                >
-                  <Instagram size={22} strokeWidth={1.5} />
-                </a>
-              )}
-              {businessMetaData?.tiktokUrl && (
-                <a
-                  href={businessMetaData.tiktokUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-heading/40 hover:text-action transition-all"
-                >
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.09-1.47-.88-.64-1.61-1.49-2.11-2.46-.01 2.13.01 4.26-.01 6.38-.04 2.11-.46 4.38-1.92 6.01-1.62 1.83-4.22 2.58-6.6 2.18-2.6-.44-4.83-2.61-5.32-5.22-.54-2.84.58-6.04 2.94-7.69 1.52-1.07 3.51-1.46 5.33-1.05v4.1c-.88-.25-1.87-.21-2.69.24-1.2.66-1.85 2.11-1.6 3.47.2 1.14 1.13 2.14 2.27 2.32 1.34.2 2.82-.36 3.5-1.55.33-.58.46-1.25.45-1.92V.02z" />
-                  </svg>
-                </a>
-              )}
+              {/* --- SOCIALS --- */}
+              <div className="flex items-center gap-6 h-full">
+                {businessMetaData?.facebookUrl && (
+                  <a
+                    href={businessMetaData.facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-heading/30 hover:text-action transition-all flex items-center"
+                  >
+                    <Facebook size={20} strokeWidth={1.5} />
+                  </a>
+                )}
+                {businessMetaData?.instagramUrl && (
+                  <a
+                    href={businessMetaData.instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-heading/30 hover:text-action transition-all flex items-center"
+                  >
+                    <Instagram size={20} strokeWidth={1.5} />
+                  </a>
+                )}
+              </div>
             </div>
-            <p className="type-label text-description/40 uppercase tracking-[0.3em] text-[10px]">
-              Honest Craft, {businessMetaData?.address || "undefined_setmetadata_in_studio"}
-            </p>
           </div>
         </div>
       </Modal>

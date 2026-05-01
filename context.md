@@ -95,11 +95,22 @@ Current priority is stabilizing the live environment. All active bugs, security 
   - Implemented defensive null-checks for malformed legacy order records.
   - Hardened user management server components with `try/catch` and environment guards.
   - Resolved `__name` build-time ReferenceError by pinning build tooling.
-- **Hardened Checkout Engine**:
+- **Hardened Checkout Engine & Auth**:
   - **Voucher Security v2**: Identity-aware (User ID/Email) real-time validation bypassing CDN caches. "Fail-hard" order processing to prevent discount exploitation.
   - **Auth Conflict Resolution**: Decoupled CheckoutDrawer from direct auth locks, centralizing state in Navbar to prevent UI freezes during Google Login.
+  - **Auth Recovery Loop**: Implemented `/auth/reset-password` and `/auth/update-password` with session-ready initialization logic to handle race conditions.
+  - **Admin Defense-in-Depth**: Every `/admin` route now performs a double-layer authorization check (`isSuperAdmin`) inside the server component to prevent middleware bypass.
   - **High-End UX**: Implemented "Voucher Inspector" (hover/tap for details), "Soft-Gate Nudge" for conversion, and localized field ordering (Tole/Area priority).
   - **Sanity Query Optimization**: Enhanced GROQ projections to include granular discount data for all active campaigns.
+
+### **🛡️ Pending Deep Audits (Master Checklist)**
+
+1. **[URGENT] Meta Pixel Whitelist**: Verify `dolakhafurniture.com` is in the Meta Business Suite "Allow List" to resolve the "unavailable" tracking error.
+2. **[URGENT] Google Cloud Console**: Add `https://dolakhafurniture.com/auth/callback` to Authorized Redirect URIs for production login reliability.
+3. **[SECURITY] SQL RLS Audit**: Run `pg_policies` check in Supabase to verify that `profiles`, `orders`, and `traffic_pulse` are truly private.
+4. **[STABILITY] Sentinel V3 Deployment**: Finalize the "Omniscient" telemetry push (City, ISP, Engagement Time, Scroll Depth).
+5. **[ACCESS] Sanity Write Tokens**: Verify `SANITY_API_WRITE_TOKEN` is present in Cloudflare Env for AI Content Engine stability.
+
 - **Sanity-Managed Social Hub**:
   - Implementation of `SocialStories` (top-bar bubbles) and `ReelsSection` (vertical video gallery) on the storefront.
   - Integrated full-screen story viewer with product tagging support ("Shop the Look").

@@ -149,7 +149,7 @@ export default async function RootLayout({
       >
         <ThemeProvider
           attribute="data-theme"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
         >
           <NextTopLoader
