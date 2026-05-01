@@ -13,18 +13,19 @@ export async function createClient() {
           return cookieStore.get(name)?.value
         },
         set(name: string, value: string, options: CookieOptions) {
+          // In Next.js App Router, we should ONLY set cookies in Middleware or Server Actions.
+          // In Server Components, we let this fail silently because the Middleware handles the refresh.
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing sessions.
+            // This is expected in Server Components
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // The `remove` method was called from a Server Component.
+            // This is expected in Server Components
           }
         },
       },

@@ -8,20 +8,33 @@ export default function PulseTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const hasTracked = useRef<string | null>(null);
+  const startTime = useRef<number>(Date.now());
+  const maxScroll = useRef<number>(0);
 
   useEffect(() => {
-    // Generate or get a session ID from local storage
+    // 1. Session & Returning Detection
     let sessionID = localStorage.getItem("dolakha_session_id");
+    const isReturning = !!localStorage.getItem("dolakha_has_visited");
+    
     if (!sessionID) {
       sessionID = Math.random().toString(36).substring(2) + Date.now().toString(36);
       localStorage.setItem("dolakha_session_id", sessionID);
     }
+    localStorage.setItem("dolakha_has_visited", "true");
 
-    const track = async () => {
-      // Don't track on localhost to keep production data clean
-      if (window.location.hostname === "localhost") return;
+    // 2. Scroll Depth Tracking
+    const handleScroll = () => {
+      const scrolled = window.scrollY + window.innerHeight;
+      const total = document.documentElement.scrollHeight;
+      const percentage = Math.round((scrolled / total) * 100);
+      if (percentage > maxScroll.current) maxScroll.current = percentage;
+    };
+    window.addEventListener("scroll", handleScroll);
 
-      // Don't track admin pages to keep logs clean
+    // 3. Track Initial Landing
+    const trackLanding = async () => {
+      // Temporarily enabled for local testing:
+      // if (window.location.hostname === "localhost") return;
       if (pathname.startsWith("/admin")) return;
 
       const currentTrackKey = `${pathname}-${searchParams.toString()}`;
@@ -29,36 +42,53 @@ export default function PulseTracker() {
       hasTracked.current = currentTrackKey;
 
       let eventType = "page_view";
-      let eventData: any = {};
+      let eventData: any = { isReturning };
 
-      // Detect Search Intent
-      if (pathname === "/search" || searchParams.has("q") || searchParams.has("query")) {
+      if (pathname === "/search" || searchParams.has("q")) {
         eventType = "search";
-        eventData.query = searchParams.get("q") || searchParams.get("query") || "unknown";
-      }
-
-      // Detect Product View (Path pattern)
-      if (pathname.startsWith("/product/")) {
+        eventData.query = searchParams.get("q") || "unknown";
+      } else if (pathname.startsWith("/product/")) {
         eventType = "product_view";
         eventData.slug = pathname.split("/").pop();
-      }
-
-      // Detect Cart/Checkout Intent
-      if (pathname === "/checkout" || pathname === "/cart") {
+      } else if (pathname === "/checkout" || pathname === "/cart") {
         eventType = "intent_to_buy";
       }
 
       await logPulse({
         path: pathname,
-        sessionID,
+        sessionID: sessionID!,
         eventType,
         eventData,
         referrer: document.referrer || "direct",
-        location: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        location: Intl?.DateTimeFormat?.().resolvedOptions?.().timeZone || "unknown",
       });
     };
 
-    track();
+    // 4. Track Exit / Engagement (Time & Scroll)
+    const trackExit = async () => {
+      const duration = Math.round((Date.now() - startTime.current) / 1000);
+      
+      // Log exit if they spent > 2 seconds
+      if (duration < 2) return;
+      // if (window.location.hostname === "localhost") return;
+
+      await logPulse({
+        path: pathname,
+        sessionID: sessionID!,
+        eventType: "engagement_ping",
+        duration,
+        scrollDepth: maxScroll.current,
+        eventData: { isReturning },
+        referrer: "session_internal"
+      });
+    };
+
+    trackLanding();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      trackExit();
+    };
   }, [pathname, searchParams]);
 
   return null; 

@@ -126,9 +126,19 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
   }, [searchParams, pathname, router]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    useCart.getState().clearCart();
-    window.location.href = "/";
+    try {
+      // 1. Clear Supabase session on server and client
+      await supabase.auth.signOut();
+      
+      // 2. Clear local storage/cart
+      useCart.getState().clearCart();
+      
+      // 3. Force a hard refresh to the homepage to clear all Middleware state
+      window.location.replace('/'); 
+    } catch (err) {
+      console.error("Logout failed:", err);
+      window.location.href = "/";
+    }
   };
 
   const { lockScroll, unlockScroll, setCampaignModalOpen } = useUIStore();

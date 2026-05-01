@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Leaf, User, Ticket, ArrowLeft, ShieldCheck, Mail, LogIn, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import { trackEvent } from "./MetaPixel";
@@ -199,6 +200,16 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
+              <div className="flex justify-end">
+                <Link 
+                  href="/auth/reset-password"
+                  onClick={() => { if (onSuccess) onSuccess(); }}
+                  className="text-[9px] font-bold uppercase tracking-widest text-label hover:text-action transition-all"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
 
               {error && (
                 <p className={`text-[10px] font-bold px-4 ${error.includes('Success') ? 'text-green-600' : 'text-red-500'}`}>

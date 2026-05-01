@@ -10,12 +10,20 @@ import {
 import Link from "next/link";
 import { client } from "@/lib/sanity";
 import { createClient } from "@/utils/supabase/server";
+import { isSuperAdmin } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Input from "@/components/ui/Input";
 import DownloadButton from "@/components/DownloadButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
+  // 1. Double-Layer Security Handshake
+  const isAdmin = await isSuperAdmin();
+  if (!isAdmin) {
+    redirect("/");
+  }
+
   // Fetch real-time metrics
   const [
     ordersCount,
