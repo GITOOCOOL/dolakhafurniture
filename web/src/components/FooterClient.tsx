@@ -82,6 +82,21 @@ export default function FooterClient({ businessMetaData }: FooterClientProps) {
           </div>
         </div>
       </div>
+      <div className="w-full px-0 border-t border-soft/30 pt-10 mt-10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="type-label text-description/60 text-[10px]">
+            © {new Date().getFullYear()} {businessMetaData?.businessName || "Dolakha Furniture"}. ALL RIGHTS RESERVED.
+          </p>
+          <div className="flex gap-8">
+            <a href="/privacy" className="type-label text-description/60 hover:text-action transition-colors text-[10px] uppercase tracking-widest">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="type-label text-description/60 hover:text-action transition-colors text-[10px] uppercase tracking-widest">
+              Terms of Service
+            </a>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 }

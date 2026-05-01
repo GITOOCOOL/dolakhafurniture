@@ -91,23 +91,23 @@ export default function CategoryNav({
           <button
             onClick={() => {
               onItemClick?.();
-              // Trigger campaign modal - we'll handle this in the parent or via a store
+              // Trigger campaign modal via window event
               window.dispatchEvent(new CustomEvent('open-campaign-modal'));
             }}
-            className="w-full mb-4 p-5 rounded-[2rem] bg-surface border border-divider flex items-center justify-between group overflow-hidden relative shadow-sm"
+            className="w-full mb-4 p-5 rounded-[2rem] bg-surface border border-soft/20 flex items-center justify-between group overflow-hidden relative shadow-sm"
           >
             <div className="relative z-10 flex items-center gap-4">
               <span className="text-2xl animate-bounce-slow">🏮</span>
               <div className="text-left">
-                <p className="type-label text-description uppercase tracking-[0.2em] text-[8px] mb-0.5">
+                <p className="text-[9px] font-sans font-bold text-description uppercase tracking-[0.2em] mb-0.5">
                   Limited Offer
                 </p>
-                <p className="type-product text-heading group-hover:text-action transition-colors text-sm">
+                <p className="text-sm font-serif italic text-heading group-hover:text-action transition-colors">
                   {campaign.title}
                 </p>
               </div>
             </div>
-            <div className="relative z-10 w-8 h-8 rounded-full border border-divider flex items-center justify-center text-heading group-hover:bg-action group-hover:text-app transition-all text-xs">
+            <div className="relative z-10 w-8 h-8 rounded-full border border-soft/20 flex items-center justify-center text-heading group-hover:bg-action group-hover:text-app transition-all text-xs">
               →
             </div>
           </button>

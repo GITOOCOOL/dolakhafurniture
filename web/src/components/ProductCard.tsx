@@ -4,7 +4,6 @@ import { urlFor } from "../lib/sanity";
 import Link from "next/link";
 import { Product, BusinessMetaData } from "@/types";
 import { ShoppingBag, Plus, Minus } from "lucide-react";
-import { useToast } from "./Toast";
 import { trackEvent } from "./MetaPixel";
 import { useCart } from "@/store/useCart";
 import { useUIStore } from "@/store/useUIStore";
@@ -23,9 +22,8 @@ const ProductCard = ({
   businessMetaData?: BusinessMetaData | null;
   discountedPrice?: number;
 }) => {
-  const { showToast } = useToast();
   const { addItem } = useCart();
-  const { setViewingProduct } = useUIStore();
+  const { setViewingProduct, setIsCheckoutDrawerOpen } = useUIStore();
   const [quantity, setQuantity] = useState(1);
 
   // Pre-filled WhatsApp link
@@ -171,8 +169,7 @@ const ProductCard = ({
               e.stopPropagation();
               const cleanId = product._id.replace("drafts.", "");
               addItem(product, quantity);
-              const thumbUrl = urlFor(product.mainImage).width(120).height(120).fit('crop').url();
-              showToast(`${quantity} x ${product.title} added`, thumbUrl);
+              setIsCheckoutDrawerOpen(true);
               trackEvent("AddToCart", {
                 content_name: product.title,
                 content_category: product.category?.title,

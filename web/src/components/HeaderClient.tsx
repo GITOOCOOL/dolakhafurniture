@@ -328,18 +328,18 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
           </div>
 
           {/* Sticky Footer Area */}
-          <div className="flex-shrink-0 w-full border-t border-soft/20 py-3 mt-auto sticky bottom-0 bg-app/90 backdrop-blur-xl z-30 px-4">
+          <div className="flex-shrink-0 w-full border-t border-soft/20 py-4 mt-auto sticky bottom-0 bg-app/90 backdrop-blur-xl z-30 px-6">
             <div className="flex items-center justify-between gap-6">
               {/* --- COMPACT THEME TOGGLE --- */}
               {mounted && (
-                <div className="flex-1 flex p-1 bg-surface border border-soft rounded-full relative max-w-[130px] items-center">
+                <div className="flex items-center justify-center p-1 bg-surface border border-soft rounded-full relative w-32 h-10">
                   <button
                     onClick={() => setTheme("light")}
-                    className={`relative z-10 flex-1 flex items-center justify-center py-2.5 rounded-full transition-all duration-300 ${
+                    className={`relative z-10 flex-1 h-full flex items-center justify-center rounded-full transition-all duration-300 ${
                       resolvedTheme === "light" ? "text-heading" : "text-description/40 hover:text-heading"
                     }`}
                   >
-                    <Sun size={14} strokeWidth={2} />
+                    <Sun size={16} strokeWidth={2} />
                     {resolvedTheme === "light" && (
                       <motion.div
                         layoutId="active-theme"
@@ -351,11 +351,11 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
 
                   <button
                     onClick={() => setTheme("dark")}
-                    className={`relative z-10 flex-1 flex items-center justify-center py-2.5 rounded-full transition-all duration-300 ${
+                    className={`relative z-10 flex-1 h-full flex items-center justify-center rounded-full transition-all duration-300 ${
                       resolvedTheme === "dark" ? "text-white" : "text-description/40 hover:text-heading"
                     }`}
                   >
-                    <Moon size={14} strokeWidth={2} />
+                    <Moon size={16} strokeWidth={2} />
                     {resolvedTheme === "dark" && (
                       <motion.div
                         layoutId="active-theme"
@@ -370,15 +370,15 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
               )}
 
               {/* --- SOCIALS --- */}
-              <div className="flex items-center gap-6 h-full">
+              <div className="flex items-center gap-8">
                 {businessMetaData?.facebookUrl && (
                   <a
                     href={businessMetaData.facebookUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-heading/30 hover:text-action transition-all flex items-center"
+                    className="text-heading/30 hover:text-action transition-all flex items-center justify-center"
                   >
-                    <Facebook size={20} strokeWidth={1.5} />
+                    <Facebook size={22} strokeWidth={1.5} />
                   </a>
                 )}
                 {businessMetaData?.instagramUrl && (
@@ -386,9 +386,9 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
                     href={businessMetaData.instagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-heading/30 hover:text-action transition-all flex items-center"
+                    className="text-heading/30 hover:text-action transition-all flex items-center justify-center"
                   >
-                    <Instagram size={20} strokeWidth={1.5} />
+                    <Instagram size={22} strokeWidth={1.5} />
                   </a>
                 )}
               </div>

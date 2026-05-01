@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { urlFor, client } from "@/lib/sanity";
 import { useCart } from "@/store/useCart";
+import { useUIStore } from "@/store/useUIStore";
 import {
   Leaf,
   Minus,
@@ -16,7 +17,6 @@ import {
 import Button from "./ui/Button";
 import { Product, BusinessMetaData } from "@/types";
 import { trackEvent } from "./MetaPixel";
-import { useToast } from "./Toast";
 import { useEffect } from "react";
 
 export default function ProductDetail({
@@ -32,7 +32,6 @@ export default function ProductDetail({
   const [isSuccess, setIsSuccess] = useState(false);
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const { showToast } = useToast();
 
   // FETCH ACTIVE CAMPAIGNS AND GLOBAL VOUCHERS FOR REAL-TIME DISCOUNTING
   useEffect(() => {
@@ -148,11 +147,14 @@ export default function ProductDetail({
     allImages[0] || product.mainImage,
   );
   const addItem = useCart((state) => state.addItem);
+  const { setIsCheckoutDrawerOpen } = useUIStore();
 
   const handleAddToCart = () => {
     if (!product) return;
     const cleanId = product._id.replace("drafts.", "");
     addItem(product, quantity);
+    
+    // Meta Pixel Tracking
     trackEvent("AddToCart", {
       content_name: product.title,
       content_category: product.category?.title,
@@ -160,27 +162,11 @@ export default function ProductDetail({
       content_type: "product",
       currency: "NPR",
       brand: businessMetaData?.businessName || "Dolakha Furniture",
-      availability:
-        (product.stock ?? 0) > 0 ? "in stock" : "available for order",
+      availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order",
     });
+
     setIsSuccess(true);
-    let thumbUrl = "";
-    try {
-      // Prioritize mainImage, fallback to first gallery image if needed
-      const imgSource =
-        product.mainImage ||
-        (product.images && product.images.length > 0
-          ? product.images[0]
-          : null);
-
-      if (imgSource) {
-        thumbUrl = urlFor(imgSource).width(120).height(120).fit("crop").url();
-      }
-    } catch (e) {
-      console.error("Toast Image Error", e);
-    }
-
-    showToast(`${quantity} x ${product.title} added`, thumbUrl);
+    setIsCheckoutDrawerOpen(true);
     setTimeout(() => setIsSuccess(false), 2000);
   };
 

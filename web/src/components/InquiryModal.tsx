@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { client as sanityClient } from "@/lib/sanity";
 import { Order } from "@/types";
+import { getCustomerOrders, getFAQs } from "@/app/actions/orders";
 import { ChevronDown, Package, Info, HelpCircle, Sparkles, Phone, MessageCircle, Facebook } from "lucide-react";
 import { trackEvent } from "./MetaPixel";
 import { BusinessMetaData } from "@/types";
@@ -76,37 +77,23 @@ export default function InquiryModal({
   useEffect(() => {
     if (isOpen) {
       const fetchData = async () => {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
         setIsLoadingFaqs(true);
         try {
-          // Fetch FAQs
-          const fetchedFaqs = await sanityClient.fetch(
-            `*[_type == "faq"] | order(category asc)`,
-          );
-          setFaqs(fetchedFaqs);
+          // 1. Fetch FAQs via Secure Server Action
+          const faqResult = await getFAQs();
+          if (faqResult.success) setFaqs(faqResult.faqs || []);
 
-          if (user) {
-            setInquiryData((prev) => ({
-              ...prev,
-              email: prev.email || user.email || "",
-              name: prev.name || user.user_metadata?.full_name || prev.name,
-            }));
-            
-            setIsLoadingOrders(true);
-            const orders = await sanityClient.fetch(
-              `*[_type == "order" && (supabaseUserId == $userId || customerEmail == $email)] | order(_createdAt desc)[0...5]`,
-              { userId: user.id, email: user.email },
-            );
-            setUserOrders(orders);
+          // 2. Fetch Orders via Secure Server Action
+          setIsLoadingOrders(true);
+          const orderResult = await getCustomerOrders();
+          
+          if (orderResult.success && orderResult.orders) {
+            setUserOrders(orderResult.orders);
             // Only default to the latest order if a specific one wasn't clicked
-            if (orders.length > 0 && !initialOrderReference) {
+            if (orderResult.orders.length > 0 && !initialOrderReference) {
               setInquiryData((prev) => ({
                 ...prev,
-                orderReference: orders[0].orderNumber || orders[0]._id,
+                orderReference: orderResult.orders[0].orderNumber || orderResult.orders[0]._id,
               }));
             }
           }
@@ -119,7 +106,7 @@ export default function InquiryModal({
       };
       fetchData();
     }
-  }, [isOpen]);
+  }, [isOpen, initialOrderReference]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
