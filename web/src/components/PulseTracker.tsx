@@ -33,8 +33,8 @@ export default function PulseTracker() {
 
     // 3. Track Initial Landing
     const trackLanding = async () => {
-      // Temporarily enabled for local testing:
-      // if (window.location.hostname === "localhost") return;
+      // SECURITY: Block localhost from polluting production data
+      if (window.location.hostname === "localhost") return;
       if (pathname.startsWith("/admin")) return;
 
       const currentTrackKey = `${pathname}-${searchParams.toString()}`;
@@ -70,7 +70,9 @@ export default function PulseTracker() {
       
       // Log exit if they spent > 2 seconds
       if (duration < 2) return;
-      // if (window.location.hostname === "localhost") return;
+      
+      // SECURITY: Block localhost from polluting production data
+      if (window.location.hostname === "localhost") return;
 
       await logPulse({
         path: pathname,
