@@ -68,7 +68,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData, isAdmin
   useEffect(() => {
     const fetchResults = async () => {
       if (!searchQuery.trim()) {
-        setSearchResults([]);
+        setSearchResults({ products: [], categories: [] });
         return;
       }
 

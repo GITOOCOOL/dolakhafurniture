@@ -56,6 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // 2. THE PAGE COMPONENT
 export default async function ProductPage({ params }: Props) {
+  const { slug } = await params;
   const isAdmin = await isAuthorizedAdmin();
   const [product, businessMetaData] = await Promise.all([
     client.fetch<Product | null>(productBySlugQuery, { slug, isAdmin }),

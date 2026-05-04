@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage({ params }: Props) {
+  const { slug } = await params;
   const isAdmin = await isAuthorizedAdmin();
   const data = await client.fetch(
     `{
