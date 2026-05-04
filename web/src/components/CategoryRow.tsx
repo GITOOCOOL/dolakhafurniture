@@ -43,9 +43,36 @@ const CategoryRow = ({
       {/* Carousel Wrapper: min-w-0 is vital for flexbox carousels */}
       <div className="w-full min-w-0">
         <Carousel>
-          {validProducts.map((product) => (
-            <ProductCard key={product._id} product={product} businessMetaData={businessMetaData} />
-          ))}
+          {validProducts.map((product) => {
+            // Calculate best discount for this product card
+            let discountedPrice = product.price;
+            if (vouchers && vouchers.length > 0) {
+              const bestVoucher = vouchers.reduce((best, current) => {
+                const currentVal = current.discountType === 'percentage' 
+                  ? product.price * (current.discountValue / 100) 
+                  : current.discountValue;
+                const bestVal = best.discountType === 'percentage' 
+                  ? product.price * (best.discountValue / 100) 
+                  : best.discountValue;
+                return currentVal > bestVal ? current : best;
+              }, vouchers[0]);
+
+              if (bestVoucher.discountType === 'percentage') {
+                discountedPrice = product.price - (product.price * (bestVoucher.discountValue / 100));
+              } else {
+                discountedPrice = Math.max(0, product.price - bestVoucher.discountValue);
+              }
+            }
+
+            return (
+              <ProductCard 
+                key={product._id} 
+                product={product} 
+                businessMetaData={businessMetaData} 
+                discountedPrice={Math.floor(discountedPrice)}
+              />
+            );
+          })}
         </Carousel>
       </div>
     </section>

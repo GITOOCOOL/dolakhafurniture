@@ -50,6 +50,9 @@ export default async function CategoryPage({ params }: Props) {
       "products": *[_type == "product" && category->slug.current == $slug && (isActive == true || ($isAdmin && adminPreview == true))] | order(_createdAt desc) {
         _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
       },
+      "activeCampaign": *[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
+        "vouchers": vouchers[]-> { code, discountValue, discountType, isFirstOrderVoucher, isOneTimePerCustomer, minimumSpend }
+      },
       "businessMetaData": *[_type == "businessMetaData"][0]
     }`,
     { slug, isAdmin },
@@ -90,9 +93,38 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 border-t border-soft border-dotted pt-16">
-            {data.products.map((product: Product) => (
-              <ProductCard key={product._id} product={product} businessMetaData={data.businessMetaData} />
-            ))}
+            {data.products.map((product: Product) => {
+              // Calculate best discount for this product card
+              let discountedPrice = product.price;
+              const vouchers = data.activeCampaign?.vouchers;
+              
+              if (vouchers && vouchers.length > 0) {
+                const bestVoucher = vouchers.reduce((best: any, current: any) => {
+                  const currentVal = current.discountType === 'percentage' 
+                    ? product.price * (current.discountValue / 100) 
+                    : current.discountValue;
+                  const bestVal = best.discountType === 'percentage' 
+                    ? product.price * (best.discountValue / 100) 
+                    : best.discountValue;
+                  return currentVal > bestVal ? current : best;
+                }, vouchers[0]);
+
+                if (bestVoucher.discountType === 'percentage') {
+                  discountedPrice = product.price - (product.price * (bestVoucher.discountValue / 100));
+                } else {
+                  discountedPrice = Math.max(0, product.price - bestVoucher.discountValue);
+                }
+              }
+
+              return (
+                <ProductCard 
+                  key={product._id} 
+                  product={product} 
+                  businessMetaData={data.businessMetaData} 
+                  discountedPrice={Math.floor(discountedPrice)}
+                />
+              );
+            })}
           </div>
         )}
 

@@ -46,25 +46,11 @@ export default function ProductDetail({
           }`,
         );
 
-        // 2. Fetch Global Active Vouchers (including those not linked to a specific campaign)
-        const globalVouchers = await client.fetch(
-          `*[_type == "discountVoucher" && isActive == true] {
-            code, details, discountType, discountValue, isFirstOrderVoucher, isOneTimePerCustomer, minimumSpend
-          }`,
-        );
+        // Filter for guest-eligible vouchers AND minimum spend threshold
+        const allVouchers = campaign?.vouchers || [];
 
-        // Merge and filter for guest-eligible vouchers AND minimum spend threshold
-        const allVouchers = [...(campaign?.vouchers || []), ...globalVouchers];
-
-        // Unique vouchers by code
-        const uniqueVouchers = Array.from(
-          new Map(allVouchers.map((v) => [v.code, v])).values(),
-        );
-
-        const eligibleVouchers = uniqueVouchers.filter(
+        const eligibleVouchers = allVouchers.filter(
           (v: any) =>
-            !v.isFirstOrderVoucher &&
-            !v.isOneTimePerCustomer &&
             (!v.minimumSpend || product.price >= v.minimumSpend),
         );
 
@@ -261,11 +247,14 @@ export default function ProductDetail({
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                           draggable="false"
                           onContextMenu={(e) => e.preventDefault()}
-                          className={`transition-transform duration-[1.5s] ${variant === "modal" ? "object-cover" : "object-contain"} select-none`}
+                          className={`transition-transform duration-[1.5s] ${variant === "modal" ? "object-cover" : "object-contain"} select-none pointer-events-none`}
                           priority={idx === 0}
                         />
-                        {/* THE SHIELD */}
-                        <div className="absolute inset-0 z-30 pointer-events-none" />
+                        {/* THE SHIELD (Blocks all interaction with the image file below) */}
+                        <div 
+                          className="absolute inset-0 z-30 cursor-crosshair" 
+                          onContextMenu={(e) => e.preventDefault()}
+                        />
                     </div>
                   </div>
                 ))

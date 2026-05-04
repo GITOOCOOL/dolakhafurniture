@@ -151,6 +151,7 @@ export default async function Home() {
                   autoScroll={true}
                   description={cat.description}
                   businessMetaData={businessMetaData}
+                  vouchers={activeCampaign?.vouchers}
                 />
               </div>
             </section>

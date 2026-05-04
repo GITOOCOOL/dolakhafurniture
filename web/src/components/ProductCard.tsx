@@ -63,7 +63,9 @@ const ProductCard = ({
                 loading="lazy"
                 src={urlFor(product.mainImage).width(100).blur(2).format("webp").url()}
                 alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-30 scale-110"
+                draggable="false"
+                onContextMenu={(e) => e.preventDefault()}
+                className="absolute inset-0 w-full h-full object-cover opacity-30 scale-110 pointer-events-none"
               />
               {/* SHARP CENTERED IMAGE */}
               <img
@@ -72,10 +74,13 @@ const ProductCard = ({
                 alt={product.title}
                 draggable="false"
                 onContextMenu={(e) => e.preventDefault()}
-                className="relative z-10 object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105 select-none"
+                className="relative z-10 object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105 select-none pointer-events-none"
               />
-              {/* TRANSPARENT SHIELD OVERLAY */}
-              <div className="absolute inset-0 z-20 pointer-events-none" />
+              {/* TRANSPARENT SHIELD OVERLAY (Touch point for clicks, but file is hidden) */}
+              <div 
+                className="absolute inset-0 z-20 cursor-pointer" 
+                onContextMenu={(e) => e.preventDefault()}
+              />
             </>
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-soft/10 text-label/40">
@@ -117,17 +122,17 @@ const ProductCard = ({
           <h3 className="type-product text-heading group-hover:text-action transition-colors line-clamp-1 uppercase text-[6px] md:text-[7px] leading-tight tracking-[0.2em]">
             {product.title}
           </h3>
-          {variant === "campaign" && discountedPrice ? (
+          {discountedPrice && discountedPrice < product.price ? (
             <div className="flex items-baseline gap-1 mt-0.5">
-              <p className="type-label text-description text-[6px] line-through decoration-action/40 decoration-1">
+              <p className="type-label text-description text-[7px] line-through decoration-action/40 decoration-1">
                 Rs. {product.price}
               </p>
-              <p className="type-label text-action text-[8px] font-black">
+              <p className="type-label text-action text-[9px] font-black">
                 Rs. {discountedPrice}
               </p>
             </div>
           ) : (
-            <p className="type-label text-action text-[7px] mt-0.5">
+            <p className="type-label text-action text-[8px] mt-0.5 font-bold">
               Rs. {product.price}
             </p>
           )}
