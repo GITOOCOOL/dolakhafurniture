@@ -3,7 +3,7 @@ export const productsForHomeQuery = `*[_type == "product" && (isActive == true |
 }`
 
 export const productsForCategoryQuery = `*[_type == "product" && category->slug.current == $category && (isActive == true || ($isAdmin && adminPreview == true))]{
-    _id, title, price, mainImage, "category": category->{title, "slug": slug.current, description}, "slug": slug.current, description, material, length, breadth, height, stock
+    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current, description}, "slug": slug.current, description, material, length, breadth, height, stock
 }`
 
 export const productBySlugQuery = `*[_type == "product" && slug.current == $slug && (isActive == true || ($isAdmin && adminPreview == true))][0]{
@@ -76,7 +76,7 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     endDate,
     "vouchers": vouchers[]->{code, details, discountValue, discountType, isFirstOrderVoucher, isOneTimePerCustomer, startsImmediately, neverExpires},
     "products": promotedProducts[@->isActive == true || ($isAdmin && @->adminPreview == true)]-> {
-        _id, title, price, mainImage, description, material, length, breadth, height, stock, "slug": slug.current, "category": category->{title, "slug": slug.current, description}
+        _id, title, price, mainImage, images, description, material, length, breadth, height, stock, "slug": slug.current, "category": category->{title, "slug": slug.current, description}
     }
 } `
 

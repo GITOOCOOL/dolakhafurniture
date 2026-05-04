@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: Props) {
     `{
       "category": *[_type == "category" && slug.current == $slug][0],
       "products": *[_type == "product" && category->slug.current == $slug && (isActive == true || ($isAdmin && adminPreview == true))] | order(_createdAt desc) {
-        _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
+        _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
       },
       "businessMetaData": *[_type == "businessMetaData"][0]
     }`,
