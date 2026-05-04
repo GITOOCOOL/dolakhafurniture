@@ -6,6 +6,7 @@ import { Leaf } from "lucide-react";
 import { Product, BusinessMetaData } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { businessMetaDataQuery } from "@/lib/queries";
+import { isAuthorizedAdmin } from "@/lib/auth";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,9 +14,10 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const isAdmin = await isAuthorizedAdmin();
   const [category, businessMetaData] = await Promise.all([
     client.fetch(`*[_type == "category" && slug.current == $slug][0]`, { slug }),
-    client.fetch(businessMetaDataQuery)
+    client.fetch(businessMetaDataQuery, { isAdmin })
   ]);
 
   if (!category) return { title: "Collection Not Found" };
@@ -40,17 +42,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage({ params }: Props) {
-  const { slug } = await params;
-
+  const isAdmin = await isAuthorizedAdmin();
   const data = await client.fetch(
     `{
       "category": *[_type == "category" && slug.current == $slug][0],
-      "products": *[_type == "product" && category->slug.current == $slug && isActive == true] | order(_createdAt desc) {
+      "products": *[_type == "product" && category->slug.current == $slug && (isActive == true || ($isAdmin && adminPreview == true))] | order(_createdAt desc) {
         _id, title, price, mainImage, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, stock, isFeatured
       },
       "businessMetaData": *[_type == "businessMetaData"][0]
     }`,
-    { slug },
+    { slug, isAdmin },
   );
 
   if (!data.category) notFound();

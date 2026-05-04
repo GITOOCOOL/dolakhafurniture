@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { productBySlugQuery, businessMetaDataQuery } from "@/lib/queries";
 import { Product, BusinessMetaData } from "@/types";
+import { isAuthorizedAdmin } from "@/lib/auth";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,9 +14,10 @@ interface Props {
 // 1. DYNAMIC SEO METADATA - Updated for a boutique feel
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const isAdmin = await isAuthorizedAdmin();
   const [product, businessMetaData] = await Promise.all([
-    client.fetch<Product | null>(productBySlugQuery, { slug }),
-    client.fetch<BusinessMetaData | null>(businessMetaDataQuery),
+    client.fetch<Product | null>(productBySlugQuery, { slug, isAdmin }),
+    client.fetch<BusinessMetaData | null>(businessMetaDataQuery, { isAdmin }),
   ]);
 
   const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
@@ -54,11 +56,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // 2. THE PAGE COMPONENT
 export default async function ProductPage({ params }: Props) {
-  const { slug } = await params;
-
+  const isAdmin = await isAuthorizedAdmin();
   const [product, businessMetaData] = await Promise.all([
-    client.fetch<Product | null>(productBySlugQuery, { slug }),
-    client.fetch<BusinessMetaData | null>(businessMetaDataQuery)
+    client.fetch<Product | null>(productBySlugQuery, { slug, isAdmin }),
+    client.fetch<BusinessMetaData | null>(businessMetaDataQuery, { isAdmin })
   ]);
 
   if (!product) {

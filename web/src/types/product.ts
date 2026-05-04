@@ -24,4 +24,6 @@ export type Product = {
     breadth?: number;
     height?: number;
     _createdAt?: string;
+    isActive?: boolean;
+    adminPreview?: boolean;
 }

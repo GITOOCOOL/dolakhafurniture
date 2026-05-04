@@ -56,20 +56,29 @@ const ProductCard = ({
         <div 
           className="aspect-square bg-app overflow-hidden relative"
         >
-          {/* BLURRED BACKDROP */}
-          <img
-            loading="lazy"
-            src={urlFor(product.mainImage).width(100).blur(2).format("webp").url()}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-30 scale-110"
-          />
-          {/* SHARP CENTERED IMAGE */}
-          <img
-            loading="lazy"
-            src={urlFor(product.mainImage).width(400).format("webp").url()}
-            alt={product.title}
-            className="relative z-10 object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105"
-          />
+          {product.mainImage ? (
+            <>
+              {/* BLURRED BACKDROP */}
+              <img
+                loading="lazy"
+                src={urlFor(product.mainImage).width(100).blur(2).format("webp").url()}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover opacity-30 scale-110"
+              />
+              {/* SHARP CENTERED IMAGE */}
+              <img
+                loading="lazy"
+                src={urlFor(product.mainImage).width(400).format("webp").url()}
+                alt={product.title}
+                className="relative z-10 object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105"
+              />
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-soft/10 text-label/40">
+              <ShoppingBag size={48} strokeWidth={0.5} />
+              <p className="text-[10px] uppercase tracking-widest mt-4">Photo Pending</p>
+            </div>
+          )}
           
           {product.stock !== undefined &&
             product.stock <= 0 &&
@@ -78,6 +87,12 @@ const ProductCard = ({
                 <span className="text-action font-bold">SOLD</span>
               </div>
             )}
+
+          {product.adminPreview && (
+            <div className="absolute top-2 left-2 bg-action text-app px-1.5 py-0.5 rounded-sm text-[8px] font-black tracking-[0.2em] z-20 shadow-lg animate-pulse uppercase">
+              Preview
+            </div>
+          )}
 
           {variant === "ribbon" && (
             <div

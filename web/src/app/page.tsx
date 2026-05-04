@@ -10,6 +10,7 @@ import {
   socialMediaQuery,
   businessMetaDataQuery,
 } from "@/lib/queries";
+import { isAuthorizedAdmin } from "@/lib/auth";
 import Carousel from "@/components/Carousel";
 import ProductCard from "@/components/ProductCard";
 import { SocialContent, BusinessMetaData } from "@/types";
@@ -17,18 +18,20 @@ import { SocialContent, BusinessMetaData } from "@/types";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  const isAdmin = await isAuthorizedAdmin();
+  
   // Fetch only featured products for the top carousel
   const featuredProducts =
-    (await client.fetch<Product[]>(featuredProductsQuery)) || [];
+    (await client.fetch<Product[]>(featuredProductsQuery, { isAdmin })) || [];
 
   // Fetch all products to group them by category for the bottom section
-  const allProducts = (await client.fetch<Product[]>(allProductsQuery)) || [];
+  const allProducts = (await client.fetch<Product[]>(allProductsQuery, { isAdmin })) || [];
 
   const categoriesInOrder =
-    (await client.fetch<Category[]>(categoriesQuery)) || [];
+    (await client.fetch<Category[]>(categoriesQuery, { isAdmin })) || [];
 
   const activeCampaign =
-    (await client.fetch<any>(activeCampaignHomeQuery)) || null;
+    (await client.fetch<any>(activeCampaignHomeQuery, { isAdmin })) || null;
 
   const businessMetaData = 
     (await client.fetch<BusinessMetaData>(businessMetaDataQuery)) || null;
@@ -37,7 +40,7 @@ export default async function Home() {
   try {
     socialContent = await client.fetch<SocialContent[]>(
       socialMediaQuery,
-      {},
+      { isAdmin },
       { next: { revalidate: 60 } },
     );
   } catch (error) {

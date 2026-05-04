@@ -1,5 +1,6 @@
 import { client } from "@/lib/sanity";
 import { businessMetaDataQuery, socialMediaQuery } from "@/lib/queries";
+import { isAuthorizedAdmin } from "@/lib/auth";
 import SocialStories from "@/components/SocialStories";
 import ReelsSection from "@/components/ReelsSection";
 import { SocialContent } from "@/types";
@@ -23,9 +24,10 @@ export default async function StoriesPage() {
   let socialContent: SocialContent[] = [];
   let businessMetaData: any = null;
 
+  const isAdmin = await isAuthorizedAdmin();
   try {
     const [socialData, metaData] = await Promise.all([
-      client.fetch<SocialContent[]>(socialMediaQuery, {}, { next: { revalidate: 60 } }),
+      client.fetch<SocialContent[]>(socialMediaQuery, { isAdmin }, { next: { revalidate: 60 } }),
       client.fetch(businessMetaDataQuery)
     ]);
     socialContent = socialData;

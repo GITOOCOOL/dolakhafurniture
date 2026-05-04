@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { isAuthorizedAdmin } from "@/lib/auth";
 
 import PDFDownloadButton from "@/components/PDFDownloadButton";
 
@@ -18,9 +19,10 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const isAdmin = await isAuthorizedAdmin();
   const [campaign, businessMetaData] = await Promise.all([
-    client.fetch<Campaign | null>(campaignBySlugQuery, { slug }),
-    client.fetch<BusinessMetaData | null>(businessMetaDataQuery),
+    client.fetch<Campaign | null>(campaignBySlugQuery, { slug, isAdmin }),
+    client.fetch<BusinessMetaData | null>(businessMetaDataQuery, { isAdmin }),
   ]);
   
   const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
@@ -43,11 +45,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CampaignLandingPage({ params }: Props) {
   const { slug } = await params;
   
+  const isAdmin = await isAuthorizedAdmin();
   // Fetch campaign, welcome voucher and business meta in parallel
   const [campaign, firstOrderVoucher, businessMetaData] = await Promise.all([
-    client.fetch(campaignBySlugQuery, { slug }),
-    client.fetch(firstOrderVoucherQuery),
-    client.fetch<BusinessMetaData>(businessMetaDataQuery)
+    client.fetch(campaignBySlugQuery, { slug, isAdmin }),
+    client.fetch(firstOrderVoucherQuery, { isAdmin }),
+    client.fetch<BusinessMetaData>(businessMetaDataQuery, { isAdmin })
   ]);
 
   if (!campaign) notFound();

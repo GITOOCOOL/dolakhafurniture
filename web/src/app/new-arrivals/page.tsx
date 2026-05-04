@@ -2,6 +2,7 @@ import { client, urlFor } from "@/lib/sanity";
 import Link from "next/link";
 import { Metadata } from "next";
 import { businessMetaDataQuery } from "@/lib/queries";
+import { ShoppingBag } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
   const businessMetaData = await client.fetch(businessMetaDataQuery);
@@ -61,11 +62,18 @@ export default async function NewArrivalsPage() {
               className={`group flex flex-col space-y-8 ${index % 2 !== 0 ? 'md:mt-32' : ''}`}
             >
               <div className="aspect-[4/5] relative overflow-hidden rounded-[4rem] bg-white border border-soft shadow-sm transition-all duration-700 group-hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] group-hover:border-action/20">
-                <img
-                  src={urlFor(product.mainImage).width(1000).url()}
-                  alt={product.title}
-                  className="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105"
-                />
+                {product.mainImage ? (
+                  <img
+                    src={urlFor(product.mainImage).width(1000).url()}
+                    alt={product.title}
+                    className="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-soft/10 text-label/40">
+                    <ShoppingBag size={64} strokeWidth={0.5} />
+                    <p className="text-xs uppercase tracking-[0.2em] mt-6">Photo Pending</p>
+                  </div>
+                )}
                 
                 <div className="absolute top-8 right-8">
                   <span className="bg-espresso/90  text-bone px-6 py-2 rounded-full text-[10px] font-sans font-bold uppercase tracking-widest shadow-lg">

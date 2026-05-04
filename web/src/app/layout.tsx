@@ -6,6 +6,7 @@ import { client } from "@/lib/sanity";
 import { bulletinQuery, activeCampaignsQuery, businessMetaDataQuery } from "@/lib/queries";
 import { Bulletin, Campaign, BusinessMetaData } from "@/types";
 import { ToastProvider } from "@/components/Toast";
+import { isAuthorizedAdmin } from "@/lib/auth";
 import MetaPixel from "@/components/MetaPixel";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import BrowserBanner from "@/components/BrowserBanner";
@@ -108,6 +109,8 @@ export default async function RootLayout({
     console.error("Layout data fetch failed:", error);
   }
 
+  const isAdmin = await isAuthorizedAdmin();
+
   // Bulletins for the ticker
   const combinedBulletins = bulletins.length > 0 
     ? bulletins.map(b => ({ ...b, type: "default" }))
@@ -171,7 +174,7 @@ export default async function RootLayout({
             </Suspense>
 
             <BrowserBanner />
-            <HeaderClient latestCampaign={latestCampaign} businessMetaData={businessMetaData} />
+            <HeaderClient latestCampaign={latestCampaign} businessMetaData={businessMetaData} isAdmin={isAdmin} />
             <main className="w-full relative flex-1 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1920px] mx-auto">{children}</main>
             
             <CampaignModal campaign={latestCampaign} businessMetaData={businessMetaData} />

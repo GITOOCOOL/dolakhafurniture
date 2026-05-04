@@ -13,6 +13,7 @@ import {
   Truck,
   MessageCircle,
   MessageSquare,
+  ShoppingBag,
 } from "lucide-react";
 import Button from "./ui/Button";
 import { Product, BusinessMetaData } from "@/types";
@@ -233,32 +234,39 @@ export default function ProductDetail({
               className={`relative bg-app overflow-x-hidden overflow-y-hidden flex flex-nowrap scrollbar-hide transition-all duration-700 ${variant === "modal" ? "aspect-square lg:aspect-auto lg:h-[600px] rounded-none" : "aspect-square rounded-[3rem] border border-divider shadow-sm hover:shadow-[0_20px_60px_rgba(163,87,58,0.1)] hover:border-action/20"}`}
             >
 
-              {allImages.map((img, idx) => (
-                <div
-                  key={idx}
-                  className="flex-shrink-0 w-full h-full snap-center snap-always relative overflow-hidden bg-app"
-                  id={`product-image-${idx}`}
-                >
-                  {/* BASE ATMOSPHERE */}
-                  <Image
-                    src={urlFor(img).width(200).blur(5).auto("format").url()}
-                    alt=""
-                    fill
-                    className="object-cover opacity-20 scale-105 pointer-events-none"
-                  />
-
-                  {/* SHARP IMAGE PORTAL */}
-                  <div className="absolute inset-0 flex items-center justify-center">
+              {allImages.length > 0 ? (
+                allImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="flex-shrink-0 w-full h-full snap-center snap-always relative overflow-hidden bg-app"
+                    id={`product-image-${idx}`}
+                  >
+                    {/* BASE ATMOSPHERE */}
                     <Image
-                      src={urlFor(img).width(1200).auto("format").url()}
-                      alt={`${product.title} view ${idx}`}
+                      src={urlFor(img).width(200).blur(5).auto("format").url()}
+                      alt=""
                       fill
-                      className={`transition-transform duration-[1.5s] ${variant === "modal" ? "object-cover" : "object-contain"}`}
-                      priority={idx === 0}
+                      className="object-cover opacity-20 scale-105 pointer-events-none"
                     />
+
+                    {/* SHARP IMAGE PORTAL */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Image
+                        src={urlFor(img).width(1200).auto("format").url()}
+                        alt={`${product.title} view ${idx}`}
+                        fill
+                        className={`transition-transform duration-[1.5s] ${variant === "modal" ? "object-cover" : "object-contain"}`}
+                        priority={idx === 0}
+                      />
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="flex-shrink-0 w-full h-full flex flex-col items-center justify-center bg-soft/5 text-label/20">
+                  <ShoppingBag size={80} strokeWidth={0.5} />
+                  <p className="text-xs uppercase tracking-[0.4em] mt-8">Photo Pending</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 

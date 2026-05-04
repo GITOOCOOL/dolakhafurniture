@@ -125,11 +125,17 @@ function ReelCard({ reel, isHovered, onHover, onLeave }: {
                 key={product._id}
                 className="w-6 h-6 rounded-full border-2 border-app overflow-hidden bg-white"
               >
-                <img 
-                  src={urlFor(product.mainImage).width(50).url()} 
-                  alt={product.title}
-                  className="w-full h-full object-cover"
-                />
+                {product.mainImage ? (
+                  <img 
+                    src={urlFor(product.mainImage).width(100).url()} 
+                    alt={product.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-soft flex items-center justify-center">
+                    <ShoppingBag size={10} className="text-label/30" />
+                  </div>
+                )}
               </div>
             ))}
             {reel.linkedProducts.length > 3 && (

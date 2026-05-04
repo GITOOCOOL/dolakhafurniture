@@ -13,6 +13,12 @@ export default defineType({
     ],
     fields: [
         defineField({
+            name: 'series',
+            title: 'Series/Collection Name',
+            type: 'string',
+            description: 'Example: Alita, Zenith, Koshi. Helps in grouping products and searching.',
+        }),
+        defineField({
             name: 'title',
             title: 'Product Name',
             type: 'string',
@@ -44,6 +50,13 @@ export default defineType({
             type: 'boolean',
             initialValue: true,
             description: 'If turned off, this product will be hidden from the website (Home, Categories, and Search).'
+        }),
+        defineField({
+            name: 'adminPreview',
+            title: 'Admin Preview Mode',
+            type: 'boolean',
+            initialValue: false,
+            description: 'If turned on, this product will be visible to logged-in admins even if "Active on Website" is turned off.'
         }),
         defineField({
             name: 'mainImage',
@@ -139,5 +152,22 @@ export default defineType({
             type: 'number',
             fieldset: 'specifications',
         }),
+        defineField({
+            name: 'researchSources',
+            title: 'Research Vault (Public Data)',
+            type: 'array',
+            description: 'Raw data fetched from public sources for review. Does not appear on the website.',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        {name: 'sourceName', title: 'Source Name', type: 'string'},
+                        {name: 'description', title: 'Raw Description', type: 'text'},
+                        {name: 'url', title: 'Source URL', type: 'url'},
+                        {name: 'fetchedAt', title: 'Fetched At', type: 'datetime'}
+                    ]
+                }
+            ]
+        }),
     ],
-});
+})

@@ -23,11 +23,12 @@ import InquiryModal from "./InquiryModal";
 interface HeaderClientProps {
   latestCampaign?: Campaign | null;
   businessMetaData?: BusinessMetaData | null;
+  isAdmin?: boolean;
 }
 
-export default function HeaderClient({ latestCampaign, businessMetaData }: HeaderClientProps) {
+export default function HeaderClient({ latestCampaign, businessMetaData, isAdmin: isAuthorizedAdmin }: HeaderClientProps) {
   const pathname = usePathname();
-  const isAdmin = pathname?.startsWith("/admin");
+  const isAdminPath = pathname?.startsWith("/admin");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -46,7 +47,10 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
   } = useUIStore();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [searchResults, setSearchResults] = useState<{ products: Product[]; categories: any[] }>({
+    products: [],
+    categories: [],
+  });
   const [isSearching, setIsSearching] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -70,10 +74,14 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
 
       setIsSearching(true);
       try {
-        const products = await client.fetch<Product[]>(searchProductsQuery, {
-          searchTerm: `${searchQuery}*`, // Add wildcard for partial matching
+        const results = await client.fetch(searchProductsQuery, {
+          searchTerm: `${searchQuery}*`,
+          isAdmin: isAuthorizedAdmin,
         });
-        setSearchResults(products);
+        setSearchResults({
+          products: results.products || [],
+          categories: results.categories || [],
+        });
       } catch (error) {
         console.error("Search error:", error);
       } finally {
@@ -89,7 +97,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
   useEffect(() => {
     if (!isSearchOpen) {
       setSearchQuery("");
-      setSearchResults([]);
+      setSearchResults({ products: [], categories: [] });
     }
   }, [isSearchOpen]);
 
@@ -108,7 +116,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
 
   // Track Header Height dynamically to allow modals to dock perfectly below it
   useEffect(() => {
-    if (isAdmin) return;
+    if (isAdminPath) return;
     const header = document.getElementById("main-site-header");
     if (!header) return;
 
@@ -122,9 +130,9 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
     });
     observer.observe(header);
     return () => observer.disconnect();
-  }, [isAdmin]);
+  }, [isAdminPath]);
 
-  if (isAdmin) return null;
+  if (isAdminPath) return null;
 
   return (
     <>
@@ -182,13 +190,13 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
           </div>
 
           <div className="hidden md:flex w-full pb-3 justify-center">
-            <CategoryNav />
+            <CategoryNav isAdmin={isAuthorizedAdmin} />
           </div>
         </div>
 
         {pathname === "/" && (
           <div className="pointer-events-auto">
-            <CategorySwitcher />
+            <CategorySwitcher isAdmin={isAuthorizedAdmin} />
           </div>
         )}
         <div className="pointer-events-auto">
@@ -245,27 +253,60 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
               {/* RESULTS AREA */}
               <div className="min-h-[40vh] py-8">
                 {searchQuery.length > 0 ? (
-                  searchResults.length > 0 ? (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                      <div className="flex justify-between items-end border-b border-soft pb-4">
-                        <h3 className="type-label text-label uppercase tracking-widest">
-                          Results found ({searchResults.length})
-                        </h3>
-                        <p className="type-label text-description italic">
-                          Scroll for more
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {searchResults.map((product) => (
-                          <div
-                            key={product._id}
-                            className="h-full"
-                            onClick={() => setIsSearchOpen(false)}
-                          >
-                            <ProductCard product={product} businessMetaData={businessMetaData} />
+                  searchResults.products.length > 0 || searchResults.categories.length > 0 ? (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      
+                      {/* CATEGORIES / COLLECTIONS */}
+                      {searchResults.categories.length > 0 && (
+                        <div className="space-y-4">
+                          <h3 className="type-label text-label uppercase tracking-widest text-[10px]">
+                            Matching Collections
+                          </h3>
+                          <div className="flex flex-wrap gap-3">
+                            {searchResults.categories.map((category) => (
+                              <Link
+                                key={category._id}
+                                href={`/category/${category.slug}`}
+                                onClick={() => setIsSearchOpen(false)}
+                                className="group flex items-center gap-3 px-6 py-3 bg-surface border border-soft rounded-full hover:border-action hover:text-action transition-all shadow-sm"
+                              >
+                                <span className="text-lg">📂</span>
+                                <span className="font-serif italic text-heading group-hover:text-action transition-colors">
+                                  {category.title}
+                                </span>
+                                <span className="text-action opacity-0 group-hover:opacity-100 transition-opacity">
+                                  →
+                                </span>
+                              </Link>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      )}
+
+                      {/* PRODUCTS */}
+                      {searchResults.products.length > 0 && (
+                        <div className="space-y-6">
+                          <div className="flex justify-between items-end border-b border-soft pb-4">
+                            <h3 className="type-label text-label uppercase tracking-widest text-[10px]">
+                              Products ({searchResults.products.length})
+                            </h3>
+                            <p className="type-label text-description italic text-[10px]">
+                              Scroll for more
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {searchResults.products.map((product) => (
+                              <div
+                                key={product._id}
+                                className="h-full"
+                                onClick={() => setIsSearchOpen(false)}
+                              >
+                                <ProductCard product={product} businessMetaData={businessMetaData} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     !isSearching && (
@@ -324,6 +365,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData }: Heade
               isMobile={true}
               onItemClick={() => setIsMenuOpen(false)}
               campaign={latestCampaign}
+              isAdmin={isAuthorizedAdmin}
             />
           </div>
 

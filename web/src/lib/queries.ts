@@ -1,16 +1,16 @@
-export const productsForHomeQuery = `*[_type == "product" && isActive == true]{
+export const productsForHomeQuery = `*[_type == "product" && (isActive == true || ($isAdmin && adminPreview == true))]{
     _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current, description}, "slug": slug.current, description, material, length, breadth, height, stock
 }`
 
-export const productsForCategoryQuery = `*[_type == "product" && category->slug.current == $category && isActive == true]{
+export const productsForCategoryQuery = `*[_type == "product" && category->slug.current == $category && (isActive == true || ($isAdmin && adminPreview == true))]{
     _id, title, price, mainImage, "category": category->{title, "slug": slug.current, description}, "slug": slug.current, description, material, length, breadth, height, stock
 }`
 
-export const productBySlugQuery = `*[_type == "product" && slug.current == $slug && isActive == true][0]{
+export const productBySlugQuery = `*[_type == "product" && slug.current == $slug && (isActive == true || ($isAdmin && adminPreview == true))][0]{
     _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current, description}, "slug": slug.current, description, stock, isFeatured, material, length, breadth, height
 }`
 
-export const categoriesQuery = `*[_type == "category" && count(*[_type == "product" && references(^._id) && isActive == true]) > 0] | order(title asc) {
+export const categoriesQuery = `*[_type == "category" && count(*[_type == "product" && references(^._id) && (isActive == true || ($isAdmin && adminPreview == true))]) > 0] | order(title asc) {
     _id, title, "slug": slug.current, description
 } `
 
@@ -25,7 +25,7 @@ export const heroImageQuery = `*[_type == "heroImage"]{
     _id, title, "slug": slug.current, mainImage, createdAt
 } `
 
-export const allProductsQuery = `*[_type == "product" && isActive == true] | order(category->title asc, title asc) {
+export const allProductsQuery = `*[_type == "product" && (isActive == true || ($isAdmin && adminPreview == true))] | order(category->title asc, title asc) {
     _id,
     title,
     price,
@@ -75,7 +75,7 @@ export const campaignBySlugQuery = `*[_type == "campaign" && slug.current == $sl
     startDate,
     endDate,
     "vouchers": vouchers[]->{code, details, discountValue, discountType, isFirstOrderVoucher, isOneTimePerCustomer, startsImmediately, neverExpires},
-    "products": promotedProducts[@->isActive == true]-> {
+    "products": promotedProducts[@->isActive == true || ($isAdmin && @->adminPreview == true)]-> {
         _id, title, price, mainImage, description, material, length, breadth, height, stock, "slug": slug.current, "category": category->{title, "slug": slug.current, description}
     }
 } `
@@ -96,7 +96,7 @@ export const facebookMelaProductsQuery = `*[_type == "campaign" && slug.current 
     }
 }.products`
 
-export const featuredProductsQuery = `*[_type == "product" && isFeatured == true && isActive == true] | order(_createdAt desc){
+export const featuredProductsQuery = `*[_type == "product" && isFeatured == true && (isActive == true || ($isAdmin && adminPreview == true))] | order(_createdAt desc){
     _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current, description}, "slug": slug.current, description, stock
 }`
 
@@ -106,7 +106,7 @@ export const activeCampaignHomeQuery = `*[_type == "campaign" && status == "acti
     endDate,
     description,
     "vouchers": vouchers[]-> { code, discountValue, discountType },
-    "products": promotedProducts[@->isActive == true]-> {
+    "products": promotedProducts[@->isActive == true || ($isAdmin && @->adminPreview == true)]-> {
       _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current, description}, "slug": slug.current, description, material, length, breadth, height, stock
     }
 }`
@@ -125,8 +125,13 @@ export const activeVouchersQuery = `*[_type == "discountVoucher" && isActive == 
     _id, code, discountValue, discountType, details
 }`
 
-export const searchProductsQuery = `*[_type == "product" && isActive == true && (title match $searchTerm || description match $searchTerm || material match $searchTerm || category->title match $searchTerm)] | order(_createdAt desc)[0...12]{
-    _id, title, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, material, length, breadth, height, stock
+export const searchProductsQuery = `{
+  "products": *[_type == "product" && (isActive == true || ($isAdmin && adminPreview == true)) && (title match $searchTerm || description match $searchTerm || material match $searchTerm || series match $searchTerm || category->title match $searchTerm)] | order(_createdAt desc)[0...12]{
+    _id, title, series, price, mainImage, images, "category": category->{title, "slug": slug.current}, "slug": slug.current, description, material, length, breadth, height, stock
+  },
+  "categories": *[_type == "category" && (title match $searchTerm || description match $searchTerm)] | order(title asc)[0...5]{
+    _id, title, "slug": slug.current
+  }
 }`
 
 export const allMaterialsQuery = `*[_type == "material"] | order(title asc) {
@@ -217,7 +222,7 @@ export const socialMediaQuery = `*[_type == "socialMedia" && isActive == true] |
     logDate,
     externalUrl,
     isFeatured,
-    "linkedProducts": linkedProducts[]-> {
+    "linkedProducts": linkedProducts[@->isActive == true || ($isAdmin && @->adminPreview == true)]-> {
         _id, title, price, "slug": slug.current, mainImage
     }
 }`

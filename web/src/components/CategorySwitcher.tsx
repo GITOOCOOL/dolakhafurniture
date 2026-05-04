@@ -5,7 +5,7 @@ import { client } from "@/lib/sanity";
 import { categoriesQuery } from "@/lib/queries";
 import { Category } from "@/types";
 
-export default function CategorySwitcher() {
+export default function CategorySwitcher({ isAdmin = false }: { isAdmin?: boolean }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -13,7 +13,7 @@ export default function CategorySwitcher() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const data = await client.fetch(categoriesQuery);
+        const data = await client.fetch(categoriesQuery, { isAdmin });
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

@@ -4,9 +4,11 @@ import { Metadata } from "next";
 import { allProductsQuery, businessMetaDataQuery } from "@/lib/queries";
 import { Product } from "@/types";
 import ShopClient from "@/components/ShopClient";
+import { isAuthorizedAdmin } from "@/lib/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const businessMetaData = await client.fetch(businessMetaDataQuery);
+  const isAdmin = await isAuthorizedAdmin();
+  const businessMetaData = await client.fetch(businessMetaDataQuery, { isAdmin });
   const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
 
   return {
@@ -18,7 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export const dynamic = 'force-dynamic';
 
 export default async function ShopPage() {
-  const products = await client.fetch(allProductsQuery);
+  const isAdmin = await isAuthorizedAdmin();
+  const products = await client.fetch(allProductsQuery, { isAdmin });
 
   return (
     <div className="bg-app min-h-screen font-sans text-heading relative pb-20">

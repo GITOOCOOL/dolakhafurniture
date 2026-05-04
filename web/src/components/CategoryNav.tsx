@@ -16,10 +16,12 @@ export default function CategoryNav({
   isMobile = false,
   onItemClick,
   campaign,
+  isAdmin = false,
 }: {
   isMobile?: boolean;
   onItemClick?: () => void;
   campaign?: any;
+  isAdmin?: boolean;
 }) {
   const pathname = usePathname();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -30,7 +32,7 @@ export default function CategoryNav({
     setMounted(true);
     async function fetchCategories() {
       try {
-        const data = await client.fetch(categoriesQuery);
+        const data = await client.fetch(categoriesQuery, { isAdmin });
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
