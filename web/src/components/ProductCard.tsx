@@ -70,8 +70,12 @@ const ProductCard = ({
                 loading="lazy"
                 src={urlFor(product.mainImage).width(400).format("webp").url()}
                 alt={product.title}
-                className="relative z-10 object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105"
+                draggable="false"
+                onContextMenu={(e) => e.preventDefault()}
+                className="relative z-10 object-contain w-full h-full transition-transform duration-[1.5s] group-hover:scale-105 select-none"
               />
+              {/* TRANSPARENT SHIELD OVERLAY */}
+              <div className="absolute inset-0 z-20 pointer-events-none" />
             </>
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-soft/10 text-label/40">

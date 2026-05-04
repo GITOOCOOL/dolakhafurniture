@@ -246,18 +246,26 @@ export default function ProductDetail({
                       src={urlFor(img).width(200).blur(5).auto("format").url()}
                       alt=""
                       fill
-                      className="object-cover opacity-20 scale-105 pointer-events-none"
+                      sizes="200px"
+                      draggable="false"
+                      onContextMenu={(e) => e.preventDefault()}
+                      className="object-cover opacity-20 scale-105 pointer-events-none select-none"
                     />
 
                     {/* SHARP IMAGE PORTAL */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <Image
-                        src={urlFor(img).width(1200).auto("format").url()}
-                        alt={`${product.title} view ${idx}`}
-                        fill
-                        className={`transition-transform duration-[1.5s] ${variant === "modal" ? "object-cover" : "object-contain"}`}
-                        priority={idx === 0}
-                      />
+                        <Image
+                          src={urlFor(img).width(1200).auto("format").url()}
+                          alt={`${product.title} view ${idx}`}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                          draggable="false"
+                          onContextMenu={(e) => e.preventDefault()}
+                          className={`transition-transform duration-[1.5s] ${variant === "modal" ? "object-cover" : "object-contain"} select-none`}
+                          priority={idx === 0}
+                        />
+                        {/* THE SHIELD */}
+                        <div className="absolute inset-0 z-30 pointer-events-none" />
                     </div>
                   </div>
                 ))
