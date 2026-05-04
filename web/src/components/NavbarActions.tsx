@@ -126,17 +126,25 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
   }, [searchParams, pathname, router]);
 
   const handleLogout = async () => {
+    console.log("[Auth-Trace] Logout process started.");
     try {
-      // 1. Clear Supabase session on server and client
-      await supabase.auth.signOut();
+      setLoading(true);
+      // 1. Clear Supabase session
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("[Auth-Trace] Supabase signOut error:", error);
+      }
       
       // 2. Clear local storage/cart
       useCart.getState().clearCart();
       
-      // 3. Force a hard refresh to the homepage to clear all Middleware state
-      window.location.replace('/'); 
+      console.log("[Auth-Trace] Logout successful. Redirecting to home.");
+      
+      // 3. Force a hard refresh to the homepage
+      // We use href instead of replace to ensure a full browser lifecycle reset
+      window.location.href = "/";
     } catch (err) {
-      console.error("Logout failed:", err);
+      console.error("[Auth-Trace] Critical Logout Failure:", err);
       window.location.href = "/";
     }
   };
@@ -353,9 +361,9 @@ export default function NavbarActions({ onSearchClick, onMenuClick, businessMeta
 
                 <div className="mt-auto pb-8">
                   <button
-                    onClick={() => {
+                    onClick={async () => {
+                      await handleLogout();
                       setIsAccountModalOpen(false);
-                      handleLogout();
                     }}
                     className="w-full py-5 text-xs font-bold tracking-widest uppercase text-heading border-2 border-espresso rounded-2xl hover:bg-espresso hover:text-bone transition-all"
                   >

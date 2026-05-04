@@ -32,6 +32,7 @@ export default function SocialStories({ stories }: SocialStoriesProps) {
                       src={story.thumbnailUrl}
                       alt={story.title}
                       fill
+                      sizes="80px"
                       className="object-cover"
                     />
                   ) : (

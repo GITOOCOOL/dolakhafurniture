@@ -77,6 +77,7 @@ function ReelCard({ reel, isHovered, onHover, onLeave }: {
           src={reel.thumbnailUrl}
           alt={reel.title}
           fill
+          sizes="(max-width: 768px) 50vw, 20vw"
           className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
         />
       ) : (

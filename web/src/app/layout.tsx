@@ -81,6 +81,11 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Quality handcrafted furniture for your home by ${name}. Built to last and delivered with care.`,
       images: ["/logo.png"],
     },
+    icons: {
+      icon: "/logo.png",
+      shortcut: "/logo.png",
+      apple: "/logo.png",
+    },
     metadataBase: new URL(url),
   };
 }
