@@ -38,7 +38,7 @@ export default function ProductQuickView({ businessMetaData }: { businessMetaDat
       onClose={() => setViewingProduct(null)}
       title={viewingProduct.title}
       position="bottom"
-      className="sm:max-w-7xl !p-0 sm:h-[calc(100dvh-var(--header-height,5rem))]"
+      className="sm:max-w-7xl !p-0 h-[100dvh] sm:h-[100dvh] !rounded-none border-none"
       noPadding
     >
       <div className="relative w-full h-full bg-app/80 backdrop-blur-3xl">

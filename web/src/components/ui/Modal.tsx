@@ -113,7 +113,7 @@ export default function Modal({
                 position === "right" || position === "left"
                   ? `h-full w-full sm:w-[500px] rounded-none ${position === "right" ? "border-l" : "border-r"}`
                   : position === "bottom"
-                    ? "w-full sm:max-w-3xl h-[85dvh] rounded-t-[2.5rem] border-t"
+                    ? "w-full sm:max-w-3xl h-[100dvh] sm:h-[85dvh] rounded-t-[2.5rem] border-t"
                     : "w-full h-full sm:h-auto sm:max-w-xl sm:border sm:rounded-[2.5rem] p-0 shadow-sm sm:max-h-[85dvh] overflow-hidden"
               }
               ${className}
