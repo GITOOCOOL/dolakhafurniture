@@ -139,85 +139,75 @@ const ProductCard = ({
         </div>
       </div>
 
-      {/* ACTION DECK: Triple-Command Row (Expands to fill remaining space) */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 flex items-stretch min-h-[40px] w-full border-t border-soft/30">
-          {/* WHATSAPP */}
-          <a
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex-1 flex items-center justify-center bg-surface hover:bg-success group/wa transition-colors"
-            title="WhatsApp"
-          >
-            <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center group-hover/wa:bg-white transition-colors">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                className="fill-success group-hover/wa:fill-success transition-colors"
-              >
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-              </svg>
-            </div>
-          </a>
+      {/* ACTION DECK: Vertically Stacked Row */}
+      <div className="flex flex-col w-full border-t border-soft/30 mt-auto">
+        {/* ADD TO BAG */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const cleanId = product._id.replace("drafts.", "");
+            addItem(product, quantity);
+            setIsCheckoutDrawerOpen(true);
+            trackEvent("AddToCart", {
+              content_name: product.title,
+              content_category: product.category?.title,
+              content_ids: [cleanId],
+              content_type: "product",
+              value: product.price * quantity,
+              currency: "NPR",
+              brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
+              availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order",
+            });
+          }}
+          className="w-full flex items-center justify-center gap-2 p-3 bg-action text-white hover:bg-action/90 transition-colors border-b border-soft/30"
+          title="Add to Bag"
+        >
+          <ShoppingBag size={16} strokeWidth={1.5} />
+          <span className="text-[10px] font-bold uppercase tracking-widest">Add to Bag</span>
+        </button>
 
-          {/* MESSENGER */}
-          <a
-            href={messengerLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex-1 flex items-center justify-center bg-surface hover:bg-action group/ms transition-colors border-x border-soft/30"
-            title="Messenger"
+        {/* WHATSAPP */}
+        <a
+          href={whatsappLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="w-full flex items-center justify-center gap-2 p-3 bg-success/10 hover:bg-success hover:text-heading transition-colors border-b border-soft/30 group"
+          title="WhatsApp"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            className="fill-heading group-hover:fill-heading transition-colors"
           >
-            <div className="w-8 h-8 rounded-full bg-action/10 flex items-center justify-center group-hover/ms:bg-white transition-colors">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                className="fill-action group-hover/ms:fill-action transition-colors"
-              >
-                <path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.303 2.254.464 3.443.464 6.627 0 12-4.974 12-11.111C24 4.974 18.627 0 12 0zm1.291 14.12l-3.058-3.268-5.965 3.268 6.556-6.974 3.125 3.268 5.898-3.268-6.556 6.974z" />
-              </svg>
-            </div>
-          </a>
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-heading group-hover:text-heading transition-colors">WhatsApp</span>
+        </a>
 
-          {/* ADD TO BAG */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const cleanId = product._id.replace("drafts.", "");
-              addItem(product, quantity);
-              setIsCheckoutDrawerOpen(true);
-              trackEvent("AddToCart", {
-                content_name: product.title,
-                content_category: product.category?.title,
-                content_ids: [cleanId],
-                content_type: "product",
-                value: product.price * quantity,
-                currency: "NPR",
-                brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
-                availability:
-                  (product.stock ?? 0) > 0 ? "in stock" : "available for order",
-              });
-            }}
-            className="flex-1 flex items-center justify-center bg-surface hover:bg-action group/bag transition-colors"
-            title="Add to Bag"
+        {/* MESSENGER */}
+        <a
+          href={messengerLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="w-full flex items-center justify-center gap-2 p-3 bg-action/10 hover:bg-action hover:text-surface transition-colors group"
+          title="Messenger"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            className="fill-heading group-hover:fill-surface transition-colors"
           >
-            <div className="w-[38px] h-[38px] rounded-full bg-action/10 flex items-center justify-center group-hover/bag:bg-white transition-colors">
-              <ShoppingBag
-                size={22}
-                strokeWidth={1.2}
-                className="text-action group-hover/bag:text-action transition-colors"
-              />
-            </div>
-          </button>
-        </div>
+            <path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.303 2.254.464 3.443.464 6.627 0 12-4.974 12-11.111C24 4.974 18.627 0 12 0zm1.291 14.12l-3.058-3.268-5.965 3.268 6.556-6.974 3.125 3.268 5.898-3.268-6.556 6.974z" />
+          </svg>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-heading group-hover:text-surface transition-colors">Messenger</span>
+        </a>
       </div>
     </div>
   );
