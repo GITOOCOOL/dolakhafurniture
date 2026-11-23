@@ -11,7 +11,7 @@ go slowly, explain before changing, one topic per session.
 - Big files: read only the lines you need (search first). `CheckoutDrawer.tsx` is 1,788 lines.
 
 ## Pieces
-- `web/`: Next.js 16 / React 19 / Tailwind 4 site. Dev: `cd web && npm run dev -- -p 3005`.
+- `web/`: Next.js 16 / React 19 / Tailwind 4 site. Dev: `cd web && npm run dev -- -p 3005` (localhost:3005 and :3000 are in Sanity CORS origins; another port gives browser-side 403 "Request error").
 - Sanity (project `b6iov2to`, dataset `production`): the main database. Products, categories, campaigns,
   and also orders, inquiries, leads, vouchers, payment accounts. Schemas in `sanity-studio/schemaTypes/`.
 - `sanity-studio/`: the owner's editing app for that data.
