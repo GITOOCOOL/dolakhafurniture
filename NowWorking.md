@@ -6,7 +6,8 @@ This document tracks active bugs, security improvements, and stabilization tasks
 
 ## 🚩 Critical Bugs & Inconsistencies
 
-- [ ] **Hardcoded WhatsApp Number**: `FloatingContact.tsx` and `ProductCard.tsx` use an Australian number (`61410765748`) instead of the business number (`+977 9808005210`).
+- [x] **WhatsApp Number**: no longer hardcoded; every button reads `businessMetaData.whatsapp` from Sanity. The Australian number is the real business WhatsApp (intended).
+- [ ] **Brand back to Dolakha Furniture**: Sanity `businessMetaData` still says "Shop Now Nepal" (name, tagline, links) from the planned company move.
 - [ ] **Messenger ID Sync**: Verify if the Messenger ID `224061751418570` matches the current business page.
 
 ---
@@ -38,4 +39,4 @@ This document tracks active bugs, security improvements, and stabilization tasks
 *Track active fixes here.*
 
 1. **[COMPLETED]**: Hardened Content Engine (v4.1). Implemented multimodal intelligence, cloud-based GitHub Actions heartbeat, and 2-step Photo Story Circle protocol. 🛰️✅
-2. **[PENDING]**: Fix hardcoded WhatsApp numbers across codebase.
+2. **[COMPLETED]**: WhatsApp numbers now come from Sanity (`businessMetaData.whatsapp`).
