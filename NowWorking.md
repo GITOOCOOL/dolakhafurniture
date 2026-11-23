@@ -7,14 +7,15 @@ This document tracks active bugs, security improvements, and stabilization tasks
 ## 🚩 Critical Bugs & Inconsistencies
 
 - [x] **WhatsApp Number**: no longer hardcoded; every button reads `businessMetaData.whatsapp` from Sanity. The Australian number is the real business WhatsApp (intended).
-- [ ] **Brand back to Dolakha Furniture**: Sanity `businessMetaData` still says "Shop Now Nepal" (name, tagline, links) from the planned company move.
+- [x] **Brand back to Dolakha Furniture**: the Shop Now Nepal copy is deleted; Business Meta Data is now a Studio singleton (needs a Studio deploy).
 - [ ] **Messenger ID Sync**: Verify if the Messenger ID `224061751418570` matches the current business page.
 
 ---
 
 ## 🔒 Security & Robustness
 
-- [ ] **Spam Protection**: Implement rate-limiting or a basic honey-pot for `Inquiry` and `Checkout` server actions to prevent bot spam.
+- [x] **Spam Protection**: honeypot + per-IP limit + length limits in `lib/spamGuard.ts` (inquiry, checkout). Cloudflare WAF rate limiting is the next step if bots get through.
+- [x] **Checkout prices**: `processOrder` now takes prices from Sanity, not from the browser cart.
 - [ ] **Environment Guards**: Refactor server utilities to gracefully handle missing environment variables instead of hard-asserting (`!`).
 - [ ] **Sanity Token Scoping**: Ensure tokens used in client-accessible patterns (if any) are restricted to READ-ONLY.
 
