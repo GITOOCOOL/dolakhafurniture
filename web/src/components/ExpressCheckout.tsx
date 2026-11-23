@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Info, Mail, MapPin, Truck, Ticket, ShoppingBag, CheckCircle2, Minus, Plus, Trash2, Sparkles, ArrowLeft } from "lucide-react";
 import Input from "@/components/ui/Input";
-import { urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
 
 interface ExpressCheckoutProps {
   items: any[];

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Play, ShoppingBag, ExternalLink } from 'lucide-react';
 import { SocialContent } from '@/types';
-import { urlFor } from '@/lib/sanity';
+import { urlFor } from "@/lib/sanityImage";
 
 interface ReelsSectionProps {
   reels: SocialContent[];

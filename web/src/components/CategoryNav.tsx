@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { client } from "@/lib/sanity";
-import { categoriesQuery } from "@/lib/queries";
+import { getCategories } from "@/app/actions/publicData";
 
 type Category = {
   _id: string;
@@ -32,7 +31,7 @@ export default function CategoryNav({
     setMounted(true);
     async function fetchCategories() {
       try {
-        const data = await client.fetch(categoriesQuery, { isAdmin });
+        const data = await getCategories();
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

@@ -2,7 +2,7 @@
 
 import { Leaf, Package, PackageSearch, MessageCircle } from "lucide-react";
 import { Order } from "@/types";
-import { urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";

@@ -1,5 +1,5 @@
 import { client } from "@/lib/sanity";
-import { urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
 import ProductDetail from "@/components/ProductDetail";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";

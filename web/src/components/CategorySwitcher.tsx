@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { client } from "@/lib/sanity";
-import { categoriesQuery } from "@/lib/queries";
+import { getCategories } from "@/app/actions/publicData";
 import { Category } from "@/types";
 
 export default function CategorySwitcher({ isAdmin = false }: { isAdmin?: boolean }) {
@@ -13,7 +12,7 @@ export default function CategorySwitcher({ isAdmin = false }: { isAdmin?: boolea
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const data = await client.fetch(categoriesQuery, { isAdmin });
+        const data = await getCategories();
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

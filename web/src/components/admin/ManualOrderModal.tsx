@@ -22,8 +22,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { createManualOrder, ManualOrderItem, uploadArtisanImage } from "@/app/actions/adminOrders";
 import { validateVoucher } from "@/app/actions/vouchers";
-import { activeVouchersQuery, allMaterialsQuery } from "@/lib/queries";
-import { client } from "@/lib/sanity";
+import { getManualOrderData } from "@/app/actions/publicData";
 import Image from "next/image";
 import { Tag, Ticket, Sparkles, Sliders, ChevronDown } from "lucide-react";
 
@@ -92,13 +91,7 @@ export default function ManualOrderModal({ isOpen, onClose, onSuccess }: ManualO
     if (isOpen) {
       const fetchData = async () => {
         try {
-          const [vouchers, mats, prods] = await Promise.all([
-            client.fetch(activeVouchersQuery),
-            client.fetch(allMaterialsQuery),
-            client.fetch(`*[_type == "product" && isActive == true] {
-              _id, title, price, "imageUrl": mainImage.asset->url, stock, category->{title}
-            }`)
-          ]);
+          const { vouchers, materials: mats, products: prods } = await getManualOrderData();
           setAvailableVouchers(vouchers);
           setMaterials(mats);
           setAllProducts(prods);

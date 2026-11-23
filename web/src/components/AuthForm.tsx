@@ -10,8 +10,7 @@ import Button from "./ui/Button";
 import Input from "./ui/Input";
 import { trackEvent } from "./MetaPixel";
 
-import { client } from "@/lib/sanity";
-import { firstOrderVoucherQuery } from "@/lib/queries";
+import { getFirstOrderVoucher } from "@/app/actions/publicData";
 import { Voucher } from "@/types";
 
 interface AuthFormProps {
@@ -33,7 +32,7 @@ export default function AuthForm({ onSuccess, showRewardBanner = true }: AuthFor
 
   useEffect(() => {
     if (showRewardBanner) {
-      client.fetch(firstOrderVoucherQuery)
+      getFirstOrderVoucher()
         .then(data => setFirstOrderVoucher(data))
         .catch(err => console.error("Error fetching first order voucher:", err));
     }

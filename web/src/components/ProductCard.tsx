@@ -1,6 +1,6 @@
 "use client";
 
-import { urlFor } from "../lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
 import Link from "next/link";
 import { Product, BusinessMetaData } from "@/types";
 import { ShoppingBag, Plus, Minus } from "lucide-react";

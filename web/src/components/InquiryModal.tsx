@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { client as sanityClient } from "@/lib/sanity";
 import { Order } from "@/types";
 import { getCustomerOrders, getFAQs } from "@/app/actions/orders";
 import { ChevronDown, Package, Info, HelpCircle, Sparkles, Phone, MessageCircle, Facebook } from "lucide-react";

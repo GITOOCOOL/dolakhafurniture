@@ -2,14 +2,10 @@
 
 import { useCart } from "@/store/useCart";
 import { useState, useEffect, useMemo, useRef } from "react";
-import { urlFor, client } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
+import { getCheckoutData } from "@/app/actions/publicData";
 import { processOrder } from "@/app/actions/checkout";
 import { validateVoucher, checkVoucherUsage } from "@/app/actions/vouchers";
-import {
-  paymentAccountsQuery,
-  activeCampaignsQuery,
-  checkoutSettingsQuery,
-} from "@/lib/queries";
 import InquiryModal from "@/components/InquiryModal";
 import Modal from "@/components/ui/Modal";
 import {
@@ -312,11 +308,11 @@ export default function CheckoutDrawer({
     const fetchData = async () => {
       try {
         setIsInitialLoading(true);
-        const [campaignsData, accounts, settings] = await Promise.all([
-          client.fetch(activeCampaignsQuery),
-          client.fetch(paymentAccountsQuery),
-          client.fetch(checkoutSettingsQuery),
-        ]);
+        const {
+          campaigns: campaignsData,
+          paymentAccounts: accounts,
+          settings,
+        } = await getCheckoutData();
 
         setCampaigns(campaignsData);
         setPaymentAccounts(accounts);

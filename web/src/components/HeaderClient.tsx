@@ -11,8 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/store/useUIStore";
 import { trackEvent } from "./MetaPixel";
 import { Campaign, Product, BusinessMetaData } from "@/types";
-import { client } from "@/lib/sanity";
-import { searchProductsQuery } from "@/lib/queries";
+import { searchProducts } from "@/app/actions/publicData";
 import ProductCard from "@/components/ProductCard";
 import CampaignModal from "./CampaignModal";
 import Modal from "./ui/Modal";
@@ -75,10 +74,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData, isAdmin
 
       setIsSearching(true);
       try {
-        const results = await client.fetch(searchProductsQuery, {
-          searchTerm: `${searchQuery}*`,
-          isAdmin: isAuthorizedAdmin,
-        });
+        const results = await searchProducts(searchQuery);
         setSearchResults({
           products: results.products || [],
           categories: results.categories || [],

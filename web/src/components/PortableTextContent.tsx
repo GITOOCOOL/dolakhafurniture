@@ -1,7 +1,7 @@
 import React from 'react';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
 import Image from 'next/image';
-import { urlFor } from '@/lib/sanity';
+import { urlFor } from "@/lib/sanityImage";
 import { Info, Lightbulb, AlertTriangle } from 'lucide-react';
 
 interface PortableTextContentProps {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Campaign, BusinessMetaData } from "@/types";
-import { urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
 import { Copy, Check, X, Leaf } from "lucide-react";
 import { useToast } from "./Toast";
 import { motion, AnimatePresence } from "framer-motion";

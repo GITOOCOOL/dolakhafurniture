@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
 import { Campaign, BusinessMetaData } from "@/types";
 import { ArrowRight, Sparkles, MessageCircle, Facebook } from "lucide-react";
 import { MISSING } from "@/lib/missing";

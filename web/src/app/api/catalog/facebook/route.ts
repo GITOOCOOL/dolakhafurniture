@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { client } from "@/lib/sanity";
 import { facebookMelaProductsQuery } from "@/lib/queries";
 import { Product } from "@/types";
-import { urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
 import { MISSING, MISSING_URL } from "@/lib/missing";
 
 export const dynamic = "force-dynamic";

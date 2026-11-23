@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { urlFor, client } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanityImage";
+import { getActiveCampaignVouchers } from "@/app/actions/publicData";
 import { useCart } from "@/store/useCart";
 import { useUIStore } from "@/store/useUIStore";
 import {
@@ -40,12 +41,7 @@ export default function ProductDetail({
     async function fetchPromotions() {
       try {
         // 1. Fetch Active Campaign and its vouchers
-        const campaign = await client.fetch(
-          `*[_type == "campaign" && status == "active"] | order(startDate desc)[0] {
-            title,
-            "vouchers": vouchers[]->{code, details, discountType, discountValue, isFirstOrderVoucher, isOneTimePerCustomer, minimumSpend}
-          }`,
-        );
+        const campaign = await getActiveCampaignVouchers();
 
         // Filter for guest-eligible vouchers AND minimum spend threshold
         const allVouchers = campaign?.vouchers || [];

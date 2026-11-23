@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
 import { Campaign, Voucher, BusinessMetaData } from '@/types';
-import { urlFor } from '@/lib/sanity';
+import { urlFor } from "@/lib/sanityImage";
 import { MISSING } from "@/lib/missing";
 
 const styles = (themeColor: string = 'warmth') => StyleSheet.create({
