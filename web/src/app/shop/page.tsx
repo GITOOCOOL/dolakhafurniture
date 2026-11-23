@@ -5,11 +5,12 @@ import { allProductsQuery, businessMetaDataQuery } from "@/lib/queries";
 import { Product } from "@/types";
 import ShopClient from "@/components/ShopClient";
 import { isAuthorizedAdmin } from "@/lib/auth";
+import { MISSING } from "@/lib/missing";
 
 export async function generateMetadata(): Promise<Metadata> {
   const isAdmin = await isAuthorizedAdmin();
   const businessMetaData = await client.fetch(businessMetaDataQuery, { isAdmin });
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
 
   return {
     title: `Shop | ${name}`,

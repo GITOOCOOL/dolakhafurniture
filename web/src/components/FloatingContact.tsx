@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/store/useUIStore";
 import { BusinessMetaData } from "@/types";
 import InquiryModal from "./InquiryModal";
+import { MISSING } from "@/lib/missing";
 
 interface FloatingContactProps {
   businessMetaData?: BusinessMetaData | null;
@@ -36,11 +37,11 @@ const FloatingContact = ({ businessMetaData }: FloatingContactProps) => {
   }, []);
 
   // Pre-filled WhatsApp link
-  const whatsappNumber = businessMetaData?.whatsapp || "undefined_setmetadata_in_studio";
+  const whatsappNumber = businessMetaData?.whatsapp || MISSING;
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`;
 
   // Messenger link
-  const messengerLink = businessMetaData?.messengerUrl || "undefined_setmetadata_in_studio";
+  const messengerLink = businessMetaData?.messengerUrl || MISSING;
 
   const buttons = [
     {
@@ -52,7 +53,7 @@ const FloatingContact = ({ businessMetaData }: FloatingContactProps) => {
         />
       ),
       label: "Phone Call",
-      href: `tel:${businessMetaData?.phone || "undefined_setmetadata_in_studio"}`,
+      href: `tel:${businessMetaData?.phone || MISSING}`,
       color: "bg-heading",
       textColor: "text-app",
     },

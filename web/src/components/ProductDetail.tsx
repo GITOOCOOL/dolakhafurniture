@@ -19,6 +19,7 @@ import Button from "./ui/Button";
 import { Product, BusinessMetaData } from "@/types";
 import { trackEvent } from "./MetaPixel";
 import { useEffect } from "react";
+import { MISSING } from "@/lib/missing";
 
 export default function ProductDetail({
   product,
@@ -359,7 +360,7 @@ export default function ProductDetail({
                 <div className="flex items-stretch w-full overflow-hidden rounded-full border border-soft shadow-sm bg-surface">
                   {/* WHATSAPP ACTION */}
                   <a
-                    href={`https://wa.me/${(businessMetaData?.whatsapp || "undefined_setmetadata_in_studio").replace(/[^0-9]/g, "")}?text=Hi ${businessMetaData?.businessName || "undefined_setmetadata_in_studio"}! I'm interested in the ${product.title}`}
+                    href={`https://wa.me/${(businessMetaData?.whatsapp || MISSING).replace(/[^0-9]/g, "")}?text=Hi ${businessMetaData?.businessName || MISSING}! I'm interested in the ${product.title}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 flex items-center justify-center py-4 bg-app hover:bg-green-600 group/wa transition-all duration-300"
@@ -385,7 +386,7 @@ export default function ProductDetail({
                   <a
                     href={
                       businessMetaData?.messengerUrl ||
-                      "undefined_setmetadata_in_studio"
+                      MISSING
                     }
                     target="_blank"
                     rel="noopener noreferrer"

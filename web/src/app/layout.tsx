@@ -1,15 +1,13 @@
 import { Cormorant_Garamond, Montserrat } from "next/font/google";
 import "./globals.css";
 import HeaderClient from "@/components/HeaderClient";
-import VerticalBulletinTicker from "@/components/VerticalBulletinTicker";
 import { client } from "@/lib/sanity";
-import { bulletinQuery, activeCampaignsQuery } from "@/lib/queries";
+import { activeCampaignsQuery } from "@/lib/queries";
 import { getBusinessMetaData } from "@/lib/business";
-import { Bulletin, Campaign, BusinessMetaData } from "@/types";
+import { Campaign, BusinessMetaData } from "@/types";
 import { ToastProvider } from "@/components/Toast";
 import { isAuthorizedAdmin } from "@/lib/auth";
 import MetaPixel from "@/components/MetaPixel";
-import AnnouncementBar from "@/components/AnnouncementBar";
 import BrowserBanner from "@/components/BrowserBanner";
 import CampaignModal from "@/components/CampaignModal";
 import FooterClient from "@/components/FooterClient";
@@ -18,6 +16,7 @@ import { Suspense } from "react";
 import PulseTracker from "@/components/PulseTracker";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Metadata } from "next";
+import { MISSING, MISSING_URL } from "@/lib/missing";
 
 
 const serif = Cormorant_Garamond({
@@ -41,9 +40,9 @@ export async function generateMetadata(): Promise<Metadata> {
     console.error("Metadata fetch failed:", error);
   }
 
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
-  const tagline = businessMetaData?.tagline || "undefined_setmetadata_in_studio";
-  const url = businessMetaData?.businessUrl || "https://undefined_setmetadata_in_studio.com";
+  const name = businessMetaData?.businessName || MISSING;
+  const tagline = businessMetaData?.tagline || MISSING;
+  const url = businessMetaData?.businessUrl || MISSING_URL;
 
   return {
     title: {
@@ -98,17 +97,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let bulletins: Bulletin[] = [];
   let activeCampaigns: Campaign[] = [];
   let businessMetaData: BusinessMetaData | null = null;
 
   try {
-    const [fetchedBulletins, fetchedCampaigns, fetchedMetaData] = await Promise.all([
-      client.fetch<Bulletin[]>(bulletinQuery),
+    const [fetchedCampaigns, fetchedMetaData] = await Promise.all([
       client.fetch<Campaign[]>(activeCampaignsQuery),
       getBusinessMetaData(),
     ]);
-    bulletins = fetchedBulletins || [];
     activeCampaigns = fetchedCampaigns || [];
     businessMetaData = fetchedMetaData || null;
   } catch (error) {
@@ -116,11 +112,6 @@ export default async function RootLayout({
   }
 
   const isAdmin = await isAuthorizedAdmin();
-
-  // Bulletins for the ticker
-  const combinedBulletins = bulletins.length > 0 
-    ? bulletins.map(b => ({ ...b, type: "default" }))
-    : [{ _id: 'fallback', title: businessMetaData?.businessName || 'undefined_setmetadata_in_studio', content: 'Crafting Heritage.', type: 'default' }];
 
   const latestCampaign = activeCampaigns?.[0] || null;
 

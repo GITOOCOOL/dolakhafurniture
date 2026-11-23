@@ -11,9 +11,7 @@ import {
 } from "@/lib/queries";
 import { isAuthorizedAdmin } from "@/lib/auth";
 import { getBusinessMetaData } from "@/lib/business";
-import Carousel from "@/components/Carousel";
-import ProductCard from "@/components/ProductCard";
-import { SocialContent, BusinessMetaData } from "@/types";
+import { SocialContent } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -126,7 +124,7 @@ export default async function Home() {
           </h2>
         </div>
 
-        {categoriesInOrder.map((cat, index) => {
+        {categoriesInOrder.map((cat) => {
           const catProducts = productsByCategory[cat.slug] || [];
           if (catProducts.length === 0) return null;
 

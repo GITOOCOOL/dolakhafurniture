@@ -2,10 +2,11 @@ import { client } from "@/lib/sanity";
 import { businessMetaDataQuery } from "@/lib/queries";
 import Link from "next/link";
 import { Metadata } from "next";
+import { MISSING } from "@/lib/missing";
 
 export async function generateMetadata(): Promise<Metadata> {
   const businessMetaData = await client.fetch(businessMetaDataQuery);
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
   const tagline = businessMetaData?.tagline || "Our Story";
 
   return {
@@ -16,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function OurStory() {
   const businessMetaData = await client.fetch(businessMetaDataQuery);
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
 
   return (
     <div className="bg-app min-h-screen pt-40 pb-20 font-sans text-heading relative">

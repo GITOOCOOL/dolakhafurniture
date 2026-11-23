@@ -7,12 +7,13 @@ import { SocialContent } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
+import { MISSING } from "@/lib/missing";
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const businessMetaData = await client.fetch(businessMetaDataQuery);
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
 
   return {
     title: `Stories | ${name}`,
@@ -40,7 +41,7 @@ export default async function StoriesPage() {
   const reels = socialContent.filter(item => item.type === 'reel');
   const blogs = socialContent.filter(item => item.type === 'blog');
 
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
 
   return (
     <div className="w-full bg-app min-h-screen">

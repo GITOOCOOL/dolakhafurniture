@@ -2,6 +2,7 @@ import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
 import { Campaign, Voucher, BusinessMetaData } from '@/types';
 import { urlFor } from '@/lib/sanity';
+import { MISSING } from "@/lib/missing";
 
 const styles = (themeColor: string = 'warmth') => StyleSheet.create({
   page: {
@@ -290,11 +291,11 @@ const chunkArray = (arr: any[], size: number) => {
 export const CampaignPDF = ({ campaign, firstOrderVoucher, businessMetaData }: Props) => {
   const currentStyles = styles(campaign.themeColor);
   const productChunks = chunkArray(campaign.products || [], 6);
-  const campaignUrl = `${businessMetaData?.businessUrl || "undefined_setmetadata_in_studio"}/campaign/${campaign.slug}`;
+  const campaignUrl = `${businessMetaData?.businessUrl || MISSING}/campaign/${campaign.slug}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(campaignUrl)}`;
 
   return (
-    <Document title={`${campaign.title} - ${businessMetaData?.businessName || "undefined_setmetadata_in_studio"} Catalog`}>
+    <Document title={`${campaign.title} - ${businessMetaData?.businessName || MISSING} Catalog`}>
       {/* Page 1: COVER & INSTRUCTIONS */}
       <Page size="A4" style={currentStyles.page}>
         <View style={currentStyles.coverPage}>
@@ -379,7 +380,7 @@ export const CampaignPDF = ({ campaign, firstOrderVoucher, businessMetaData }: P
           </View>
 
           <View style={currentStyles.footer} fixed>
-            <Text>{businessMetaData?.businessName || "undefined_setmetadata_in_studio"} • High Fidelity Interior Systems</Text>
+            <Text>{businessMetaData?.businessName || MISSING} • High Fidelity Interior Systems</Text>
             <Text render={({ pageNumber, totalPages }) => `PAGE ${pageNumber} / ${totalPages}`} />
           </View>
         </Page>
@@ -401,10 +402,10 @@ export const CampaignPDF = ({ campaign, firstOrderVoucher, businessMetaData }: P
             {businessMetaData?.tiktokUrl && <Text style={currentStyles.socialItem}>TikTok: {businessMetaData.tiktokUrl.split('/').pop()}</Text>}
           </View>
           
-          <Text style={currentStyles.phoneItem}>{businessMetaData?.phone || "undefined_setmetadata_in_studio"}</Text>
+          <Text style={currentStyles.phoneItem}>{businessMetaData?.phone || MISSING}</Text>
           <Text style={currentStyles.whatsappText}>Text us on WhatsApp for instant quote</Text>
           
-          <Text style={[currentStyles.socialItem, { marginTop: 40, fontSize: 10, opacity: 0.6 }]}>{businessMetaData?.businessUrl || "undefined_setmetadata_in_studio"}</Text>
+          <Text style={[currentStyles.socialItem, { marginTop: 40, fontSize: 10, opacity: 0.6 }]}>{businessMetaData?.businessUrl || MISSING}</Text>
           
           <Text style={currentStyles.brandName}>Est. 2018 • Crafted with pride in Nepal</Text>
         </View>

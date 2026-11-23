@@ -3,6 +3,7 @@ import { client } from "@/lib/sanity";
 import { facebookMelaProductsQuery } from "@/lib/queries";
 import { Product } from "@/types";
 import { urlFor } from "@/lib/sanity";
+import { MISSING, MISSING_URL } from "@/lib/missing";
 
 export const dynamic = "force-dynamic";
 
@@ -34,8 +35,8 @@ export async function GET() {
 
     const melaProducts = Array.isArray(products) ? products : [];
     
-    const DOMAIN = businessMetaData?.businessUrl || "https://undefined_setmetadata_in_studio.com";
-    const BRAND = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+    const DOMAIN = businessMetaData?.businessUrl || MISSING_URL;
+    const BRAND = businessMetaData?.businessName || MISSING;
     const CURRENCY = "NPR";
 
     const xmlItems = melaProducts

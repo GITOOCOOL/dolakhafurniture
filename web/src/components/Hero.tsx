@@ -19,6 +19,7 @@ import { SocialContent, BusinessMetaData } from "@/types";
 import SocialStories from "./SocialStories";
 import StoryViewer from "./StoryViewer";
 import Carousel from "./Carousel";
+import { MISSING } from "@/lib/missing";
 
 const Hero = ({ 
   stories = [], 
@@ -31,7 +32,7 @@ const Hero = ({
 }) => {
   const [selectedReel, setSelectedReel] = useState<number | null>(null);
 
-  const placeholder = "undefined_setmetadata_in_studio";
+  const placeholder = MISSING;
 
   return (
     <section className="relative w-full py-24 flex flex-col justify-center bg-app overflow-hidden">

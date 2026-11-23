@@ -5,6 +5,7 @@ import Image from "next/image";
 import { urlFor } from "@/lib/sanity";
 import { Campaign, BusinessMetaData } from "@/types";
 import { ArrowRight, Sparkles, MessageCircle, Facebook } from "lucide-react";
+import { MISSING } from "@/lib/missing";
 
 export default function CampaignCard({ 
   campaign, 
@@ -97,7 +98,7 @@ export default function CampaignCard({
 
           <div className="flex items-center gap-2">
             <a 
-              href={`https://wa.me/${(businessMetaData?.whatsapp || "undefined_setmetadata_in_studio").replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${businessMetaData?.businessName || "undefined_setmetadata_in_studio"}! I'm interested in the ${campaign.title} collection.`)}`}
+              href={`https://wa.me/${(businessMetaData?.whatsapp || MISSING).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${businessMetaData?.businessName || MISSING}! I'm interested in the ${campaign.title} collection.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25D366]/5 border border-[#25D366]/20 text-[#128C7E] hover:bg-[#25D366] hover:text-white transition-all duration-300"
@@ -106,7 +107,7 @@ export default function CampaignCard({
               <MessageCircle size={18} />
             </a>
             <a 
-              href={businessMetaData?.messengerUrl || "undefined_setmetadata_in_studio"}
+              href={businessMetaData?.messengerUrl || MISSING}
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full flex items-center justify-center bg-[#0084FF]/5 border border-[#0084FF]/20 text-[#0084FF] hover:bg-[#0084FF] hover:text-white transition-all duration-300"

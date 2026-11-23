@@ -6,6 +6,7 @@ import { Leaf, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 import { Metadata } from "next";
+import { MISSING } from "@/lib/missing";
 
 export async function generateMetadata(): Promise<Metadata> {
   let businessMetaData: BusinessMetaData | null = null;
@@ -15,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     console.error("Metadata fetch failed:", error);
   }
 
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
 
   return {
     title: `Campaigns & Editorials | ${name}`,

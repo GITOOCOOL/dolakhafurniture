@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bulletin, BusinessMetaData } from "@/types";
 import { Ticket } from "lucide-react";
+import { MISSING } from "@/lib/missing";
 
 interface AnnouncementBarProps {
   bulletins: (Bulletin & { type?: string; voucherCode?: string })[];
@@ -50,7 +51,7 @@ export default function AnnouncementBar({ bulletins, businessMetaData }: Announc
           >
             <div className="flex flex-col md:flex-row items-center gap-1 md:gap-4">
               <span className="text-[9px] md:text-[10px] font-sans font-extrabold uppercase tracking-[0.3em] opacity-80">
-                {currentBulletin.title || businessMetaData?.businessName || "undefined_setmetadata_in_studio"}
+                {currentBulletin.title || businessMetaData?.businessName || MISSING}
               </span>
               <span className="hidden md:inline-block opacity-40">•</span>
               <span className="text-[10px] md:text-xs font-serif italic tracking-wide">

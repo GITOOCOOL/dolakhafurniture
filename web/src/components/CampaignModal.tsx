@@ -12,6 +12,7 @@ import Link from "next/link";
 import Modal from "@/components/ui/Modal";
 import Carousel from "./Carousel";
 import ProductCard from "./ProductCard";
+import { MISSING } from "@/lib/missing";
 
 interface CampaignModalProps {
   campaign: Campaign | null;
@@ -256,7 +257,7 @@ export default function CampaignModal({ campaign, businessMetaData }: CampaignMo
         </div>
 
       <div className="w-full text-center py-6 text-[10px] uppercase tracking-widest text-label border-t border-soft/50 mt-10">
-        Honest Craft, {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}
+        Honest Craft, {businessMetaData?.businessName || MISSING}
       </div>
     </Modal>
   );

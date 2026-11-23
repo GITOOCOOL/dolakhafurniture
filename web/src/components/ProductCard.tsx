@@ -8,6 +8,7 @@ import { trackEvent } from "./MetaPixel";
 import { useCart } from "@/store/useCart";
 import { useUIStore } from "@/store/useUIStore";
 import { useState } from "react";
+import { MISSING } from "@/lib/missing";
 
 const ProductCard = ({
   product,
@@ -27,14 +28,14 @@ const ProductCard = ({
   const [quantity, setQuantity] = useState(1);
 
   // Pre-filled WhatsApp link
-  const whatsappNumber = businessMetaData?.whatsapp || "undefined_setmetadata_in_studio";
+  const whatsappNumber = businessMetaData?.whatsapp || MISSING;
   const whatsappMessage = encodeURIComponent(
-    `Hi ${businessMetaData?.businessName || "undefined_setmetadata_in_studio"}! I'm interested in buying ${product.title}.`,
+    `Hi ${businessMetaData?.businessName || MISSING}! I'm interested in buying ${product.title}.`,
   );
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
 
   // Messenger link
-  const messengerLink = businessMetaData?.messengerUrl || "undefined_setmetadata_in_studio";
+  const messengerLink = businessMetaData?.messengerUrl || MISSING;
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-soft bg-surface w-full h-full shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1">
@@ -156,7 +157,7 @@ const ProductCard = ({
               content_type: "product",
               value: product.price * quantity,
               currency: "NPR",
-              brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
+              brand: businessMetaData?.businessName || MISSING,
               availability: (product.stock ?? 0) > 0 ? "in stock" : "available for order",
             });
           }}

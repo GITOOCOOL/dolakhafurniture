@@ -19,6 +19,7 @@ import Modal from "./ui/Modal";
 import CategorySwitcher from "./CategorySwitcher";
 import ProductQuickView from "./ProductQuickView";
 import InquiryModal from "./InquiryModal";
+import { MISSING } from "@/lib/missing";
 
 interface HeaderClientProps {
   latestCampaign?: Campaign | null;
@@ -173,7 +174,7 @@ export default function HeaderClient({ latestCampaign, businessMetaData, isAdmin
                   />
                 </div>
                  <span className="hidden lg:block text-2xl xl:text-3xl font-serif italic tracking-tight text-heading">
-                  {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}
+                  {businessMetaData?.businessName || MISSING}
                   <span className="text-action">.</span>
                 </span>
               </Link>

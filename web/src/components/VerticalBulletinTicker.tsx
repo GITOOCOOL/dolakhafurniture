@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bulletin as BulletinType, BusinessMetaData } from '@/types';
+import { MISSING } from "@/lib/missing";
 
 // Items enter from bottom, move up, then exit top
 const bulletinVariants = {
@@ -60,7 +61,7 @@ export default function VerticalBulletinTicker({ bulletins = [], businessMetaDat
 
       {/* Footer Label: Fixed at the bottom */}
       <div className="text-[9px] font-sans font-bold uppercase tracking-[0.4em] text-action rotate-90 origin-center whitespace-nowrap mt-16">
-        {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}
+        {businessMetaData?.businessName || MISSING}
       </div>
     </div>
   );

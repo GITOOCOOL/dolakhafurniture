@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import { productBySlugQuery, businessMetaDataQuery } from "@/lib/queries";
 import { Product, BusinessMetaData } from "@/types";
 import { isAuthorizedAdmin } from "@/lib/auth";
+import { MISSING, MISSING_URL } from "@/lib/missing";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     client.fetch<BusinessMetaData | null>(businessMetaDataQuery, { isAdmin }),
   ]);
 
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
 
   if (!product) return { title: `Piece Not Found | ${name}` };
 
@@ -71,8 +72,8 @@ export default async function ProductPage({ params }: Props) {
     ? urlFor(product.mainImage).width(1200).height(630).url()
     : "/logo.png";
   
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
-  const url = businessMetaData?.businessUrl || "https://undefined_setmetadata_in_studio.com";
+  const name = businessMetaData?.businessName || MISSING;
+  const url = businessMetaData?.businessUrl || MISSING_URL;
   const defaultDescription = `A unique, handcrafted addition to your home, created by ${name}.`;
 
   const jsonLd = {

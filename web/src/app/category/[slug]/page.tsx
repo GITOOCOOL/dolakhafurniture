@@ -7,6 +7,7 @@ import { Product, BusinessMetaData } from "@/types";
 import ProductCard from "@/components/ProductCard";
 import { businessMetaDataQuery } from "@/lib/queries";
 import { isAuthorizedAdmin } from "@/lib/auth";
+import { MISSING } from "@/lib/missing";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!category) return { title: "Collection Not Found" };
 
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
   const description = category.description || `Explore our ${category.title} collection.`;
 
   return {
@@ -131,7 +132,7 @@ export default async function CategoryPage({ params }: Props) {
         {/* BOTTOM NAVIGATION */}
         <div className="mt-48 pt-16 border-t border-soft border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-[10px] font-medium uppercase tracking-[0.4em] text-label">
-            {data.businessMetaData?.businessName || "undefined_setmetadata_in_studio"} / {data.category.title}
+            {data.businessMetaData?.businessName || MISSING} / {data.category.title}
           </div>
           <Link
             href="/"

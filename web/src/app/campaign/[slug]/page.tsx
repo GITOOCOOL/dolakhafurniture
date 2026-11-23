@@ -10,6 +10,7 @@ import { Metadata } from "next";
 import { isAuthorizedAdmin } from "@/lib/auth";
 
 import PDFDownloadButton from "@/components/PDFDownloadButton";
+import { MISSING } from "@/lib/missing";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     client.fetch<BusinessMetaData | null>(businessMetaDataQuery, { isAdmin }),
   ]);
   
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
   
   if (!campaign) return { title: `Campaign Not Found | ${name}` };
   

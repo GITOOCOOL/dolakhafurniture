@@ -3,10 +3,11 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { businessMetaDataQuery } from "@/lib/queries";
 import { ShoppingBag } from "lucide-react";
+import { MISSING } from "@/lib/missing";
 
 export async function generateMetadata(): Promise<Metadata> {
   const businessMetaData = await client.fetch(businessMetaDataQuery);
-  const name = businessMetaData?.businessName || "undefined_setmetadata_in_studio";
+  const name = businessMetaData?.businessName || MISSING;
 
   return {
     title: `New Arrivals | ${name}`,
@@ -114,7 +115,7 @@ export default async function NewArrivalsPage() {
 
         <div className="mt-64 pt-16 border-t border-soft border-dotted flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="type-label text-label">
-                {businessMetaData?.businessName || "undefined_setmetadata_in_studio"} / New Arrivals
+                {businessMetaData?.businessName || MISSING} / New Arrivals
             </div>
             <Link 
               href="/shop" 
