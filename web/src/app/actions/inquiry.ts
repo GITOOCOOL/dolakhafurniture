@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@sanity/client";
+import { checkSpam } from "@/lib/spamGuard";
 
 const sanityAdmin = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -18,6 +19,7 @@ export async function submitInquiry(data: {
   inquiryType?: string;
   orderReference?: string;
   topic?: string;
+  website?: string; // honeypot: hidden field, real visitors leave it empty
 }) {
   // 1.5 Safety Check: Verify Write Token
   if (!process.env.SANITY_API_WRITE_TOKEN) {
@@ -26,6 +28,16 @@ export async function submitInquiry(data: {
       success: false, 
       message: "Configuration error: Missing write permissions for inquiries." 
     }
+  }
+
+  const spam = await checkSpam("inquiry", data.website, {
+    name: data.name, email: data.email, phone: data.phone, message: data.message,
+    orderReference: data.orderReference, topic: data.topic,
+  });
+  if (!spam.ok) {
+    // Honeypot: look successful to the bot, save nothing
+    if (spam.silent) return { success: true, message: "Inquiry submitted successfully!" };
+    return { success: false, message: spam.message };
   }
 
   try {

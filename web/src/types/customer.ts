@@ -11,4 +11,5 @@ export type CustomerData = {
   country?: string;
   shippingMethod?: string;
   paymentMethod: string;
+  website?: string; // honeypot: hidden field, real customers leave it empty
 }

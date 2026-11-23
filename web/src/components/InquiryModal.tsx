@@ -52,6 +52,7 @@ export default function InquiryModal({
     message: "",
     inquiryType: initialOrderReference ? "order" : "general",
     orderReference: initialOrderReference || "",
+    website: "",
   });
   const [inquiryStatus, setInquiryStatus] = useState<
     "idle" | "submitting" | "success" | "error"
@@ -248,6 +249,17 @@ export default function InquiryModal({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Honeypot: hidden from people, bots fill it and get silently ignored (lib/spamGuard.ts) */}
+        <input
+          type="text"
+          name="website"
+          value={inquiryData.website}
+          onChange={handleInputChange}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ position: "absolute", left: "-10000px", width: "1px", height: "1px", overflow: "hidden" }}
+        />
         <div className="space-y-4">
           {/* PRIMARY INQUIRY TYPE */}
           <div className="space-y-2">

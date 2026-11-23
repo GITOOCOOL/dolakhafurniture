@@ -50,6 +50,7 @@ import ExpressCheckout from "@/components/ExpressCheckout";
 
 import { firstOrderVoucherQuery } from "@/lib/queries";
 import { Voucher, BusinessMetaData } from "@/types";
+import { MISSING } from "@/lib/missing";
 
 interface CheckoutDrawerProps {
   isOpen: boolean;
@@ -173,6 +174,7 @@ export default function CheckoutDrawer({
     saveInfo: true,
     shippingMethod: "standard",
     paymentMethod: "cod",
+    website: "",
   });
 
   const [inquiryData, setInquiryData] = useState({
@@ -274,7 +276,7 @@ export default function CheckoutDrawer({
         num_items: totalPieces,
         value: finalTotal,
         currency: "NPR",
-        brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
+        brand: businessMetaData?.businessName || MISSING,
         availability: "in stock",
       });
     }
@@ -473,7 +475,7 @@ export default function CheckoutDrawer({
             content_type: "product",
             currency: "NPR",
             value: Number(finalTotal) || 0,
-            brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
+            brand: businessMetaData?.businessName || MISSING,
             num_items: totalPieces,
           });
           clearCart();
@@ -558,7 +560,7 @@ export default function CheckoutDrawer({
           content_type: "product",
           currency: "NPR",
           value: Number(finalTotal) || 0,
-          brand: businessMetaData?.businessName || "undefined_setmetadata_in_studio",
+          brand: businessMetaData?.businessName || MISSING,
           num_items: totalPieces,
         });
         clearCart();
@@ -615,14 +617,14 @@ export default function CheckoutDrawer({
               <div className="w-20 h-20 bg-success/10 border border-success/20 rounded-full flex items-center justify-center mx-auto mb-8 text-success">
                 <CheckCircle2 size={32} />
               </div>
-              <h3 className="type-section mb-4">Order Received at {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}.</h3>
+              <h3 className="type-section mb-4">Order Received at {businessMetaData?.businessName || MISSING}.</h3>
               {orderNumber && (
                 <div className="inline-block bg-heading text-app px-5 py-1.5 rounded-full type-label mb-6">
                   Order #{orderNumber}
                 </div>
               )}
               <p className="type-body text-description mb-10 max-w-xs mx-auto">
-                Thank you for choosing {businessMetaData?.businessName || "undefined_setmetadata_in_studio"}. We'll contact you
+                Thank you for choosing {businessMetaData?.businessName || MISSING}. We'll contact you
                 shortly to confirm your delivery details.
               </p>
 
@@ -802,7 +804,7 @@ export default function CheckoutDrawer({
 
                   <div className="grid grid-cols-1 gap-3">
                     <a
-                      href={`tel:${businessMetaData?.phone || "undefined_setmetadata_in_studio"}`}
+                      href={`tel:${businessMetaData?.phone || MISSING}`}
                       className="flex items-center gap-4 p-4 bg-app rounded-2xl border border-soft/20 hover:border-action/30 transition-all group/link"
                     >
                       <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center group-hover/link:bg-action transition-colors">
@@ -816,13 +818,13 @@ export default function CheckoutDrawer({
                           Instant Reach
                         </span>
                         <span className="text-sm font-bold text-heading">
-                          {businessMetaData?.phone || "undefined_setmetadata_in_studio"}
+                          {businessMetaData?.phone || MISSING}
                         </span>
                       </div>
                     </a>
 
                     <a
-                      href={`mailto:${businessMetaData?.email || "undefined_setmetadata_in_studio"}`}
+                      href={`mailto:${businessMetaData?.email || MISSING}`}
                       className="flex items-center gap-4 p-4 bg-app rounded-2xl border border-soft/20 hover:border-action/30 transition-all group/link"
                     >
                       <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center group-hover/link:bg-action transition-colors">
@@ -836,7 +838,7 @@ export default function CheckoutDrawer({
                           Support Desk
                         </span>
                         <span className="text-sm font-bold italic text-heading truncate">
-                          {businessMetaData?.email || "undefined_setmetadata_in_studio"}
+                          {businessMetaData?.email || MISSING}
                         </span>
                       </div>
                     </a>
@@ -869,6 +871,17 @@ export default function CheckoutDrawer({
               onSubmit={handleCheckout}
               className="space-y-6 pb-6"
             >
+              {/* Honeypot: hidden from people, bots fill it and get silently ignored (lib/spamGuard.ts) */}
+              <input
+                type="text"
+                name="website"
+                value={formData.website}
+                onChange={handleInputChange}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: "absolute", left: "-10000px", width: "1px", height: "1px", overflow: "hidden" }}
+              />
               {checkoutMethod === "express" ? (
                 <ExpressCheckout
                   items={items}

@@ -3,6 +3,7 @@
 import { createClient as createSupabase } from "@/utils/supabase/server"
 import { createClient as createSanity } from "@sanity/client"
 import { CartItem, CustomerData } from "@/types"
+import { checkSpam } from "@/lib/spamGuard"
 
 // 1. Initialize the Sanity Admin Client with Write Permissions
 const sanityAdmin = createSanity({
@@ -32,13 +33,46 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
     }
   }
 
+  const spam = await checkSpam("checkout", customerData.website, {
+    firstName: customerData.firstName, lastName: customerData.lastName, email: customerData.email,
+    phone: customerData.phone, address: customerData.address, apartment: customerData.apartment,
+    city: customerData.city, state: customerData.state, postcode: customerData.postcode,
+  })
+  if (!spam.ok) {
+    // Honeypot: look successful to the bot, save nothing
+    if (spam.silent) return { success: true, orderId: "", orderNumber: generateOrderNumber() }
+    return { success: false, message: spam.message }
+  }
+
+  if (!Array.isArray(cartItems) || cartItems.length === 0 || cartItems.length > 50) {
+    return { success: false, message: "Your cart is empty or invalid." }
+  }
+
   try {
     const supabase = await createSupabase()
     const { data: { user } } = await supabase.auth.getUser()
     const orderNumber = generateOrderNumber();
 
     // 2. Server-side Recalculation (Integrity Check)
-    const serverSubtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    // Prices come from Sanity, never from the browser: the cart lives in the visitor's
+    // browser and could be edited to any price.
+    const ids = cartItems.map((item) => item._id)
+    const dbProducts = await sanityAdmin.fetch<{ _id: string; title: string; price: number }[]>(
+      `*[_id in $ids]{ _id, title, price }`,
+      { ids }
+    )
+    const priceById = new Map(dbProducts.map((p) => [p._id, p]))
+    for (const item of cartItems) {
+      const q = item.quantity
+      if (!priceById.has(item._id) || typeof priceById.get(item._id)!.price !== "number") {
+        return { success: false, message: `"${item.title}" is no longer available. Please remove it from your cart.` }
+      }
+      if (!Number.isInteger(q) || q < 1 || q > 99) {
+        return { success: false, message: `Invalid quantity for "${item.title}".` }
+      }
+    }
+    const pricedItems = cartItems.map((item) => ({ ...item, price: priceById.get(item._id)!.price }))
+    const serverSubtotal = pricedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     let serverShipping = customerData.shippingMethod === 'express' ? 500 : 0;
     
     // Multi-Voucher Calculation
@@ -87,7 +121,7 @@ export async function processOrder(cartItems: CartItem[], total: number, custome
       paymentMethod: customerData.paymentMethod,
       totalPrice: serverTotal,
       status: 'pending',
-      items: cartItems.map((item) => ({
+      items: pricedItems.map((item) => ({
         _key: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         title: item.title,
         price: item.price,
