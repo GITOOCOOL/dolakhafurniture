@@ -8,9 +8,9 @@ import {
   featuredProductsQuery,
   activeCampaignHomeQuery,
   socialMediaQuery,
-  businessMetaDataQuery,
 } from "@/lib/queries";
 import { isAuthorizedAdmin } from "@/lib/auth";
+import { getBusinessMetaData } from "@/lib/business";
 import Carousel from "@/components/Carousel";
 import ProductCard from "@/components/ProductCard";
 import { SocialContent, BusinessMetaData } from "@/types";
@@ -20,32 +20,25 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const isAdmin = await isAuthorizedAdmin();
   
-  // Fetch only featured products for the top carousel
-  const featuredProducts =
-    (await client.fetch<Product[]>(featuredProductsQuery, { isAdmin })) || [];
-
-  // Fetch all products to group them by category for the bottom section
-  const allProducts = (await client.fetch<Product[]>(allProductsQuery, { isAdmin })) || [];
-
-  const categoriesInOrder =
-    (await client.fetch<Category[]>(categoriesQuery, { isAdmin })) || [];
-
-  const activeCampaign =
-    (await client.fetch<any>(activeCampaignHomeQuery, { isAdmin })) || null;
-
-  const businessMetaData = 
-    (await client.fetch<BusinessMetaData>(businessMetaDataQuery)) || null;
-
-  let socialContent: SocialContent[] = [];
-  try {
-    socialContent = await client.fetch<SocialContent[]>(
-      socialMediaQuery,
-      { isAdmin },
-      { next: { revalidate: 60 } },
-    );
-  } catch (error) {
-    console.error("Home: Failed to fetch social content:", error);
-  }
+  // All queries run at the same time instead of one after another.
+  const [featured, all, categories, campaign, businessMetaData, socialContent] =
+    await Promise.all([
+      client.fetch<Product[]>(featuredProductsQuery, { isAdmin }), // top carousel
+      client.fetch<Product[]>(allProductsQuery, { isAdmin }), // grouped by category below
+      client.fetch<Category[]>(categoriesQuery, { isAdmin }),
+      client.fetch<any>(activeCampaignHomeQuery, { isAdmin }),
+      getBusinessMetaData(), // shared with layout.tsx, fetched once
+      client
+        .fetch<SocialContent[]>(socialMediaQuery, { isAdmin }, { next: { revalidate: 60 } })
+        .catch((error) => {
+          console.error("Home: Failed to fetch social content:", error);
+          return [] as SocialContent[];
+        }),
+    ]);
+  const featuredProducts = featured || [];
+  const allProducts = all || [];
+  const categoriesInOrder = categories || [];
+  const activeCampaign = campaign || null;
 
   const homepageStories = socialContent
     .filter((item) => item.type === "story")

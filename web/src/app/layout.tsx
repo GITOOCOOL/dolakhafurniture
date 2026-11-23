@@ -3,7 +3,8 @@ import "./globals.css";
 import HeaderClient from "@/components/HeaderClient";
 import VerticalBulletinTicker from "@/components/VerticalBulletinTicker";
 import { client } from "@/lib/sanity";
-import { bulletinQuery, activeCampaignsQuery, businessMetaDataQuery } from "@/lib/queries";
+import { bulletinQuery, activeCampaignsQuery } from "@/lib/queries";
+import { getBusinessMetaData } from "@/lib/business";
 import { Bulletin, Campaign, BusinessMetaData } from "@/types";
 import { ToastProvider } from "@/components/Toast";
 import { isAuthorizedAdmin } from "@/lib/auth";
@@ -35,7 +36,7 @@ const sans = Montserrat({
 export async function generateMetadata(): Promise<Metadata> {
   let businessMetaData: BusinessMetaData | null = null;
   try {
-    businessMetaData = await client.fetch<BusinessMetaData>(businessMetaDataQuery);
+    businessMetaData = await getBusinessMetaData();
   } catch (error) {
     console.error("Metadata fetch failed:", error);
   }
@@ -105,7 +106,7 @@ export default async function RootLayout({
     const [fetchedBulletins, fetchedCampaigns, fetchedMetaData] = await Promise.all([
       client.fetch<Bulletin[]>(bulletinQuery),
       client.fetch<Campaign[]>(activeCampaignsQuery),
-      client.fetch<BusinessMetaData>(businessMetaDataQuery),
+      getBusinessMetaData(),
     ]);
     bulletins = fetchedBulletins || [];
     activeCampaigns = fetchedCampaigns || [];
